@@ -2,30 +2,42 @@ import React, { useEffect, useState } from 'react';
 import Filters from './Filters';
 import ProductCard from './ProductCard';
 
-function ProductList() {
+function ProductList({ refresh }) {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({ brand: '', scale: '', price: 100 });
 
-  useEffect(() => {
+  const loadProducts = () => {
     fetch('http://localhost:3000/api/products')
       .then((res) => res.json())
       .then((data) => {
-        const normalized = (data.products || data).map((p) => ({
+        const normalized = (data.products || data).map(p => ({
           ...p,
-          id: p._id || p.id, // 👈 нормалізація ID
+          id: p._id || p.id
         }));
         setProducts(normalized);
       })
       .catch((err) => console.error('Failed to load products:', err));
-  }, []);
+  };
+
+  useEffect(() => {
+    loadProducts();
+  }, [refresh]);
+
+  const filtered = products.filter((model) => {
+    const brandMatch = filters.brand ? model.brand === filters.brand : true;
+    const scaleMatch = filters.scale ? model.scale === filters.scale : true;
+    const priceMatch = model.price <= filters.price;
+    return brandMatch && scaleMatch && priceMatch;
+  });
 
   const handleAddToCart = (product) => {
     const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existing = savedCart.find((item) => item.id === product.id);
+
+    const existing = savedCart.find(item => item.id === product.id);
 
     let updatedCart;
     if (existing) {
-      updatedCart = savedCart.map((item) =>
+      updatedCart = savedCart.map(item =>
         item.id === product.id
           ? { ...item, quantity: item.quantity + 1 }
           : item
@@ -38,20 +50,13 @@ function ProductList() {
     window.updateCartCount?.();
   };
 
-  const filtered = products.filter((model) => {
-    const brandMatch = filters.brand ? model.brand === filters.brand : true;
-    const scaleMatch = filters.scale ? model.scale === filters.scale : true;
-    const priceMatch = model.price <= filters.price;
-    return brandMatch && scaleMatch && priceMatch;
-  });
-
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
 
   return (
     <section id="models-container" className="bg-gray-100 py-12 px-6">
       <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-[270px_1fr] gap-10">
         {/* Блок фільтрів */}
-        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200">
+        <div className="bg-white p-6 rounded-2xl shadow-lg border border-gray-200 self-start">
           <h3 className="text-2xl font-semibold mb-6 text-gray-800 tracking-tight">Filters</h3>
 
           <label className="block mb-2 text-sm font-medium text-gray-700">Brand:</label>
@@ -78,7 +83,7 @@ function ProductList() {
           </select>
 
           <label className="block mb-2 text-sm font-medium text-gray-700">
-            Max Price: <span className="font-bold text-gray-900">${filters.price}</span>
+          Price: <span className="font-bold text-gray-900">${filters.price}</span>
           </label>
           <input
             type="range"
@@ -92,7 +97,7 @@ function ProductList() {
           />
         </div>
 
-        {/* Товари */}
+        {/* Блок товарів */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((model) => (
             <ProductCard

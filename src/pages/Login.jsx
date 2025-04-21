@@ -4,54 +4,68 @@ import { useNavigate } from 'react-router-dom';
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
   const handleLogin = async (e) => {
     e.preventDefault();
+
     try {
-      const response = await fetch('http://localhost:3000/api/login', {
+      const res = await fetch('http://localhost:3000/api/login', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password })
+        body: JSON.stringify({ email, password }),
       });
 
-      const data = await response.json();
-      if (response.ok) {
+      const data = await res.json();
+      if (res.ok) {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         localStorage.setItem('role', data.role);
-        setMessage('Login successful!');
         navigate('/');
+        window.location.reload();
       } else {
-        setMessage(data.message || 'Login failed');
+        alert(data.message || 'Login failed');
       }
     } catch (error) {
-      setMessage('An error occurred');
+      alert('Login error');
+      console.error(error);
     }
   };
 
   return (
-    <div className="max-w-md mx-auto p-6 bg-white rounded shadow mt-8 text-black">
-      <h2 className="text-xl font-semibold mb-4">Login</h2>
-      <form onSubmit={handleLogin}>
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-800 via-purple-700 to-pink-600 animate-[pulse_12s_infinite]">
+      <form
+        onSubmit={handleLogin}
+        className="bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-8 w-full max-w-md"
+      >
+        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
+          Login to TrueScale
+        </h2>
+
         <input
-          type="email"
+          type="text"
           placeholder="Email"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
-          className="w-full p-2 border mb-4 rounded"
+          required
         />
         <input
           type="password"
           placeholder="Password"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
-          className="w-full p-2 border mb-4 rounded"
+          required
         />
-        <button type="submit" className="w-full bg-blue-600 text-white p-2 rounded">Login</button>
+
+        <button
+          type="submit"
+          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition"
+        >
+          Login
+        </button>
       </form>
-      {message && <p className="mt-4 text-center text-red-500">{message}</p>}
     </div>
   );
 }

@@ -18,33 +18,31 @@ function BrandSlider() {
     {
       loop: true,
       slides: {
-        perView: 4,
-        spacing: 20,
+        perView: 5,
+        spacing: 30,
       },
       renderMode: 'performance',
       drag: true,
       created(slider) {
         timer.current = setInterval(() => {
           if (slider) slider.next();
-        }, 2500); // прокрутка кожні 2.5 секунди
+        }, 2500);
       },
     },
     []
   );
 
   useEffect(() => {
-    return () => {
-      clearInterval(timer.current); // очистити таймер при виході
-    };
+    return () => clearInterval(timer.current);
   }, []);
 
   const handlePrev = () => instanceRef.current?.prev();
   const handleNext = () => instanceRef.current?.next();
 
   return (
-    <div className="relative py-8 bg-white flex justify-center">
-      <div className="relative w-full max-w-5xl">
-        <div ref={sliderRef} className="keen-slider px-8">
+    <div className="relative py-14 bg-white flex justify-center">
+      <div className="relative w-full max-w-7xl">
+        <div ref={sliderRef} className="keen-slider px-6">
           {brandLogos.map((logo, index) => (
             <div
               className="keen-slider__slide flex justify-center items-center"
@@ -53,7 +51,8 @@ function BrandSlider() {
               <img
                 src={`/images/logos/${logo}`}
                 alt={logo}
-                className="h-16 object-contain"
+                className="h-20 object-contain transition duration-300 hover:scale-110"
+
               />
             </div>
           ))}
@@ -62,13 +61,13 @@ function BrandSlider() {
         {/* Кнопки */}
         <button
           onClick={handlePrev}
-          className="absolute -left-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute -left-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
         >
           &#10094;
         </button>
         <button
           onClick={handleNext}
-          className="absolute -right-4 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute -right-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
         >
           &#10095;
         </button>
