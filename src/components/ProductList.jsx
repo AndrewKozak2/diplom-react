@@ -7,7 +7,7 @@ function ProductList() {
   const [filters, setFilters] = useState({ brand: '', scale: '', price: 100 });
 
   useEffect(() => {
-    fetch('https://truescale-backend.onrender.com/api/products')
+    fetch('http://localhost:3000/api/products')
       .then((res) => res.json())
       .then((data) => {
         const normalized = (data.products || data).map((p) => ({

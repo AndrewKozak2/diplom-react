@@ -4,7 +4,7 @@ function NewArrivals() {
   const [latest, setLatest] = useState([]);
 
   useEffect(() => {
-    fetch('https://truescale-backend.onrender.com/api/products')
+    fetch('http://localhost:3000/api/products')
       .then((res) => res.json())
       .then((data) => {
         const products = Array.isArray(data) ? data : data.products || [];
