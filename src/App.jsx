@@ -7,6 +7,9 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import CartSidebar from './components/CartSidebar';
 import AddProductForm from './components/AddProductForm';
+import Favorites from './pages/Favorites';
+import Footer from './components/Footer';
+
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -32,6 +35,7 @@ function App() {
         <Route path="/about" element={<About />} />
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
+        <Route path="/favorites" element={<Favorites />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
@@ -39,6 +43,7 @@ function App() {
       {showAddForm && (
         <AddProductForm onClose={() => setShowAddForm(false)} />
       )}
+       <Footer /> 
     </div>
   );
 }

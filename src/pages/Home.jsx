@@ -3,6 +3,8 @@ import { useLocation, Link } from "react-router-dom";
 import BrandSlider from "../components/BrandSlider";
 import NewArrivals from "../components/NewArrivals";
 import ProductList from "../components/ProductList";
+import StoreBenefits from "../components/StoreBenefits";
+import Banner from "../components/Banner";
 
 function Home({ refresh }) {
   const location = useLocation();
@@ -11,7 +13,11 @@ function Home({ refresh }) {
     const hash = window.location.hash;
     const scrollTarget = localStorage.getItem("scrollTo");
 
-    if (hash === "#models" || scrollTarget === "models" || location.state?.scrollToModels) {
+    if (
+      hash === "#models" ||
+      scrollTarget === "models" ||
+      location.state?.scrollToModels
+    ) {
       const section = document.getElementById("models");
       if (section) {
         setTimeout(() => {
@@ -62,9 +68,16 @@ function Home({ refresh }) {
       <BrandSlider />
       <NewArrivals />
 
+      {/* Контейнер товарів */}
       <div id="models">
         <ProductList refresh={refresh} />
       </div>
+
+      <div className="my-16">
+      <Banner />
+      </div>
+      {/* Переваги магазину */}
+      <StoreBenefits />
     </main>
   );
 }

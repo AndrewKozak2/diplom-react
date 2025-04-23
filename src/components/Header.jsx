@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
-
 function Header() {
   const navigate = useNavigate();
   const username = localStorage.getItem("username");
@@ -20,9 +19,8 @@ function Header() {
 
     updateCartCount();
 
-    // оновлювати при змінах
     window.addEventListener("storage", updateCartCount);
-    window.updateCartCount = updateCartCount; // вручну можна викликати
+    window.updateCartCount = updateCartCount;
 
     return () => {
       window.removeEventListener("storage", updateCartCount);
@@ -41,8 +39,7 @@ function Header() {
   };
 
   return (
-<header className="absolute top-0 left-0 w-full h-[100px] z-50 flex justify-between items-center px-8 bg-black/20 backdrop-blur-sm text-white font-poppins">
-
+    <header className="absolute top-0 left-0 w-full h-[100px] z-50 flex justify-between items-center px-8 bg-black/20 backdrop-blur-sm text-white font-poppins">
       <Link to="/" className="text-2xl font-bold">
         TrueScale
       </Link>
@@ -53,6 +50,13 @@ function Header() {
           className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
         >
           About
+        </Link>
+
+        <Link
+          to="/favorites"
+          className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
+        >
+          Favorites
         </Link>
 
         {token ? (
@@ -92,7 +96,6 @@ function Header() {
           </>
         )}
 
-        {/* Корзина справа */}
         <button
           onClick={handleCartClick}
           className="relative ml-2 p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
