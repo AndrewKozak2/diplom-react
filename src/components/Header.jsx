@@ -30,6 +30,7 @@ function Header() {
 
   const handleLogout = () => {
     localStorage.clear();
+    window.dispatchEvent(new Event("cartUpdated"));
     navigate("/");
   };
 

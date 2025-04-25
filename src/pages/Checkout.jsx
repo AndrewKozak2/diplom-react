@@ -48,7 +48,6 @@ function Checkout() {
     }
 
     console.log('Order submitted:', form, cart);
-    // Тут можна додати запит на сервер
     localStorage.removeItem('cart');
     window.location.href = '/';
   };

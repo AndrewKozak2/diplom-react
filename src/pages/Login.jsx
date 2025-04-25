@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { loadCartFromDB } from '../utils/cartStorage';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -21,6 +22,10 @@ function Login() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         localStorage.setItem('role', data.role);
+        
+        await loadCartFromDB();
+        window.updateCartCount?.();
+
         navigate('/');
         window.location.reload();
       } else {

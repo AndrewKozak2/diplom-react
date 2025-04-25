@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import Filters from './Filters';
 import ProductCard from './ProductCard';
+import { saveCartToDB } from '../utils/cartStorage';
 
 function ProductList({ refresh }) {
   const [products, setProducts] = useState([]);
@@ -47,6 +48,7 @@ function ProductList({ refresh }) {
     }
   
     localStorage.setItem('cart', JSON.stringify(updatedCart));
+    saveCartToDB();
     window.dispatchEvent(new Event("cartUpdated")); // ✅ ДОДАЙ ЦЕ!
   };
   

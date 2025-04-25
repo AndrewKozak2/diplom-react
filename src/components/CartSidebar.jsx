@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import { saveCartToDB } from '../utils/cartStorage';
+
 
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState([]);
@@ -24,6 +26,7 @@ function CartSidebar({ isOpen, onClose }) {
     const updated = cart.filter(item => item.id !== id);
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    saveCartToDB();
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
@@ -37,6 +40,7 @@ function CartSidebar({ isOpen, onClose }) {
     );
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    saveCartToDB();
     window.dispatchEvent(new Event("cartUpdated"));
   };
 

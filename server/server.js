@@ -5,6 +5,7 @@ const Product = require('./models/Product');
 const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const productRoutes = require('./routes/products');
+const cartRoutes = require('./routes/cart');
 require('dotenv').config();
 
 const app = express();
@@ -18,7 +19,9 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 console.log('Registering auth routes...');
 app.use('/api', authRoutes);    
 app.use('/api/admin', adminRoutes);
-app.use('/api', productRoutes);       
+app.use('/api', productRoutes);  
+app.use('/api/cart', cartRoutes);  
+
 
 mongoose.connect(process.env.MONGO_URI, {})
   .then(() => {
