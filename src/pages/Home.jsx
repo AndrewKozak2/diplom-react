@@ -5,6 +5,7 @@ import NewArrivals from "../components/NewArrivals";
 import ProductList from "../components/ProductList";
 import StoreBenefits from "../components/StoreBenefits";
 import Banner from "../components/Banner";
+import LimitedDrop from "../components/LimitedDrop";
 
 function Home({ refresh }) {
   const location = useLocation();
@@ -66,7 +67,7 @@ function Home({ refresh }) {
       </section>
 
       <BrandSlider />
-      <NewArrivals />
+      <LimitedDrop />
 
       {/* Контейнер товарів */}
       <div id="models">

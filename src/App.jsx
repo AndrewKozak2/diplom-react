@@ -9,6 +9,7 @@ import CartSidebar from './components/CartSidebar';
 import AddProductForm from './components/AddProductForm';
 import Favorites from './pages/Favorites';
 import Footer from './components/Footer';
+import Checkout from './pages/Checkout';
 
 
 function App() {
@@ -36,6 +37,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/register" element={<Register />} />
         <Route path="/favorites" element={<Favorites />} />
+        <Route path="/checkout" element={<Checkout />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />

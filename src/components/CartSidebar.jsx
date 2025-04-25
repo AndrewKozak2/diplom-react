@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { X } from 'lucide-react';
-import OrderModal from './OrderModal'; // 👈 не забудь створити цей файл
+import { useNavigate } from 'react-router-dom';
 
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState([]);
-  const [showOrderModal, setShowOrderModal] = useState(false); // 👈 керування модалкою
+  const navigate = useNavigate();
 
   useEffect(() => {
     const saved = localStorage.getItem('cart');
@@ -24,6 +24,7 @@ function CartSidebar({ isOpen, onClose }) {
     const updated = cart.filter(item => item.id !== id);
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const updateQuantity = (id, newQty) => {
@@ -36,9 +37,15 @@ function CartSidebar({ isOpen, onClose }) {
     );
     setCart(updated);
     localStorage.setItem('cart', JSON.stringify(updated));
+    window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+
+  const handleCheckout = () => {
+    onClose(); // закриваємо сайдбар
+    navigate('/checkout'); // переходимо на сторінку замовлення
+  };
 
   return (
     <>
@@ -115,7 +122,7 @@ function CartSidebar({ isOpen, onClose }) {
             <span>${total.toFixed(2)}</span>
           </div>
           <button
-            onClick={() => setShowOrderModal(true)}
+            onClick={handleCheckout}
             disabled={cart.length === 0}
             className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg transition font-medium disabled:opacity-50"
           >
@@ -123,13 +130,6 @@ function CartSidebar({ isOpen, onClose }) {
           </button>
         </div>
       </div>
-
-      {/* Модалка */}
-      <OrderModal
-        isOpen={showOrderModal}
-        onClose={() => setShowOrderModal(false)}
-        cart={cart}
-      />
     </>
   );
 }

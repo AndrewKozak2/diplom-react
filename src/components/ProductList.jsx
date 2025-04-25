@@ -32,9 +32,9 @@ function ProductList({ refresh }) {
 
   const handleAddToCart = (product) => {
     const savedCart = JSON.parse(localStorage.getItem('cart')) || [];
-
+  
     const existing = savedCart.find(item => item.id === product.id);
-
+  
     let updatedCart;
     if (existing) {
       updatedCart = savedCart.map(item =>
@@ -45,10 +45,11 @@ function ProductList({ refresh }) {
     } else {
       updatedCart = [...savedCart, { ...product, quantity: 1 }];
     }
-
+  
     localStorage.setItem('cart', JSON.stringify(updatedCart));
-    window.updateCartCount?.();
+    window.dispatchEvent(new Event("cartUpdated")); // ✅ ДОДАЙ ЦЕ!
   };
+  
 
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
 

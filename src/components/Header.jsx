@@ -20,9 +20,10 @@ function Header() {
     updateCartCount();
 
     window.addEventListener("storage", updateCartCount);
-    window.updateCartCount = updateCartCount;
+    window.addEventListener("cartUpdated", updateCartCount);
 
     return () => {
+      window.removeEventListener("cartUpdated", updateCartCount);
       window.removeEventListener("storage", updateCartCount);
     };
   }, []);
