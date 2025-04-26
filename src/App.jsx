@@ -10,13 +10,14 @@ import AddProductForm from './components/AddProductForm';
 import Favorites from './pages/Favorites';
 import Footer from './components/Footer';
 import Checkout from './pages/Checkout';
+import OrderSuccess from './pages/OrderSuccess';
 
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [refresh, setRefresh] = useState(false);
-  const location = useLocation(); // 🔁 отримуємо поточну сторінку
+  const location = useLocation(); 
 
   useEffect(() => {
     window.toggleCart = () => setCartOpen((prev) => !prev);
@@ -24,11 +25,14 @@ function App() {
     window.triggerRefresh = () => setRefresh(prev => !prev);
   }, []);
 
-  // ❌ Не показувати Header на login або register
   const hideHeader = location.pathname === '/login' || location.pathname === '/register';
 
+  // 🔥 Додаємо перевірку сторінки
+  const isHome = location.pathname === '/';
+
   return (
-    <div className="bg-gray-100 min-h-screen">
+    // 👇 Додаємо динамічний клас в залежності від сторінки
+    <div className={`${isHome ? 'bg-transparent' : 'bg-gray-100'} min-h-screen`}>
       {!hideHeader && <Header />}
 
       <Routes>
@@ -38,16 +42,15 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/checkout" element={<Checkout />} />
+        <Route path="/order-success" element={<OrderSuccess />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
-
-      {showAddForm && (
-        <AddProductForm onClose={() => setShowAddForm(false)} />
-      )}
-       <Footer /> 
+      {showAddForm && <AddProductForm onClose={() => setShowAddForm(false)} />}
+      <Footer />
     </div>
   );
 }
+
 
 export default App;

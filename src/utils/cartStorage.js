@@ -18,7 +18,7 @@ export async function loadCartFromDB() {
   }
 }
 
-// ✅ Зберегти кошик
+
 export async function saveCartToDB() {
   const token = localStorage.getItem("token");
   if (!token) return;

@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart } from "lucide-react";
 
 function Header() {
   const navigate = useNavigate();
+  const location = useLocation();
   const username = localStorage.getItem("username");
   const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
@@ -18,7 +19,6 @@ function Header() {
     };
 
     updateCartCount();
-
     window.addEventListener("storage", updateCartCount);
     window.addEventListener("cartUpdated", updateCartCount);
 
@@ -40,8 +40,16 @@ function Header() {
     }
   };
 
+  const isCheckout = location.pathname === "/checkout";
+
   return (
-    <header className="absolute top-0 left-0 w-full h-[100px] z-50 flex justify-between items-center px-8 bg-black/20 backdrop-blur-sm text-white font-poppins">
+    <header
+      className={`w-full z-50 flex justify-between items-center px-8 h-[100px] font-poppins transition-all duration-300 ${
+        isCheckout
+          ? "bg-gray-900 text-white shadow-md"
+          : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"
+      }`}
+    >
       <Link to="/" className="text-2xl font-bold">
         TrueScale
       </Link>
