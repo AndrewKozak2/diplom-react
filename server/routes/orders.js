@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const Order = require('../models/Order');
 const sendEmail = require('../utils/sendEmail');
-const sendTelegramMessage = require('../utils/sendTelegramMessage'); // 📌 Підключаємо
+const sendTelegramMessage = require('../utils/sendTelegramMessage'); 
 
 function generateOrderEmail(order) {
   const itemsHtml = order.cart.map(item => `
