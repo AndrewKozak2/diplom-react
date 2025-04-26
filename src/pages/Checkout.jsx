@@ -103,38 +103,53 @@ function Checkout() {
       return alert("Невірний email.");
     return true;
   };
-
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (validateForm()) {
       toast.custom((t) => (
         <motion.div
           initial={{ opacity: 0, scale: 0.8 }}
           animate={{ opacity: 1, scale: 1 }}
           exit={{ opacity: 0, scale: 0.8 }}
-          transition={{ duration: 0.3, ease: "easeOut" }} // додано плавне зникнення
+          transition={{ duration: 0.3, ease: "easeOut" }}
           className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3"
         >
           <CheckCircle size={28} /> Замовлення успішно оформлено!
-          
         </motion.div>
-        
       ));
-      setTimeout(() => {
-        navigate("/order-success");
-      }, 1500); 
-      
-      
-      setForm({
-        firstName: "",
-        lastName: "",
-        city: "",
-        warehouse: "",
-        phone: "",
-        email: "",
-      });
+  
+      try {
+        await fetch('http://localhost:3000/api/orders', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            ...form,
+            cart: cart,
+            total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost
+          })
+        });
+
+        await fetch('http://localhost:3000/api/cart/clear', {
+          method: 'PATCH',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${localStorage.getItem('token')}`
+          }
+        });
+  
+      } catch (error) {
+        console.error('Помилка при оформленні замовлення або очищенні кошика:', error);
+      }
+  
+      setForm({ firstName: "", lastName: "", city: "", warehouse: "", phone: "", email: "" });
       setCart([]);
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
+      
+      setTimeout(() => {
+        navigate("/order-success");
+      }, 1500);
     }
   };
 

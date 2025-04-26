@@ -27,4 +27,22 @@ function verifyAdmin(req, res, next) {
   }
 }
 
-module.exports = { verifyAdmin };
+function verifyUser(req, res, next) {
+  const authHeader = req.headers.authorization;
+
+  if (!authHeader || !authHeader.startsWith('Bearer ')) {
+    return res.status(401).json({ message: 'Немає токена або неправильний формат' });
+  }
+
+  const token = authHeader.split(' ')[1];
+
+  try {
+    const decoded = jwt.verify(token, JWT_SECRET);
+
+    req.user = decoded; // зберігаємо дані користувача в запиті
+    next();
+  } catch (err) {
+    return res.status(401).json({ message: 'Недійсний або прострочений токен' });
+  }
+}
+module.exports = { verifyAdmin, verifyUser };
