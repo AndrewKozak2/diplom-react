@@ -47,8 +47,8 @@ function CartSidebar({ isOpen, onClose }) {
   const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
   const handleCheckout = () => {
-    onClose(); // закриваємо сайдбар
-    navigate('/checkout'); // переходимо на сторінку замовлення
+    onClose();
+    navigate('/checkout');
   };
 
   return (
