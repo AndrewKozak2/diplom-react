@@ -11,6 +11,8 @@ import Favorites from './pages/Favorites';
 import Footer from './components/Footer';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
+import Orders from "./pages/Orders";
+
 
 
 function App() {
@@ -43,6 +45,7 @@ function App() {
         <Route path="/favorites" element={<Favorites />} />
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
+        <Route path="/orders" element={<Orders />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />

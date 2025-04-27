@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
-import { ShoppingCart } from "lucide-react";
+import { ShoppingCart, User, UserRound, PackageCheck } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
 
 function Header() {
   const navigate = useNavigate();
@@ -10,6 +11,7 @@ function Header() {
   const role = localStorage.getItem("role");
 
   const [cartCount, setCartCount] = useState(0);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -54,7 +56,7 @@ function Header() {
         TrueScale
       </Link>
 
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-4 relative">
         <Link
           to="/about"
           className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
@@ -79,9 +81,45 @@ function Header() {
                 Add Product
               </button>
             )}
-            <span className="bg-white text-black px-3 py-1 rounded">
-              {username}
-            </span>
+            <div
+              className="relative"
+              onMouseEnter={() => setIsMenuOpen(true)}
+              onMouseLeave={() => setIsMenuOpen(false)}
+            >
+              <button className="flex items-center gap-2 bg-white text-black px-3 py-1 rounded hover:bg-gray-100">
+                <User size={20} />
+                {username}
+              </button>
+              <AnimatePresence>
+                {isMenuOpen && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    transition={{ duration: 0.2 }}
+                    className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg overflow-hidden"
+                  >
+                    <Link
+                      to="/account"
+                      className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <UserRound size={18} />
+                      My Account
+                    </Link>
+
+                    <Link
+                      to="/orders"
+                      className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      <PackageCheck size={18} />
+                      My Orders
+                    </Link>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
             <button
               onClick={handleLogout}
               className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
