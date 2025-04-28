@@ -138,10 +138,10 @@ function Account() {
   const handleSave = async () => {
     const token = localStorage.getItem("token");
     if (!token) return;
-
+  
     const confirmUpdate = window.confirm("Are you sure you want to save changes?");
     if (!confirmUpdate) return;
-
+  
     try {
       const res = await fetch("http://localhost:3000/api/user/update-profile", {
         method: "PATCH",
@@ -151,27 +151,48 @@ function Account() {
         },
         body: JSON.stringify(user),
       });
-
+  
       if (!res.ok) throw new Error("Failed to update profile");
-
+  
       const updatedProfile = await res.json();
       setUser(updatedProfile);
       setInitialUser(updatedProfile);
-
+  
       localStorage.setItem("username", updatedProfile.username);
       localStorage.setItem("email", updatedProfile.email);
       window.dispatchEvent(new Event("profileUpdated"));
+  
 
-      setSuccessMessage("Profile updated successfully!");
-      setTimeout(() => {
-        window.location.reload();
-      }, 1500);
+      if (initialUser.email !== updatedProfile.email) {
+  
+        localStorage.clear();
+        window.dispatchEvent(new Event("cartUpdated"));
+        setSuccessMessage("Email updated! Please login again.");
+        setTimeout(() => {
+          navigate("/login");
+        }, 1500);
+      } else if (initialUser.username !== updatedProfile.username) {
+ 
+        setSuccessMessage("Username updated!");
+        setTimeout(() => {
+          window.location.reload();
+        }, 1000);
+      } else {
+       
+        setSuccessMessage("Profile updated successfully!");
+        setTimeout(() => {
+          setSuccessMessage("");
+        }, 3000);
+      }
+  
     } catch (error) {
       console.error("Error updating profile:", error);
       setErrorMessage("Failed to update profile. Please try again.");
       setTimeout(() => setErrorMessage(""), 3000);
     }
   };
+  
+  
 
   const handleLogout = () => {
     localStorage.clear();
