@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { ShoppingCart, Truck, CheckCircle } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
@@ -14,10 +14,10 @@ function Checkout() {
     phone: "",
     email: "",
   });
-
-  const navigate = useNavigate();
   const [cities, setCities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
+  const [cityRef, setCityRef] = useState("");
+  const navigate = useNavigate();
 
   const deliveryCost = cart.length <= 5 ? 1.94 : 2.43;
 
@@ -27,17 +27,49 @@ function Checkout() {
   }, []);
 
   useEffect(() => {
+    async function fetchProfile() {
+      const token = localStorage.getItem("token");
+      if (!token) return;
+
+      try {
+        const res = await fetch("http://localhost:3000/api/user/profile", {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        if (res.ok) {
+          const data = await res.json();
+          setForm((prev) => ({
+            ...prev,
+            city: data.city || "",
+            warehouse: data.warehouse || "",
+            phone: data.phone || "",
+            email: data.email || "",
+          }));
+        }
+      } catch (error) {
+        console.error("Error fetching profile for checkout:", error);
+      }
+    }
+    fetchProfile();
+  }, []);
+
+  useEffect(() => {
     const handleClickOutside = (e) => {
-      if (!e.target.closest(".city-autocomplete")) setCities([]);
-      if (!e.target.closest(".warehouse-autocomplete")) setWarehouses([]);
+      if (
+        !e.target.closest(".warehouse-autocomplete") &&
+        !e.target.closest("input[name='warehouse']")
+      ) {
+        setWarehouses([]);
+      }
+      if (
+        !e.target.closest(".city-autocomplete") &&
+        !e.target.closest("input[name='city']")
+      ) {
+        setCities([]);
+      }
     };
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-  const total =
-    cart.reduce((sum, item) => sum + item.price * item.quantity, 0) +
-    deliveryCost;
 
   const fetchCities = async (searchTerm) => {
     if (searchTerm.length < 2) {
@@ -58,11 +90,11 @@ function Checkout() {
       const data = await response.json();
       if (data.success) setCities(data.data);
     } catch (error) {
-      console.error("Помилка запиту на Нову Пошту:", error);
+      console.error("Error fetching cities:", error);
     }
   };
 
-  const fetchWarehouses = async (cityRef) => {
+  const fetchWarehouses = async (cityRef, searchTerm = "") => {
     try {
       const response = await fetch("https://api.novaposhta.ua/v2.0/json/", {
         method: "POST",
@@ -71,38 +103,56 @@ function Checkout() {
           apiKey: "52a4484ea02a26983e729db187fc04fc",
           modelName: "Address",
           calledMethod: "getWarehouses",
-          methodProperties: { CityRef: cityRef },
+          methodProperties: { CityRef: cityRef, FindByString: searchTerm },
         }),
       });
       const data = await response.json();
       if (data.success) setWarehouses(data.data);
     } catch (error) {
-      console.error("Помилка запиту відділень:", error);
+      console.error("Error fetching warehouses:", error);
     }
   };
 
   const handleChange = (e) => {
     const { name, value } = e.target;
-    if (name === "phone") {
-      const formattedPhone = value.replace(/\D/g, "").slice(0, 12);
-      setForm({ ...form, [name]: formattedPhone });
-    } else {
-      setForm({ ...form, [name]: value });
-      if (name === "city") fetchCities(value);
+    setForm((prev) => ({ ...prev, [name]: value }));
+
+    if (name === "city") {
+      fetchCities(value);
+    }
+  };
+
+  const handleCitySelect = (city) => {
+    setForm((prev) => ({ ...prev, city: city.Description, warehouse: "" }));
+    setCities([]);
+    setCityRef(city.Ref);
+  };
+
+  const handleWarehouseFocus = () => {
+    if (cityRef) {
+      fetchWarehouses(cityRef);
+    }
+  };
+
+  const handleWarehouseInput = (e) => {
+    const value = e.target.value;
+    setForm((prev) => ({ ...prev, warehouse: value }));
+
+    if (cityRef) {
+      fetchWarehouses(cityRef, value);
     }
   };
 
   const validateForm = () => {
-    if (!form.firstName.trim()) return alert("Введіть ім'я.");
-    if (!form.lastName.trim()) return alert("Введіть прізвище.");
-    if (!form.city.trim()) return alert("Виберіть місто.");
-    if (!form.warehouse.trim()) return alert("Виберіть відділення.");
-    if (!/^\d{10,12}$/.test(form.phone))
-      return alert("Невірний номер телефону.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email))
-      return alert("Невірний email.");
+    if (!form.firstName.trim()) return alert("Enter your First Name.");
+    if (!form.lastName.trim()) return alert("Enter your Last Name.");
+    if (!form.city.trim()) return alert("Select a city.");
+    if (!form.warehouse.trim()) return alert("Select a warehouse.");
+    if (!/^\d{10,12}$/.test(form.phone)) return alert("Invalid phone number.");
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return alert("Invalid email.");
     return true;
   };
+
   const handleSubmit = async () => {
     if (validateForm()) {
       toast.custom((t) => (
@@ -113,80 +163,83 @@ function Checkout() {
           transition={{ duration: 0.3, ease: "easeOut" }}
           className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3"
         >
-          <CheckCircle size={28} /> Замовлення успішно оформлено!
+          <CheckCircle size={28} /> Order placed successfully!
         </motion.div>
       ));
-  
+
       try {
-        await fetch('http://localhost:3000/api/orders', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
+        await fetch("http://localhost:3000/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             ...form,
             cart: cart,
-            total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost
-          })
+            total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost,
+          }),
         });
 
-        await fetch('http://localhost:3000/api/cart/clear', {
-          method: 'PATCH',
+        await fetch("http://localhost:3000/api/cart/clear", {
+          method: "PATCH",
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${localStorage.getItem('token')}`
-          }
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
         });
-  
       } catch (error) {
-        console.error('Помилка при оформленні замовлення або очищенні кошика:', error);
+        console.error("Order submission error:", error);
       }
-  
+
       setForm({ firstName: "", lastName: "", city: "", warehouse: "", phone: "", email: "" });
       setCart([]);
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
-      
+
       setTimeout(() => {
         navigate("/order-success");
       }, 1500);
     }
   };
 
+  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost;
+
   return (
     <div className="min-h-screen bg-gray-100 pt-12 pb-10">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
-        <h2 className="text-3xl font-bold mb-8 text-center">
-          Оформлення замовлення
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 relative">
+        <h2 className="text-3xl font-bold mb-8 text-center">Checkout</h2>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* First Name */}
           <input
             type="text"
             name="firstName"
-            placeholder="Ім'я"
-            autoComplete="off"
+            placeholder="First Name"
             value={form.firstName}
             onChange={handleChange}
+            autoComplete="nope"
             className="border rounded-md px-4 py-3 w-full"
           />
+
+          {/* Last Name */}
           <input
             type="text"
             name="lastName"
-            placeholder="Прізвище"
-            autoComplete="off"
+            placeholder="Last Name"
             value={form.lastName}
             onChange={handleChange}
+            autoComplete="nope"
             className="border rounded-md px-4 py-3 w-full"
           />
+
+          {/* City */}
           <div className="relative">
             <input
               type="text"
               name="city"
-              placeholder="Місто"
-              autoComplete="off"
+              placeholder="City"
               value={form.city}
               onChange={handleChange}
+              autoComplete="nope"
               className="border rounded-md px-4 py-3 w-full"
             />
             {cities.length > 0 && (
@@ -194,11 +247,7 @@ function Checkout() {
                 {cities.map((city) => (
                   <div
                     key={city.Ref}
-                    onClick={() => {
-                      setForm({ ...form, city: city.Description });
-                      setCities([]);
-                      fetchWarehouses(city.Ref);
-                    }}
+                    onClick={() => handleCitySelect(city)}
                     className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
                   >
                     {city.Description}
@@ -207,62 +256,74 @@ function Checkout() {
               </div>
             )}
           </div>
+
+          {/* Warehouse */}
           <div className="relative">
             <input
               type="text"
               name="warehouse"
-              placeholder="№ відділення/поштомату"
-              autoComplete="off"
+              placeholder="Warehouse"
               value={form.warehouse}
-              onChange={handleChange}
+              onFocus={handleWarehouseFocus}
+              onChange={handleWarehouseInput}
+              autoComplete="nope"
               className="border rounded-md px-4 py-3 w-full"
             />
             {warehouses.length > 0 && (
               <div className="warehouse-autocomplete absolute top-full left-0 right-0 bg-white border rounded-md mt-1 max-h-48 overflow-y-auto shadow-lg z-10">
-                {warehouses.map((wh) => (
-                  <div
-                    key={wh.Ref}
-                    onClick={() => {
-                      setForm({ ...form, warehouse: wh.Description });
-                      setWarehouses([]);
-                    }}
-                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
-                  >
-                    {wh.Description}
-                  </div>
-                ))}
+                {warehouses
+                  .filter((wh) => {
+                    if (form.warehouse.trim() === "") return true;
+                    const search = form.warehouse.trim();
+                    const regex = new RegExp(`№\\s*${search}`, "i");
+                    return regex.test(wh.Description);
+                  })
+                  .map((wh) => (
+                    <div
+                      key={wh.Ref}
+                      onClick={() => {
+                        setForm((prev) => ({ ...prev, warehouse: wh.Description }));
+                        setWarehouses([]);
+                      }}
+                      className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
+                    >
+                      {wh.Description}
+                    </div>
+                  ))}
               </div>
             )}
           </div>
+
+          {/* Phone */}
           <input
             type="text"
             name="phone"
-            placeholder="Телефон"
-            autoComplete="off"
+            placeholder="Phone"
             value={form.phone}
             onChange={handleChange}
+            autoComplete="nope"
             className="border rounded-md px-4 py-3 w-full"
           />
+
+          {/* Email */}
           <input
             type="email"
             name="email"
             placeholder="Email"
-            autoComplete="off"
             value={form.email}
             onChange={handleChange}
+            autoComplete="nope"
             className="border rounded-md px-4 py-3 w-full"
           />
         </div>
 
+        {/* Cart Summary */}
         <div className="border-t pt-6">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <ShoppingCart /> Товари в кошику:
+            <ShoppingCart /> Items in Cart:
           </h3>
           {cart.map((item) => (
-            <div
-              key={item.id}
-              className="flex items-center justify-between mb-4"
-            >
+            <div key={item.id} className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-4">
                 <img
                   src={item.image}
@@ -282,13 +343,13 @@ function Checkout() {
 
           <div className="flex justify-between border-t pt-4 mt-4">
             <span className="font-medium flex items-center gap-2">
-              <Truck /> Доставка:
+              <Truck /> Delivery:
             </span>
             <span>${deliveryCost.toFixed(2)}</span>
           </div>
 
           <div className="flex justify-between mt-2 text-xl font-bold">
-            <span>Разом:</span>
+            <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
 
@@ -296,7 +357,7 @@ function Checkout() {
             onClick={handleSubmit}
             className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md text-lg font-semibold transition"
           >
-            Підтвердити замовлення
+            Confirm Order
           </button>
         </div>
       </div>

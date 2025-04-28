@@ -6,7 +6,8 @@ const authRoutes = require('./routes/auth');
 const adminRoutes = require('./routes/admin');
 const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
-const orderRoutes = require('./routes/orders'); // 📌 Додаємо тут
+const orderRoutes = require('./routes/orders'); 
+const userRoutes = require('./routes/user');
 require('dotenv').config();
 
 const app = express();
@@ -19,11 +20,14 @@ app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 
 console.log('Registering auth routes...');
-app.use('/api', authRoutes);
+
+app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
-app.use('/api', productRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api', authRoutes);
+app.use('/api', productRoutes);
 app.use('/api', orderRoutes); 
+
 
 mongoose.connect(process.env.MONGO_URI, {})
   .then(() => {

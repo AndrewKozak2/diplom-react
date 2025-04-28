@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
-  const username = localStorage.getItem("username");
-  const token = localStorage.getItem("token");
   const role = localStorage.getItem("role");
+  const token = localStorage.getItem("token");
 
+  const [username, setUsername] = useState(localStorage.getItem("username") || "");
   const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+
+  const isCheckout = location.pathname === "/checkout";
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -20,19 +22,28 @@ function Header() {
       setCartCount(count);
     };
 
+    const updateUsername = () => {
+      setUsername(localStorage.getItem("username") || "");
+    };
+
     updateCartCount();
+    updateUsername();
+
     window.addEventListener("storage", updateCartCount);
     window.addEventListener("cartUpdated", updateCartCount);
+    window.addEventListener("storage", updateUsername);
 
     return () => {
-      window.removeEventListener("cartUpdated", updateCartCount);
       window.removeEventListener("storage", updateCartCount);
+      window.removeEventListener("cartUpdated", updateCartCount);
+      window.removeEventListener("storage", updateUsername);
     };
   }, []);
 
   const handleLogout = () => {
     localStorage.clear();
     window.dispatchEvent(new Event("cartUpdated"));
+    window.dispatchEvent(new Event("storage"));
     navigate("/");
   };
 
@@ -42,15 +53,12 @@ function Header() {
     }
   };
 
-  const isCheckout = location.pathname === "/checkout";
-
   return (
     <header
-      className={`w-full z-50 flex justify-between items-center px-8 h-[100px] font-poppins transition-all duration-300 ${
-        isCheckout
-          ? "bg-gray-900 text-white shadow-md"
-          : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"
-      }`}
+      className={`w-full z-50 flex justify-between items-center px-8 h-[100px] font-poppins transition-all duration-300
+      ${isCheckout 
+        ? "bg-gray-900 text-white shadow-md" 
+        : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"}`}
     >
       <Link to="/" className="text-2xl font-bold">
         TrueScale
@@ -88,7 +96,7 @@ function Header() {
             >
               <button className="flex items-center gap-2 bg-white text-black px-3 py-1 rounded hover:bg-gray-100">
                 <User size={20} />
-                {username}
+                {username || "Profile"}
               </button>
               <AnimatePresence>
                 {isMenuOpen && (

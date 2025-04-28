@@ -12,7 +12,7 @@ import Footer from './components/Footer';
 import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import Orders from "./pages/Orders";
-
+import Account from "./pages/Account";
 
 
 function App() {
@@ -29,11 +29,9 @@ function App() {
 
   const hideHeader = location.pathname === '/login' || location.pathname === '/register';
 
-  // 🔥 Додаємо перевірку сторінки
   const isHome = location.pathname === '/';
 
   return (
-    // 👇 Додаємо динамічний клас в залежності від сторінки
     <div className={`${isHome ? 'bg-transparent' : 'bg-gray-100'} min-h-screen`}>
       {!hideHeader && <Header />}
 
@@ -46,6 +44,7 @@ function App() {
         <Route path="/checkout" element={<Checkout />} />
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/account" element={<Account />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
