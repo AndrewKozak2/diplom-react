@@ -2,32 +2,26 @@ import React from 'react';
 
 function Filters({ brands, filters, onChange }) {
   return (
-    <div className="bg-white p-4 rounded shadow mb-6 w-full max-w-xs">
-      <h2 className="font-bold text-lg mb-4">Filters</h2>
+    <div className="bg-white p-6 rounded-xl shadow-lg mb-8 w-full max-w-sm border border-gray-200">
+      <h2 className="font-semibold text-xl mb-4 text-gray-800">Filter by</h2>
 
-      <label className="block mb-2">Brand:</label>
+      <label className="block mb-2 text-sm text-gray-600">Brand</label>
       <select
-        className="w-full border rounded p-2 mb-4"
+        className="w-full border rounded-md p-2 mb-6"
         value={filters.brand}
         onChange={(e) => onChange({ ...filters, brand: e.target.value })}
       >
-        <option value="">All</option>
-        {brands.map(brand => (
-          <option key={brand} value={brand}>{brand}</option>
+        <option value="">All Brands</option>
+        {brands.map((brand) => (
+          <option key={brand} value={brand}>
+            {brand}
+          </option>
         ))}
       </select>
 
-      <label className="block mb-2">Scale:</label>
-      <select
-        className="w-full border rounded p-2 mb-4"
-        value={filters.scale}
-        onChange={(e) => onChange({ ...filters, scale: e.target.value })}
-      >
-        <option value="">All</option>
-        <option value="1/64">1/64</option>
-      </select>
-
-      <label className="block mb-2">Max Price: ${filters.price}</label>
+      <label className="block mb-2 text-sm text-gray-600">
+        Max Price: <span className="font-medium text-gray-800">${filters.price}</span>
+      </label>
       <input
         type="range"
         min="1"

@@ -3,7 +3,6 @@ import { X } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { saveCartToDB } from '../utils/cartStorage';
 
-
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
@@ -21,6 +20,18 @@ function CartSidebar({ isOpen, onClose }) {
   useEffect(() => {
     window.updateCartCount?.();
   }, [cart]);
+
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+    }
+
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+    };
+  }, [isOpen]);
 
   const removeFromCart = (id) => {
     const updated = cart.filter(item => item.id !== id);
@@ -53,13 +64,22 @@ function CartSidebar({ isOpen, onClose }) {
 
   return (
     <>
+      {/* BACKDROP */}
+      {isOpen && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 backdrop-blur-sm"
+          onClick={onClose}
+        ></div>
+      )}
+
+      {/* SIDEBAR */}
       <div
-        className={`fixed top-0 right-0 h-full w-80 bg-white shadow-xl z-50 transform transition-transform duration-300 border-l border-gray-200 ${
+        className={`fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-2xl border-l border-gray-200 transform transition-transform duration-300 ${
           isOpen ? 'translate-x-0' : 'translate-x-full'
         }`}
       >
         {/* Header */}
-        <div className="flex justify-between items-center p-5 border-b border-gray-200">
+        <div className="flex justify-between items-center px-6 py-5 border-b border-gray-100">
           <h2 className="text-xl font-bold text-gray-800">Your Cart</h2>
           <button
             onClick={onClose}
@@ -70,14 +90,14 @@ function CartSidebar({ isOpen, onClose }) {
         </div>
 
         {/* Items */}
-        <div className="p-4 space-y-4 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+        <div className="p-5 space-y-4 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {cart.length === 0 ? (
             <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
           ) : (
             cart.map(item => (
               <div
                 key={item.id}
-                className="flex gap-3 items-start bg-gray-50 rounded-xl p-3 border border-gray-200 shadow-sm"
+                className="flex gap-4 items-start bg-gray-50 border border-gray-200 rounded-xl p-4"
               >
                 <img
                   src={item.image}
@@ -86,10 +106,10 @@ function CartSidebar({ isOpen, onClose }) {
                   className="w-16 h-16 object-contain rounded bg-white"
                 />
                 <div className="flex-1">
-                  <h4 className="font-semibold text-sm text-gray-800 leading-snug">
+                  <h4 className="font-medium text-sm text-gray-800 leading-snug mb-1">
                     {item.name}
                   </h4>
-                  <div className="flex items-center gap-2 mt-2">
+                  <div className="flex items-center gap-2">
                     <label className="text-xs text-gray-500">Qty:</label>
                     <input
                       type="number"
@@ -99,17 +119,17 @@ function CartSidebar({ isOpen, onClose }) {
                       onChange={(e) =>
                         updateQuantity(item.id, parseInt(e.target.value))
                       }
-                      className="w-16 px-2 py-1 border rounded text-sm"
+                      className="w-14 px-2 py-1 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                   </div>
                 </div>
-                <div className="text-right flex flex-col justify-between h-full">
+                <div className="text-right flex flex-col justify-between items-end">
                   <p className="text-sm font-semibold text-gray-900">
                     ${item.price * item.quantity}
                   </p>
                   <button
                     onClick={() => removeFromCart(item.id)}
-                    className="text-xs text-red-600 hover:underline mt-1"
+                    className="text-xs text-red-500 hover:underline mt-1"
                   >
                     Remove
                   </button>
@@ -120,15 +140,15 @@ function CartSidebar({ isOpen, onClose }) {
         </div>
 
         {/* Total + Checkout */}
-        <div className="p-4 border-t border-gray-200">
-          <div className="flex justify-between text-lg font-semibold text-gray-800 mb-3">
+        <div className="p-5 border-t border-gray-100">
+          <div className="flex justify-between text-base font-semibold text-gray-800 mb-4">
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
           <button
             onClick={handleCheckout}
             disabled={cart.length === 0}
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2.5 rounded-lg transition font-medium disabled:opacity-50"
+            className="w-full bg-gray-900 text-white py-2.5 rounded-lg transition hover:bg-gray-700 cursor-pointer disabled:opacity-50"
           >
             Checkout
           </button>
