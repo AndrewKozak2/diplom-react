@@ -9,11 +9,14 @@ function Header() {
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
 
-  const [username, setUsername] = useState(localStorage.getItem("username") || "");
+  const [username, setUsername] = useState(
+    localStorage.getItem("username") || ""
+  );
   const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
-  const isCheckout = location.pathname === "/checkout";
+  const darkHeaderPages = ["/checkout", "/favorites", "/account", "/orders"];
+  const isDarkHeader = darkHeaderPages.includes(location.pathname);
 
   useEffect(() => {
     const updateCartCount = () => {
@@ -56,12 +59,14 @@ function Header() {
   return (
     <header
       className={`w-full z-50 flex justify-between items-center px-8 h-[100px] font-poppins transition-all duration-300
-      ${isCheckout 
-        ? "bg-gray-900 text-white shadow-md" 
-        : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"}`}
+      ${
+        isDarkHeader
+          ? "bg-gray-900 text-white shadow-md"
+          : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"
+      }`}
     >
-      <Link to="/" className="text-2xl font-bold">
-        TrueScale
+      <Link to="/" className="flex items-center">
+      <img src="/images/logo.png" alt="Logo" className="h-25 w-auto object-contain -mt-2" />
       </Link>
 
       <div className="flex items-center gap-4 relative">

@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { X } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
-import { saveCartToDB } from '../utils/cartStorage';
+import React, { useEffect, useState } from "react";
+import { X } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { saveCartToDB } from "../utils/cartStorage";
 
 function CartSidebar({ isOpen, onClose }) {
   const [cart, setCart] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
-    const saved = localStorage.getItem('cart');
+    const saved = localStorage.getItem("cart");
     try {
       const parsed = JSON.parse(saved) || [];
       setCart(Array.isArray(parsed) ? parsed : []);
@@ -23,34 +23,33 @@ function CartSidebar({ isOpen, onClose }) {
 
   useEffect(() => {
     if (isOpen) {
-      document.body.classList.add('overflow-hidden');
+      document.body.classList.add("overflow-hidden");
     } else {
-      document.body.classList.remove('overflow-hidden');
+      document.body.classList.remove("overflow-hidden");
     }
 
     return () => {
-      document.body.classList.remove('overflow-hidden');
+      document.body.classList.remove("overflow-hidden");
     };
   }, [isOpen]);
 
   const removeFromCart = (id) => {
-    const updated = cart.filter(item => item.id !== id);
+    const updated = cart.filter((item) => item.id !== id);
     setCart(updated);
-    localStorage.setItem('cart', JSON.stringify(updated));
+    localStorage.setItem("cart", JSON.stringify(updated));
     saveCartToDB();
     window.dispatchEvent(new Event("cartUpdated"));
   };
 
   const updateQuantity = (id, newQty) => {
-    if (newQty <= 0) {
-      removeFromCart(id);
+    if (isNaN(newQty) || newQty <= 0) {
       return;
     }
-    const updated = cart.map(item =>
+    const updated = cart.map((item) =>
       item.id === id ? { ...item, quantity: newQty } : item
     );
     setCart(updated);
-    localStorage.setItem('cart', JSON.stringify(updated));
+    localStorage.setItem("cart", JSON.stringify(updated));
     saveCartToDB();
     window.dispatchEvent(new Event("cartUpdated"));
   };
@@ -59,7 +58,7 @@ function CartSidebar({ isOpen, onClose }) {
 
   const handleCheckout = () => {
     onClose();
-    navigate('/checkout');
+    navigate("/checkout");
   };
 
   return (
@@ -75,7 +74,7 @@ function CartSidebar({ isOpen, onClose }) {
       {/* SIDEBAR */}
       <div
         className={`fixed top-0 right-0 h-full w-80 bg-white z-50 shadow-2xl border-l border-gray-200 transform transition-transform duration-300 ${
-          isOpen ? 'translate-x-0' : 'translate-x-full'
+          isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
         {/* Header */}
@@ -92,9 +91,11 @@ function CartSidebar({ isOpen, onClose }) {
         {/* Items */}
         <div className="p-5 space-y-4 overflow-y-auto max-h-[calc(100vh-180px)] scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
           {cart.length === 0 ? (
-            <p className="text-gray-500 text-center mt-10">Your cart is empty.</p>
+            <p className="text-gray-500 text-center mt-10">
+              Your cart is empty.
+            </p>
           ) : (
-            cart.map(item => (
+            cart.map((item) => (
               <div
                 key={item.id}
                 className="flex gap-4 items-start bg-gray-50 border border-gray-200 rounded-xl p-4"
@@ -102,7 +103,7 @@ function CartSidebar({ isOpen, onClose }) {
                 <img
                   src={item.image}
                   alt={item.name}
-                  onError={(e) => (e.target.src = '/images/placeholder.svg')}
+                  onError={(e) => (e.target.src = "/images/placeholder.svg")}
                   className="w-16 h-16 object-contain rounded bg-white"
                 />
                 <div className="flex-1">
@@ -115,10 +116,12 @@ function CartSidebar({ isOpen, onClose }) {
                       type="number"
                       min="1"
                       max="99"
-                      value={item.quantity}
-                      onChange={(e) =>
-                        updateQuantity(item.id, parseInt(e.target.value))
-                      }
+                      value={item.quantity || 1}
+                      onChange={(e) => {
+                        const val = parseInt(e.target.value, 10);
+                        const safeQty = isNaN(val) ? 1 : Math.min(99, Math.max(1, val));
+                        updateQuantity(item.id, safeQty);
+                      }}
                       className="w-14 px-2 py-1 text-sm rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
                     />
                   </div>

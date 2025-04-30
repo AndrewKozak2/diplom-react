@@ -23,7 +23,14 @@ export async function saveCartToDB() {
   const token = localStorage.getItem("token");
   if (!token) return;
 
-  const cart = JSON.parse(localStorage.getItem("cart")) || [];
+  let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+  cart = cart.map((item) => ({
+    ...item,
+    quantity: typeof item.quantity === "number" && !isNaN(item.quantity) && item.quantity > 0
+      ? item.quantity
+      : 1,
+  }));
 
   try {
     const res = await fetch("http://localhost:3000/api/cart/save", {
@@ -40,3 +47,4 @@ export async function saveCartToDB() {
     console.error("Error saving cart to DB:", error);
   }
 }
+
