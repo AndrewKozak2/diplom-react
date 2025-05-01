@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { X } from 'lucide-react';
 
 function AddProductForm({ onClose }) {
@@ -9,6 +9,33 @@ function AddProductForm({ onClose }) {
     price: '',
     image: ''
   });
+  const [fileName, setFileName] = useState('Файл не вибрано');
+  const [brands, setBrands] = useState([]);
+
+useEffect(() => {
+  document.body.style.overflow = 'hidden';
+  fetch('http://localhost:3000/api/products')
+    .then(res => res.json())
+    .then(data => {
+      if (Array.isArray(data)) {
+        const uniqueBrands = [...new Set(data.map(p => p.brand))];
+        setBrands(uniqueBrands);
+      } else {
+        console.error('products is not an array:', data);
+        setBrands([]);
+      }
+    })
+    .catch(err => {
+      console.error('Error fetching products:', err);
+      setBrands([]); 
+    });
+    
+
+  return () => {
+    document.body.style.overflow = 'auto';
+  };
+}, []);
+
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -18,6 +45,8 @@ function AddProductForm({ onClose }) {
   const handleFileChange = (e) => {
     const file = e.target.files[0];
     if (!file) return;
+
+    setFileName(file.name);
 
     const reader = new FileReader();
     reader.onloadend = () => {
@@ -51,7 +80,12 @@ function AddProductForm({ onClose }) {
         throw new Error(data.message || 'Failed to add product');
       }
 
-      alert('✅ Product added successfully!');
+      const toast = document.createElement('div');
+      toast.textContent = '✅ Product added successfully!';
+      toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-[9999]';
+      document.body.appendChild(toast);
+      setTimeout(() => toast.remove(), 3000);
+
       onClose?.();
     } catch (err) {
       alert(`❌ ${err.message}`);
@@ -59,8 +93,8 @@ function AddProductForm({ onClose }) {
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 flex justify-center items-center z-50">
-      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-lg relative">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="bg-white rounded-xl p-6 w-full max-w-md shadow-xl relative">
         <button
           onClick={onClose}
           className="absolute top-4 right-4 text-gray-500 hover:text-gray-800"
@@ -70,19 +104,29 @@ function AddProductForm({ onClose }) {
 
         <h2 className="text-xl font-bold mb-4 text-center">Add New Product</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
-          <input
-            name="brand"
-            value={form.brand}
-            onChange={handleChange}
-            placeholder="Brand"
-            className="w-full border px-3 py-2 rounded"
-            required
-          />
+          <div>
+            <input
+              list="brand-options"
+              name="brand"
+              value={form.brand}
+              onChange={handleChange}
+              placeholder="Brand"
+              className="w-full border px-3 py-2 rounded"
+              required
+            />
+            <datalist id="brand-options">
+              {brands.map((brand, i) => (
+                <option key={i} value={brand} />
+              ))}
+            </datalist>
+          </div>
+
           <input
             name="name"
             value={form.name}
             onChange={handleChange}
             placeholder="Name"
+            autoComplete="nope"
             className="w-full border px-3 py-2 rounded"
             required
           />
@@ -90,7 +134,8 @@ function AddProductForm({ onClose }) {
             name="scale"
             value={form.scale}
             onChange={handleChange}
-            placeholder="Scale (e.g. 1/64)"
+            placeholder="Scale"
+            autoComplete="nope"
             className="w-full border px-3 py-2 rounded"
             required
           />
@@ -99,24 +144,35 @@ function AddProductForm({ onClose }) {
             value={form.price}
             onChange={handleChange}
             placeholder="Price"
+            autoComplete="nope"
             type="number"
             className="w-full border px-3 py-2 rounded"
             required
           />
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">
+
+          <div className="flex items-center gap-4">
+            <label className="block text-sm text-gray-700">
               Upload Image:
             </label>
-            <input
-              type="file"
-              accept="image/*"
-              onChange={handleFileChange}
-              className="w-full"
-            />
+            <div className="relative">
+              <label className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 transition cursor-pointer">
+                Вибрати файл
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleFileChange}
+                  className="absolute left-0 top-0 w-full h-full cursor-pointer opacity-0"
+                />
+              </label>
+            </div>
+            <span className="text-sm text-gray-500 truncate max-w-[150px]">
+              {fileName}
+            </span>
           </div>
+
           <button
             type="submit"
-            className="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded transition"
+            className="w-full bg-gray-900 hover:bg-gray-800 text-white py-2 rounded cursor-pointer transition"
           >
             Submit
           </button>
