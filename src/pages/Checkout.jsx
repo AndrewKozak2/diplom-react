@@ -355,7 +355,7 @@ function Checkout() {
 
           <button
             onClick={handleSubmit}
-            className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-md text-lg font-semibold transition"
+            className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
           >
             Confirm Order
           </button>

@@ -13,7 +13,9 @@ import Checkout from './pages/Checkout';
 import OrderSuccess from './pages/OrderSuccess';
 import Orders from "./pages/Orders";
 import Account from "./pages/Account";
-
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import VerifyEmail from './pages/VerifyEmail';
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -27,13 +29,14 @@ function App() {
     window.triggerRefresh = () => setRefresh(prev => !prev);
   }, []);
 
-  const hideHeader = location.pathname === '/login' || location.pathname === '/register';
+  const hideLayoutRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
+  const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   const isHome = location.pathname === '/';
 
   return (
     <div className={`${isHome ? 'bg-transparent' : 'bg-gray-100'} min-h-screen`}>
-      {!hideHeader && <Header />}
+      {!hideLayout && <Header />}
 
       <Routes>
         <Route path="/" element={<Home refresh={refresh} />} />
@@ -45,14 +48,16 @@ function App() {
         <Route path="/order-success" element={<OrderSuccess />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/account" element={<Account />} />
+        <Route path="/forgot-password" element={<ForgotPassword />} />
+        <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/verify-email" element={<VerifyEmail />} />
       </Routes>
 
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       {showAddForm && <AddProductForm onClose={() => setShowAddForm(false)} />}
-      <Footer />
+      {!hideLayout && <Footer />}
     </div>
   );
 }
-
 
 export default App;

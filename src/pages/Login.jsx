@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { loadCartFromDB } from '../utils/cartStorage';
 
 function Login() {
@@ -22,7 +22,7 @@ function Login() {
         localStorage.setItem('token', data.token);
         localStorage.setItem('username', data.username);
         localStorage.setItem('role', data.role);
-        
+
         await loadCartFromDB();
         window.updateCartCount?.();
 
@@ -38,14 +38,17 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-br from-indigo-800 via-purple-700 to-pink-600 animate-[pulse_12s_infinite]">
+    <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <form
         onSubmit={handleLogin}
-        className="bg-white/90 backdrop-blur-md shadow-lg rounded-xl p-8 w-full max-w-md"
+        className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md border border-gray-200"
       >
-        <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Login to TrueScale
-        </h2>
+        <h1 className="text-3xl font-extrabold text-center text-gray-800 mb-2">
+          TrueScale
+        </h1>
+        <p className="text-sm text-center text-gray-500 mb-6">
+          Welcome back! Please enter your credentials.
+        </p>
 
         <input
           type="text"
@@ -58,7 +61,7 @@ function Login() {
         <input
           type="password"
           placeholder="Password"
-          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-6 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
           required
@@ -66,10 +69,30 @@ function Login() {
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition"
+          className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 rounded-md transition cursor-pointer"
         >
           Login
         </button>
+        <p className="text-sm text-center text-gray-600 mt-3">
+  <a
+    href="/forgot-password"
+    className="text-gray-900 hover:underline"
+  >
+    Forgot your password?
+  </a>
+</p>
+        {/* Посилання на реєстрацію */}
+        <p className="text-sm text-center text-gray-600 mt-4">
+          Don’t have an account?{' '}
+          <Link to="/register" className="text-gray-900 hover:underline">
+            Sign up
+          </Link>
+        </p>
+
+        {/* Внутрішній футер */}
+        <p className="text-xs text-gray-400 text-center mt-6">
+          © 2025 TrueScale. All rights reserved.
+        </p>
       </form>
     </div>
   );

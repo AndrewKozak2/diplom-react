@@ -8,6 +8,8 @@ const productRoutes = require('./routes/products');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders'); 
 const userRoutes = require('./routes/user');
+const passwordResetRoutes = require('./routes/passwordReset');
+const registerVerificationRoutes = require('./routes/registerVerification');
 require('dotenv').config();
 
 const app = express();
@@ -24,6 +26,8 @@ console.log('Registering auth routes...');
 app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
+app.use('/api', passwordResetRoutes);
+app.use('/api', registerVerificationRoutes);
 app.use('/api', authRoutes);
 app.use('/api', productRoutes);
 app.use('/api', orderRoutes); 
