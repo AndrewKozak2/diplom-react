@@ -6,6 +6,7 @@ function ProductList({ refresh }) {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({ brand: "", price: 100 });
   const [sortOrder, setSortOrder] = useState("");
+  const [visibleCount, setVisibleCount] = useState(16); // новий стан
 
   useEffect(() => {
     fetch("http://localhost:3000/api/products")
@@ -27,10 +28,16 @@ function ProductList({ refresh }) {
       return brandMatch && priceMatch;
     })
     .sort((a, b) => {
+      if (a.inStock && !b.inStock) return -1;
+      if (!a.inStock && b.inStock) return 1;
+    
       if (sortOrder === "asc") return a.price - b.price;
       if (sortOrder === "desc") return b.price - a.price;
       return 0;
     });
+    
+
+  const visibleProducts = filtered.slice(0, visibleCount); // обрізаємо
 
   const handleAddToCart = (product) => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -67,14 +74,20 @@ function ProductList({ refresh }) {
                   ? "bg-gray-800 text-white"
                   : "bg-white text-gray-800 hover:bg-gray-100"
               }`}
-              onClick={() => setFilters({ ...filters, brand: "" })}
+              onClick={() => {
+                setFilters({ ...filters, brand: "" });
+                setVisibleCount(16);
+              }}
             >
               All Brands
             </button>
             {uniqueBrands.map((brand) => (
               <button
                 key={brand}
-                onClick={() => setFilters({ ...filters, brand })}
+                onClick={() => {
+                  setFilters({ ...filters, brand });
+                  setVisibleCount(16);
+                }}
                 className={`px-4 py-2 rounded-full border text-sm transition cursor-pointer ${
                   filters.brand === brand
                     ? "bg-gray-800 text-white"
@@ -100,9 +113,10 @@ function ProductList({ refresh }) {
                 min="10"
                 max="100"
                 value={filters.price}
-                onChange={(e) =>
-                  setFilters({ ...filters, price: Number(e.target.value) })
-                }
+                onChange={(e) => {
+                  setFilters({ ...filters, price: Number(e.target.value) });
+                  setVisibleCount(16);
+                }}
                 className="w-full sm:w-64 accent-gray-800 cursor-pointer"
               />
             </div>
@@ -112,7 +126,10 @@ function ProductList({ refresh }) {
               </label>
               <select
                 value={sortOrder}
-                onChange={(e) => setSortOrder(e.target.value)}
+                onChange={(e) => {
+                  setSortOrder(e.target.value);
+                  setVisibleCount(16);
+                }}
                 className="border rounded-md p-2 w-48 cursor-pointer"
               >
                 <option value="">Default</option>
@@ -126,7 +143,7 @@ function ProductList({ refresh }) {
 
       {/* ТОВАРИ */}
       <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-[15px]">
-        {filtered.map((model) => (
+        {visibleProducts.map((model) => (
           <ProductCard
             key={model.id}
             model={model}
@@ -134,6 +151,18 @@ function ProductList({ refresh }) {
           />
         ))}
       </div>
+
+      {/* КНОПКА Load More */}
+      {visibleCount < filtered.length && (
+        <div className="flex justify-center mt-8">
+          <button
+            onClick={() => setVisibleCount(visibleCount + 16)}
+            className="px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition"
+          >
+            Load More
+          </button>
+        </div>
+      )}
     </section>
   );
 }
