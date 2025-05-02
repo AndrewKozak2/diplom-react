@@ -16,6 +16,7 @@ import Account from "./pages/Account";
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
+import ScrollToTopButton from "./components/ScrollToTopButton";
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -30,6 +31,7 @@ function App() {
   }, []);
 
   const hideLayoutRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
+  const hideScrollButton = ['/checkout', '/favorites'].includes(location.pathname);
   const hideLayout = hideLayoutRoutes.includes(location.pathname);
 
   const isHome = location.pathname === '/';
@@ -56,6 +58,7 @@ function App() {
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       {showAddForm && <AddProductForm onClose={() => setShowAddForm(false)} />}
       {!hideLayout && <Footer />}
+      {!hideScrollButton && <ScrollToTopButton />}
     </div>
   );
 }
