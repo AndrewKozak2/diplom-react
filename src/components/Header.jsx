@@ -14,6 +14,7 @@ function Header() {
   );
   const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   const darkHeaderPages = ["/checkout", "/favorites", "/account", "/orders"];
   const isDarkHeader = darkHeaderPages.includes(location.pathname);
@@ -66,23 +67,34 @@ function Header() {
       }`}
     >
       <Link to="/" className="flex items-center">
-      <img src="/images/logo.png" alt="Logo" className="h-25 w-auto object-contain -mt-2" />
+        <img src="/images/logo.png" alt="Logo" className="h-25 w-auto object-contain -mt-2" />
       </Link>
 
-      <div className="flex items-center gap-4 relative">
-        <Link
-          to="/about"
-          className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
+      <div className="lg:hidden">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="text-white p-2 rounded-md focus:outline-none"
         >
-          About
-        </Link>
+          <svg
+            className="w-8 h-8"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+          >
+            {mobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </motion.button>
+      </div>
 
-        <Link
-          to="/favorites"
-          className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
-        >
-          Favorites
-        </Link>
+      <div className="hidden lg:flex items-center gap-4 relative">
+        <Link to="/about" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">About</Link>
+        <Link to="/favorites" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Favorites</Link>
 
         {token ? (
           <>
@@ -112,48 +124,24 @@ function Header() {
                     transition={{ duration: 0.2 }}
                     className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg overflow-hidden"
                   >
-                    <Link
-                      to="/account"
-                      className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <UserRound size={18} />
-                      My Account
+                    <Link to="/account" className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>
+                      <UserRound size={18} /> My Account
                     </Link>
-
-                    <Link
-                      to="/orders"
-                      className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
-                      onClick={() => setIsMenuOpen(false)}
-                    >
-                      <PackageCheck size={18} />
-                      My Orders
+                    <Link to="/orders" className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100" onClick={() => setIsMenuOpen(false)}>
+                      <PackageCheck size={18} /> My Orders
                     </Link>
                   </motion.div>
                 )}
               </AnimatePresence>
             </div>
-            <button
-              onClick={handleLogout}
-              className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
-            >
+            <button onClick={handleLogout} className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition">
               Log Out
             </button>
           </>
         ) : (
           <>
-            <Link
-              to="/login"
-              className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
-            >
-              Login
-            </Link>
-            <Link
-              to="/register"
-              className="px-4 py-2 rounded-md hover:bg-gray-700 transition"
-            >
-              Register
-            </Link>
+            <Link to="/login" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Login</Link>
+            <Link to="/register" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Register</Link>
           </>
         )}
 
@@ -169,6 +157,32 @@ function Header() {
           )}
         </button>
       </div>
+
+      <AnimatePresence>
+        {mobileMenuOpen && (
+          <motion.div
+            initial={{ opacity: 0, y: -10 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            className="absolute top-[100px] left-0 w-full bg-gray-900 z-40 flex flex-col items-center gap-4 py-6 lg:hidden"
+          >
+            <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
+            <Link to="/favorites" onClick={() => setMobileMenuOpen(false)}>Favorites</Link>
+            {!token ? (
+              <>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>Register</Link>
+              </>
+            ) : (
+              <>
+                <Link to="/account" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
+                <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>
+                <button onClick={handleLogout}>Log Out</button>
+              </>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
     </header>
   );
 }

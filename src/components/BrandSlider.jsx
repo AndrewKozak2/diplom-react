@@ -17,11 +17,18 @@ function BrandSlider() {
   const [sliderRef, instanceRef] = useKeenSlider(
     {
       loop: true,
+      breakpoints: {
+        '(max-width: 768px)': {
+          slides: { perView: 2.2, spacing: 10 },
+        },
+        '(max-width: 1024px)': {
+          slides: { perView: 3.2, spacing: 15 },
+        },
+      },
       slides: {
         perView: 5,
         spacing: 30,
       },
-      renderMode: 'performance',
       drag: true,
       created(slider) {
         timer.current = setInterval(() => {
@@ -41,8 +48,8 @@ function BrandSlider() {
 
   return (
     <div className="relative py-14 bg-white flex justify-center">
-      <div className="relative w-full max-w-7xl">
-        <div ref={sliderRef} className="keen-slider px-6">
+      <div className="relative w-full max-w-7xl px-4">
+        <div ref={sliderRef} className="keen-slider">
           {brandLogos.map((logo, index) => (
             <div
               className="keen-slider__slide flex justify-center items-center"
@@ -51,23 +58,21 @@ function BrandSlider() {
               <img
                 src={`/images/logos/${logo}`}
                 alt={logo}
-                className="h-20 object-contain transition duration-300 hover:scale-110"
-
+                className="h-16 md:h-20 object-contain transition duration-300 hover:scale-110"
               />
             </div>
           ))}
         </div>
 
-        {/* Кнопки */}
         <button
           onClick={handlePrev}
-          className="absolute -left-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute -left-2 md:-left-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
         >
           &#10094;
         </button>
         <button
           onClick={handleNext}
-          className="absolute -right-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute -right-2 md:-right-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
         >
           &#10095;
         </button>

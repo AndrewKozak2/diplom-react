@@ -99,7 +99,7 @@ function VerifyEmail() {
             <button
               type="button"
               onClick={handleResend}
-              className="text-blue-600 hover:underline"
+              className="text-gray-900 hover:underline"
             >
               Resend Code
             </button>
