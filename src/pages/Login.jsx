@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loadCartFromDB } from '../utils/cartStorage';
+import { toast } from 'react-hot-toast';
 
 function Login() {
   const [email, setEmail] = useState('');
@@ -29,10 +30,10 @@ function Login() {
         navigate('/');
         window.location.reload();
       } else {
-        alert(data.message || 'Login failed');
+        toast.error(data.message || 'Login failed');
       }
     } catch (error) {
-      alert('Login error');
+      toast.error('Login error');
       console.error(error);
     }
   };

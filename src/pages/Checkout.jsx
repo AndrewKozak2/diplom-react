@@ -144,14 +144,33 @@ function Checkout() {
   };
 
   const validateForm = () => {
-    if (!form.firstName.trim()) return alert("Enter your First Name.");
-    if (!form.lastName.trim()) return alert("Enter your Last Name.");
-    if (!form.city.trim()) return alert("Select a city.");
-    if (!form.warehouse.trim()) return alert("Select a warehouse.");
-    if (!/^\d{10,12}$/.test(form.phone)) return alert("Invalid phone number.");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) return alert("Invalid email.");
+    if (!form.firstName.trim()) {
+      toast.error("Enter your First Name.");
+      return false;
+    }
+    if (!form.lastName.trim()) {
+      toast.error("Enter your Last Name.");
+      return false;
+    }
+    if (!form.city.trim()) {
+      toast.error("Select a city.");
+      return false;
+    }
+    if (!form.warehouse.trim()) {
+      toast.error("Select a warehouse.");
+      return false;
+    }
+    if (!/^\d{10,12}$/.test(form.phone)) {
+      toast.error("Invalid phone number.");
+      return false;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
+      toast.error("Invalid email.");
+      return false;
+    }
     return true;
   };
+  
 
   const handleSubmit = async () => {
     if (validateForm()) {
@@ -216,7 +235,7 @@ function Checkout() {
             placeholder="First Name"
             value={form.firstName}
             onChange={handleChange}
-            autoComplete="nope"
+            autoComplete="off"
             className="border rounded-md px-4 py-3 w-full"
           />
 
@@ -227,7 +246,7 @@ function Checkout() {
             placeholder="Last Name"
             value={form.lastName}
             onChange={handleChange}
-            autoComplete="nope"
+            autoComplete="off"
             className="border rounded-md px-4 py-3 w-full"
           />
 

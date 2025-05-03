@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
+
 
 function ResetPassword() {
   const location = useLocation();
@@ -17,26 +19,27 @@ function ResetPassword() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const res = await fetch('http://localhost:3000/api/reset-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
-
+  
       if (res.ok) {
         setSuccess(true);
+        toast.success('Password updated!');
         setTimeout(() => navigate('/login'), 3000);
       } else {
-        alert('Failed to reset password.');
+        toast.error('Failed to reset password.');
       }
     } catch (err) {
       console.error(err);
-      alert('Something went wrong.');
+      toast.error('Something went wrong.');
     }
   };
-
+  
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
       <form

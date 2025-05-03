@@ -17,6 +17,7 @@ import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
 import ScrollToTopButton from "./components/ScrollToTopButton";
+import { Toaster } from 'react-hot-toast';
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -39,7 +40,7 @@ function App() {
   return (
     <div className={`${isHome ? 'bg-transparent' : 'bg-gray-100'} min-h-screen`}>
       {!hideLayout && <Header />}
-
+      <Toaster position="top-center" />
       <Routes>
         <Route path="/" element={<Home refresh={refresh} />} />
         <Route path="/about" element={<About />} />

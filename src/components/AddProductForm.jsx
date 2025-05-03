@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { X } from 'lucide-react';
+import { X, CheckCircle, XCircle } from 'lucide-react';
+import { toast } from 'react-hot-toast';
 
 function AddProductForm({ onClose }) {
   const [form, setForm] = useState({
@@ -57,10 +58,10 @@ useEffect(() => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
+  
     try {
       const token = localStorage.getItem('token');
-
+  
       const res = await fetch('http://localhost:3000/api/admin/products', {
         method: 'POST',
         headers: {
@@ -73,22 +74,28 @@ useEffect(() => {
           inStock: true
         })
       });
-
+  
       const data = await res.json();
-
+  
       if (!res.ok) {
         throw new Error(data.message || 'Failed to add product');
       }
-
-      const toast = document.createElement('div');
-      toast.textContent = '✅ Product added successfully!';
-      toast.className = 'fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-green-600 text-white px-4 py-2 rounded shadow-lg z-[9999]';
-      document.body.appendChild(toast);
-      setTimeout(() => toast.remove(), 3000);
-
+  
+      toast.custom((t) => (
+        <div className="bg-green-600 text-white px-4 py-3 rounded shadow-lg flex items-center gap-3">
+          <CheckCircle size={20} />
+          <span>Product added successfully!</span>
+        </div>
+      ));
+  
       onClose?.();
     } catch (err) {
-      alert(`❌ ${err.message}`);
+      toast.custom((t) => (
+        <div className="bg-red-600 text-white px-4 py-3 rounded shadow-lg flex items-center gap-3">
+          <XCircle size={20} />
+          <span>{err.message}</span>
+        </div>
+      ));
     }
   };
 

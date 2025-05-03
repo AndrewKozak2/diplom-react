@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 function EditProductModal({ product, onClose, onSave }) {
   const [form, setForm] = useState({
@@ -45,7 +46,7 @@ function EditProductModal({ product, onClose, onSave }) {
       onClose();
     } catch (err) {
       console.error(err);
-      alert("Failed to update product");
+      toast.error("Failed to update product");
     }
   };
 
