@@ -3,6 +3,8 @@ import { ShoppingCart, Truck, CheckCircle } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import PaypalCheckout from "../components/PaypalCheckout";
+import { useRef } from "react";
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -17,6 +19,7 @@ function Checkout() {
   const [cities, setCities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [cityRef, setCityRef] = useState("");
+  const [showPaypal, setShowPaypal] = useState(false);
   const navigate = useNavigate();
 
   const deliveryCost = cart.length <= 5 ? 1.94 : 2.43;
@@ -70,6 +73,51 @@ function Checkout() {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
+
+
+const handlePayPalSuccess = async () => {
+  toast.success("Order placed successfully!");
+
+  try {
+    await fetch("http://localhost:3000/api/orders", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        ...form,
+        cart,
+        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost,
+        payment: {
+          method: "PayPal",
+          status: "COMPLETED",
+        },
+      }),
+    });
+
+    await fetch("http://localhost:3000/api/cart/clear", {
+      method: "PATCH",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+
+    setForm({ firstName: "", lastName: "", city: "", warehouse: "", phone: "", email: "" });
+    setCart([]);
+    localStorage.removeItem("cart");
+    window.dispatchEvent(new Event("cartUpdated"));
+    setTimeout(() => navigate("/order-success"), 1500);
+  } catch (error) {
+    console.error("Order submission error:", error);
+  }
+};
+
+const handleConfirmClick = () => {
+  if (validateForm()) {
+    setShowPaypal(true);
+  }
+};
+
+
 
   const fetchCities = async (searchTerm) => {
     if (searchTerm.length < 2) {
@@ -170,7 +218,6 @@ function Checkout() {
     }
     return true;
   };
-  
 
   const handleSubmit = async () => {
     if (validateForm()) {
@@ -193,7 +240,13 @@ function Checkout() {
           body: JSON.stringify({
             ...form,
             cart: cart,
-            total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost,
+            total:
+              cart.reduce((sum, item) => sum + item.price * item.quantity, 0) +
+              deliveryCost,
+            payment: {
+              method: "PayPal",
+              status: "COMPLETED",
+            },
           }),
         });
 
@@ -208,7 +261,14 @@ function Checkout() {
         console.error("Order submission error:", error);
       }
 
-      setForm({ firstName: "", lastName: "", city: "", warehouse: "", phone: "", email: "" });
+      setForm({
+        firstName: "",
+        lastName: "",
+        city: "",
+        warehouse: "",
+        phone: "",
+        email: "",
+      });
       setCart([]);
       localStorage.removeItem("cart");
       window.dispatchEvent(new Event("cartUpdated"));
@@ -219,7 +279,9 @@ function Checkout() {
     }
   };
 
-  const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost;
+  const total =
+    cart.reduce((sum, item) => sum + item.price * item.quantity, 0) +
+    deliveryCost;
 
   return (
     <div className="min-h-screen bg-gray-100 pt-12 pb-10">
@@ -301,7 +363,10 @@ function Checkout() {
                     <div
                       key={wh.Ref}
                       onClick={() => {
-                        setForm((prev) => ({ ...prev, warehouse: wh.Description }));
+                        setForm((prev) => ({
+                          ...prev,
+                          warehouse: wh.Description,
+                        }));
                         setWarehouses([]);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -342,7 +407,10 @@ function Checkout() {
             <ShoppingCart /> Items in Cart:
           </h3>
           {cart.map((item) => (
-            <div key={item.id} className="flex items-center justify-between mb-4">
+            <div
+              key={item.id}
+              className="flex items-center justify-between mb-4"
+            >
               <div className="flex items-center gap-4">
                 <img
                   src={item.image}
@@ -371,12 +439,17 @@ function Checkout() {
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
+          {showPaypal && (
+  <div className="my-4">
+    <PaypalCheckout amountUSD={total} onSuccess={handlePayPalSuccess} />
+  </div>
+)}
 
           <button
-            onClick={handleSubmit}
+            onClick={handleConfirmClick}
             className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
           >
-            Confirm Order
+            Confirm Order and Pay
           </button>
         </div>
       </div>

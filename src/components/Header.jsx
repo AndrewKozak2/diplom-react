@@ -141,7 +141,7 @@ function Header() {
         ) : (
           <>
             <Link to="/login" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Log in</Link>
-            <Link to="/register" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Log on</Link>
+            <Link to="/register" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Sign on</Link>
           </>
         )}
 
