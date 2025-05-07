@@ -74,8 +74,9 @@ function Header() {
 
 
       <div className="hidden lg:flex items-center gap-4">
-        <Link to="/about" className="hover:underline">About</Link>
-        <Link to="/favorites" className="hover:underline">Favorites</Link>
+      <Link to="/about" className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition">About</Link>
+      <Link to="/favorites" className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition">Favorites</Link>
+
 
         {token ? (
           <>
@@ -123,8 +124,8 @@ function Header() {
           </>
         ) : (
           <>
-            <Link to="/login" className="hover:underline">Log in</Link>
-            <Link to="/register" className="hover:underline">Sign up</Link>
+           <Link to="/login" className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition">Log in</Link>
+           <Link to="/register" className="px-4 py-2 rounded-md hover:bg-gray-700 text-white transition">Sign up</Link>
           </>
         )}
 
