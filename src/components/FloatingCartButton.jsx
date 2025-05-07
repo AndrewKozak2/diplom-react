@@ -28,11 +28,13 @@ function FloatingCartButton() {
   return (
     <button
       onClick={handleClick}
-      className="fixed bottom-5 left-4 z-50 bg-black text-white rounded-full shadow-xl p-4 sm:hidden"
+      className="fixed bottom-5 left-4 z-50 sm:hidden bg-black/60 w-12 h-12 rounded-full shadow-lg flex items-center justify-center"
     >
-      <ShoppingCart size={20} />
+      <ShoppingCart size={20} className="text-white" />
       {count > 0 && (
-        <span className="ml-1 text-xs font-medium">{count}</span>
+        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center">
+          {count}
+        </span>
       )}
     </button>
   );
