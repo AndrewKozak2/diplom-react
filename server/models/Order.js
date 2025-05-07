@@ -17,10 +17,6 @@ const orderSchema = new mongoose.Schema({
     }
   ],
   total: { type: Number, required: true },
-  payment: {
-    method: { type: String, required: true },   // наприклад: "PayPal"
-    status: { type: String, required: true }    // наприклад: "COMPLETED"
-  },
   createdAt: { type: Date, default: Date.now }
 });
 

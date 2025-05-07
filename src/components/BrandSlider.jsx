@@ -18,16 +18,16 @@ function BrandSlider() {
     {
       loop: true,
       breakpoints: {
-        '(max-width: 768px)': {
-          slides: { perView: 2.2, spacing: 10 },
+        '(max-width: 640px)': {
+          slides: { perView: 2.2, spacing: 8 },
         },
         '(max-width: 1024px)': {
-          slides: { perView: 3.2, spacing: 15 },
+          slides: { perView: 3.2, spacing: 12 },
         },
       },
       slides: {
         perView: 5,
-        spacing: 30,
+        spacing: 24,
       },
       drag: true,
       created(slider) {
@@ -47,8 +47,8 @@ function BrandSlider() {
   const handleNext = () => instanceRef.current?.next();
 
   return (
-    <div className="relative py-14 bg-white flex justify-center">
-      <div className="relative w-full max-w-7xl px-4">
+    <div className="relative py-12 bg-white flex justify-center">
+      <div className="relative w-full max-w-7xl px-4 sm:px-6">
         <div ref={sliderRef} className="keen-slider">
           {brandLogos.map((logo, index) => (
             <div
@@ -58,7 +58,7 @@ function BrandSlider() {
               <img
                 src={`/images/logos/${logo}`}
                 alt={logo}
-                className="h-16 md:h-20 object-contain transition duration-300 hover:scale-110"
+                className="h-12 sm:h-16 md:h-20 object-contain transition duration-300 hover:scale-110"
               />
             </div>
           ))}
@@ -66,13 +66,13 @@ function BrandSlider() {
 
         <button
           onClick={handlePrev}
-          className="absolute -left-2 md:-left-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute left-2 sm:left-0 top-1/2 transform -translate-y-1/2 text-2xl text-gray-500 hover:text-black transition"
         >
           &#10094;
         </button>
         <button
           onClick={handleNext}
-          className="absolute -right-2 md:-right-6 top-1/2 transform -translate-y-1/2 text-gray-600 hover:text-black"
+          className="absolute right-2 sm:right-0 top-1/2 transform -translate-y-1/2 text-2xl text-gray-500 hover:text-black transition"
         >
           &#10095;
         </button>

@@ -9,9 +9,7 @@ function Header() {
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
 
-  const [username, setUsername] = useState(
-    localStorage.getItem("username") || ""
-  );
+  const [username, setUsername] = useState(localStorage.getItem("username") || "");
   const [cartCount, setCartCount] = useState(0);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
@@ -59,42 +57,25 @@ function Header() {
 
   return (
     <header
-      className={`w-full z-50 flex justify-between items-center px-8 h-[100px] font-poppins transition-all duration-300
-      ${
+      className={`w-full z-50 flex justify-between items-center px-6 sm:px-8 h-[100px] transition-all duration-300 ${
         isDarkHeader
           ? "bg-gray-900 text-white shadow-md"
           : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"
       }`}
     >
-      <Link to="/" className="flex items-center">
-        <img src="/images/logo.png" alt="Logo" className="h-25 w-auto object-contain -mt-2" />
-      </Link>
 
-      <div className="lg:hidden">
-        <motion.button
-          whileTap={{ scale: 0.9 }}
-          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="text-white p-2 rounded-md focus:outline-none"
-        >
-          <svg
-            className="w-8 h-8"
-            fill="none"
-            stroke="currentColor"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {mobileMenuOpen ? (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-            ) : (
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-            )}
-          </svg>
-        </motion.button>
-      </div>
+<Link to="/" className="flex items-center">
+  <img
+    src="/images/logo.png"
+    alt="Logo"
+    className="h-20 md:h-[104px] object-contain"
+  />
+</Link>
 
-      <div className="hidden lg:flex items-center gap-4 relative">
-        <Link to="/about" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">About</Link>
-        <Link to="/favorites" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Favorites</Link>
+
+      <div className="hidden lg:flex items-center gap-4">
+        <Link to="/about" className="hover:underline">About</Link>
+        <Link to="/favorites" className="hover:underline">Favorites</Link>
 
         {token ? (
           <>
@@ -106,6 +87,7 @@ function Header() {
                 Add Product
               </button>
             )}
+
             <div
               className="relative"
               onMouseEnter={() => setIsMenuOpen(true)}
@@ -134,16 +116,18 @@ function Header() {
                 )}
               </AnimatePresence>
             </div>
+
             <button onClick={handleLogout} className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition">
               Log Out
             </button>
           </>
         ) : (
           <>
-            <Link to="/login" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Log in</Link>
-            <Link to="/register" className="px-4 py-2 rounded-md hover:bg-gray-700 transition">Sign on</Link>
+            <Link to="/login" className="hover:underline">Log in</Link>
+            <Link to="/register" className="hover:underline">Sign up</Link>
           </>
         )}
+
 
         <button
           onClick={handleCartClick}
@@ -158,6 +142,22 @@ function Header() {
         </button>
       </div>
 
+      <div className="lg:hidden">
+        <motion.button
+          whileTap={{ scale: 0.9 }}
+          onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          className="text-white p-2 rounded-md focus:outline-none"
+        >
+          <svg className="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            {mobileMenuOpen ? (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+            ) : (
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+            )}
+          </svg>
+        </motion.button>
+      </div>
+
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
@@ -168,16 +168,16 @@ function Header() {
           >
             <Link to="/about" onClick={() => setMobileMenuOpen(false)}>About</Link>
             <Link to="/favorites" onClick={() => setMobileMenuOpen(false)}>Favorites</Link>
-            {!token ? (
-              <>
-                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Login</Link>
-                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>Register</Link>
-              </>
-            ) : (
+            {token ? (
               <>
                 <Link to="/account" onClick={() => setMobileMenuOpen(false)}>My Account</Link>
                 <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>My Orders</Link>
-                <button onClick={handleLogout}>Log Out</button>
+                <button onClick={() => { setMobileMenuOpen(false); handleLogout(); }}>Log Out</button>
+              </>
+            ) : (
+              <>
+                <Link to="/login" onClick={() => setMobileMenuOpen(false)}>Log in</Link>
+                <Link to="/register" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
               </>
             )}
           </motion.div>

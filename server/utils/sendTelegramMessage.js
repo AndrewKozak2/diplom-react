@@ -11,7 +11,7 @@ async function sendTelegramMessage(message) {
     await axios.post(url, {
       chat_id: chatId,
       text: message,
-      parse_mode: 'HTML' // Щоб можна було форматувати повідомлення
+      parse_mode: 'HTML' 
     });
     console.log('Telegram повідомлення надіслано');
   } catch (error) {

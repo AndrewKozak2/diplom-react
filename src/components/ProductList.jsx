@@ -6,7 +6,7 @@ function ProductList({ refresh }) {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({ brand: "", price: 100 });
   const [sortOrder, setSortOrder] = useState("");
-  const [visibleCount, setVisibleCount] = useState(16); // новий стан
+  const [visibleCount, setVisibleCount] = useState(16);
 
   useEffect(() => {
     fetch("http://localhost:3000/api/products")
@@ -30,14 +30,13 @@ function ProductList({ refresh }) {
     .sort((a, b) => {
       if (a.inStock && !b.inStock) return -1;
       if (!a.inStock && b.inStock) return 1;
-    
+
       if (sortOrder === "asc") return a.price - b.price;
       if (sortOrder === "desc") return b.price - a.price;
       return 0;
     });
-    
 
-  const visibleProducts = filtered.slice(0, visibleCount); // обрізаємо
+  const visibleProducts = filtered.slice(0, visibleCount);
 
   const handleAddToCart = (product) => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -59,15 +58,12 @@ function ProductList({ refresh }) {
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
 
   return (
-    <section
-      id="models-container"
-      className="bg-white py-10 px-4 sm:px-6 lg:px-8"
-    >
+    <section id="models-container" className="bg-white py-10 px-4 sm:px-6 lg:px-8">
       {/* ФІЛЬТРИ */}
       <div className="max-w-7xl mx-auto mb-10 bg-gray-50 border border-gray-200 rounded-xl shadow p-6">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
           {/* Бренди */}
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap sm:flex-nowrap gap-2 overflow-x-auto scrollbar-none pb-1">
             <button
               className={`px-4 py-2 rounded-full border text-sm transition cursor-pointer ${
                 filters.brand === ""
@@ -104,9 +100,7 @@ function ProductList({ refresh }) {
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
                 Max Price:{" "}
-                <span className="text-gray-900 font-bold">
-                  ${filters.price}
-                </span>
+                <span className="text-gray-900 font-bold">${filters.price}</span>
               </label>
               <input
                 type="range"
@@ -121,9 +115,7 @@ function ProductList({ refresh }) {
               />
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">
-                Sort
-              </label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">Sort</label>
               <select
                 value={sortOrder}
                 onChange={(e) => {
@@ -142,14 +134,16 @@ function ProductList({ refresh }) {
       </div>
 
       {/* ТОВАРИ */}
-      <div className="max-w-7xl mx-auto flex flex-wrap justify-center gap-[15px]">
-        {visibleProducts.map((model) => (
-          <ProductCard
-            key={model.id}
-            model={model}
-            onAddToCart={handleAddToCart}
-          />
-        ))}
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center">
+        {visibleProducts.length === 0 ? (
+          <div className="text-center text-gray-500 col-span-full">
+            No models found for selected filters.
+          </div>
+        ) : (
+          visibleProducts.map((model) => (
+            <ProductCard key={model.id} model={model} onAddToCart={handleAddToCart} />
+          ))
+        )}
       </div>
 
       {/* КНОПКА Load More */}

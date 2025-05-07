@@ -1,65 +1,68 @@
 import React, { useState, useEffect } from "react";
 
 function LimitedDrop() {
-  const initialStock = parseInt(localStorage.getItem("limitedStock")) || 10;
-  const [stock, setStock] = useState(initialStock);
+  const [product, setProduct] = useState(null);
+
+  const fetchLimitedProduct = async () => {
+    try {
+      const res = await fetch("http://localhost:3000/api/limited");
+      const data = await res.json();
+      setProduct(data);
+    } catch (err) {
+      console.error("Error loading limited product", err);
+    }
+  };
 
   useEffect(() => {
-    localStorage.setItem("limitedStock", stock);
-  }, [stock]);
-
-  const product = {
-    id: "limited-nissan-gt-r35",
-    name: "LB★Silhouette GT–R R35",
-    price: 550,
-    image: "/images/nissanGTR(r35)Limited.png",
-    scale: "1/64",
-    brand: "MiniGT",
-    limited: true
-  };
+    fetchLimitedProduct();
+  }, []);
 
   const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItem = cart.find(item => item.id === product.id);
+    const existingItem = cart.find(item => item.id === product._id);
 
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      cart.push({ ...product, quantity: 1 });
+      cart.push({ ...product, id: product._id, quantity: 1, limited: true });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
+
+    // ОНОВЛЕННЯ даних з сервера після додавання
+    fetchLimitedProduct();
   };
+
+  if (!product) return <div className="text-center py-20 text-white">Loading...</div>;
 
   return (
     <section className="py-20 bg-transparent">
       <div className="max-w-6xl mx-auto px-6">
         <div className="bg-gradient-to-r from-purple-900 via-indigo-900 to-purple-900 text-white rounded-3xl shadow-2xl p-10 md:p-14 flex flex-col md:flex-row items-center justify-between gap-10">
-          {/* Ліва частина (текст) */}
+          {/* Ліва частина */}
           <div className="max-w-xl">
             <p className="uppercase text-pink-300 font-semibold mb-2 text-sm tracking-wider">
               Limited Edition
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">
-              LB★Silhouette GT–R R35
-            </h2>
-            <p className="text-white/80 text-lg mb-4 leading-relaxed">
-              Ultra-rare 1/64 scale model in Purple Metallic. A must-have for collectors and JDM lovers. Act fast — limited quantity!
-            </p>
-            <p className="text-white text-lg font-semibold mb-6">$550</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">{product.name}</h2>
+            <p className="text-white/80 text-lg mb-4 leading-relaxed">{product.description}</p>
+            <p className="text-white text-lg font-semibold mb-6">${product.price}</p>
             <div className="flex items-center gap-6">
               <button
                 onClick={handleAddToCart}
                 className={`px-6 py-3 rounded-xl font-semibold transition bg-pink-600 hover:bg-pink-700 text-white`}
+                disabled={product.countInStock <= 0}
               >
-                Buy Now
+                {product.countInStock > 0 ? "Buy Now" : "Out of Stock"}
               </button>
-              <span className="text-lg font-medium">{stock} left</span>
+              <span className="text-lg font-medium">
+                {product.countInStock > 0 ? `${product.countInStock} left` : "Sold Out"}
+              </span>
             </div>
           </div>
 
-          {/* Права частина (зображення) */}
+          {/* Права частина */}
           <div className="w-full md:w-1/2">
             <img
               src={product.image}

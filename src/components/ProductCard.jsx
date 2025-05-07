@@ -35,39 +35,38 @@ function ProductCard({ model, onAddToCart }) {
 
   return (
     <div
-      className={`relative border rounded-xl shadow-sm p-3 text-gray-800 flex flex-col justify-between transition w-[300px] min-h-[360px] ${
-        isOutOfStock && !showEditModal ?  "bg-gray-100 opacity-60" : "bg-white hover:shadow-md"
+      className={`relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full sm:w-[300px] min-h-[380px] ${
+        isOutOfStock && !showEditModal ? "bg-gray-100 opacity-60" : "bg-white hover:shadow-md"
       }`}
     >
-      {/* Іконка редагування (адмін) */}
+      {/* Header row */}
       <div className="flex items-center justify-between mb-2">
-  <div className="flex items-center gap-2">
-    <span className="bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded-full">
-      {localModel.brand}
-    </span>
-    {isAdmin && (
-      <button
-        onClick={() => setShowEditModal(true)}
-        className="bg-white rounded-full p-1 shadow hover:bg-gray-200 transition"
-        title="Edit"
-      >
-        <Pencil size={16} className="text-gray-700" />
-      </button>
-    )}
-  </div>
-  <button
-    onClick={toggleFavorite}
-    className="text-gray-400 hover:text-red-500 transition"
-  >
-    <Heart
-      size={16}
-      className={isFavorite ? "fill-red-500 text-red-500" : ""}
-    />
-  </button>
-</div>
+        <div className="flex items-center gap-2">
+          <span className="bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded-full">
+            {localModel.brand}
+          </span>
+          {isAdmin && (
+            <button
+              onClick={() => setShowEditModal(true)}
+              className="bg-white rounded-full p-1 shadow hover:bg-gray-200 transition"
+              title="Edit"
+            >
+              <Pencil size={16} className="text-gray-700" />
+            </button>
+          )}
+        </div>
+        <button
+          onClick={toggleFavorite}
+          className="text-gray-400 hover:text-red-500 transition"
+        >
+          <Heart
+            size={16}
+            className={isFavorite ? "fill-red-500 text-red-500" : ""}
+          />
+        </button>
+      </div>
 
-
-      {/* Зображення */}
+      {/* Image */}
       <img
         src={localModel.image}
         alt={localModel.name}
@@ -75,7 +74,7 @@ function ProductCard({ model, onAddToCart }) {
         className="w-full h-[180px] object-contain rounded mb-2"
       />
 
-      {/* Інформація */}
+      {/* Info */}
       <div className="mb-2">
         <h3 className="text-sm font-semibold leading-tight mb-1">
           {localModel.name}
@@ -93,20 +92,20 @@ function ProductCard({ model, onAddToCart }) {
         )}
       </div>
 
-      {/* Кнопка додавання в кошик */}
+      {/* Add to cart button */}
       <button
         onClick={() => onAddToCart(localModel)}
         disabled={isOutOfStock}
-        className={`w-full py-2 rounded-md text-xs font-medium transition flex items-center justify-center gap-4 cursor-pointer ${
-          isOutOfStock
+        className={`w-full py-2 rounded-md text-xs font-medium transition flex items-center justify-center gap-4 cursor-pointer
+          ${isOutOfStock
             ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white"
-        }`}
+            : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white active:scale-95 active:bg-gray-900 active:text-white"}
+        `}
       >
         <ShoppingCart size={20} /> Add to Cart
       </button>
 
-      {/* Модалка редагування */}
+      {/* Edit modal (admin only) */}
       {showEditModal && (
         <EditProductModal
           product={localModel}
