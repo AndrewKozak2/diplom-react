@@ -92,11 +92,16 @@ function CartSidebar({ isOpen, onClose }) {
                 className="flex gap-3 sm:gap-4 items-start bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4"
               >
                 <img
-                  src={item.image}
+                  src={
+                    item.images?.[0]?.startsWith("http")
+                      ? item.images[0]
+                      : `http://localhost:3000${item.images?.[0]}`
+                  }
                   alt={item.name}
                   onError={(e) => (e.target.src = "/images/placeholder.svg")}
-                  className="w-14 h-14 sm:w-16 sm:h-16 object-contain rounded bg-white"
+                  className="h-16 w-16 object-cover rounded"
                 />
+
                 <div className="flex-1">
                   <h4 className="font-medium text-sm text-gray-800 leading-snug mb-1">
                     {item.name}

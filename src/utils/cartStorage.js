@@ -27,10 +27,24 @@ export async function saveCartToDB() {
 
   cart = cart.map((item) => ({
     ...item,
-    quantity: typeof item.quantity === "number" && !isNaN(item.quantity) && item.quantity > 0
-      ? item.quantity
-      : 1,
+    quantity:
+      typeof item.quantity === "number" && !isNaN(item.quantity) && item.quantity > 0
+        ? item.quantity
+        : 1,
+    images: Array.isArray(item.images)
+      ? item.images
+      : item.image
+      ? [item.image]
+      : [],
+
+    brand: item.brand || "Unknown",
+    scale: item.scale || "1/64",
+    name: item.name || "Unnamed",
+    price: Number(item.price) || 0,
+    id: item.id || item._id || ""
   }));
+
+  console.log("🛒 Sending cart:", cart);
 
   try {
     const res = await fetch("http://localhost:3000/api/cart/save", {
@@ -44,7 +58,8 @@ export async function saveCartToDB() {
 
     if (!res.ok) throw new Error("Failed to save cart");
   } catch (error) {
-    console.error("Error saving cart to DB:", error);
+    console.error("❌ Error saving cart to DB:", error);
   }
 }
+
 

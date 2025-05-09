@@ -3,6 +3,7 @@ import { ShoppingCart, Truck, CheckCircle } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import PaymentModal from "../components/PaymentModal";
 
 
 function Checkout() {
@@ -18,6 +19,7 @@ function Checkout() {
   const [cities, setCities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
   const [cityRef, setCityRef] = useState("");
+  const [showPayment, setShowPayment] = useState(false);
   const navigate = useNavigate();
 
   const deliveryCost = cart.length <= 5 ? 1.94 : 2.43;
@@ -381,7 +383,7 @@ const handleConfirmClick = () => {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={item.image}
+                  src={item.images?.[0]}
                   alt={item.name}
                   className="w-16 h-16 object-cover rounded"
                 />
@@ -409,11 +411,20 @@ const handleConfirmClick = () => {
           </div>
 
 <button
-  onClick={handleSubmit}
+  onClick={() => setShowPayment(true)}
   className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
 >
-  Confirm Order
+  Confirm Order and Pay
 </button>
+
+
+{showPayment && (
+  <PaymentModal
+    total={total}
+    onClose={() => setShowPayment(false)}
+    onOrderSuccess={handleSubmit} 
+  />
+)}
 
         </div>
       </div>

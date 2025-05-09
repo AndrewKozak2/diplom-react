@@ -1,14 +1,18 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard";
 import { saveCartToDB } from "../utils/cartStorage";
+import SkeletonCard from "../components/SkeletonCard";
+import { toast } from "react-hot-toast";
 
 function ProductList({ refresh }) {
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({ brand: "", price: 100 });
   const [sortOrder, setSortOrder] = useState("");
   const [visibleCount, setVisibleCount] = useState(16);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setLoading(true);
     fetch("http://localhost:3000/api/products")
       .then((res) => res.json())
       .then((data) => {
@@ -18,7 +22,8 @@ function ProductList({ refresh }) {
         }));
         setProducts(normalized);
       })
-      .catch((err) => console.error("Failed to load products:", err));
+      .catch((err) => console.error("Failed to load products:", err))
+      .finally(() => setLoading(false));
   }, [refresh]);
 
   const filtered = products
@@ -38,31 +43,43 @@ function ProductList({ refresh }) {
 
   const visibleProducts = filtered.slice(0, visibleCount);
 
-  const handleAddToCart = (product) => {
-    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existing = savedCart.find((item) => item.id === product.id);
+const handleAddToCart = (product) => {
+  const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+  const existing = savedCart.find((item) => item.id === product.id);
 
-    const updatedCart = existing
-      ? savedCart.map((item) =>
-          item.id === product.id
-            ? { ...item, quantity: item.quantity + 1 }
-            : item
-        )
-      : [...savedCart, { ...product, quantity: 1 }];
-
-    localStorage.setItem("cart", JSON.stringify(updatedCart));
-    saveCartToDB();
-    window.dispatchEvent(new Event("cartUpdated"));
+  const productForCart = {
+    id: product.id,
+    name: product.name,
+    price: product.price,
+    images: product.images || [], 
+    quantity: 1,
   };
+
+  const updatedCart = existing
+    ? savedCart.map((item) =>
+        item.id === product.id
+          ? { ...item, quantity: item.quantity + 1 }
+          : item
+      )
+    : [...savedCart, productForCart];
+
+  localStorage.setItem("cart", JSON.stringify(updatedCart));
+  saveCartToDB();
+  window.dispatchEvent(new Event("cartUpdated"));
+  toast.success("Added to cart");
+};
+
+
 
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
 
   return (
-    <section id="models-container" className="bg-white py-10 px-4 sm:px-6 lg:px-8">
-      {/* ФІЛЬТРИ */}
+    <section
+      id="models-container"
+      className="bg-white py-10 px-4 sm:px-6 lg:px-8"
+    >
       <div className="max-w-7xl mx-auto mb-10 bg-gray-50 border border-gray-200 rounded-xl shadow p-6">
         <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-6">
-          {/* Бренди */}
           <div className="flex flex-wrap sm:flex-nowrap gap-2 overflow-x-auto scrollbar-none pb-1">
             <button
               className={`px-4 py-2 rounded-full border text-sm transition cursor-pointer ${
@@ -95,12 +112,13 @@ function ProductList({ refresh }) {
             ))}
           </div>
 
-          {/* Ціна + сортування */}
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
                 Max Price:{" "}
-                <span className="text-gray-900 font-bold">${filters.price}</span>
+                <span className="text-gray-900 font-bold">
+                  ${filters.price}
+                </span>
               </label>
               <input
                 type="range"
@@ -115,7 +133,9 @@ function ProductList({ refresh }) {
               />
             </div>
             <div>
-              <label className="block mb-1 text-sm font-medium text-gray-700">Sort</label>
+              <label className="block mb-1 text-sm font-medium text-gray-700">
+                Sort
+              </label>
               <select
                 value={sortOrder}
                 onChange={(e) => {
@@ -133,20 +153,26 @@ function ProductList({ refresh }) {
         </div>
       </div>
 
-      {/* ТОВАРИ */}
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-5 justify-items-center">
-        {visibleProducts.length === 0 ? (
+        {loading ? (
+          Array(8)
+            .fill(0)
+            .map((_, i) => <SkeletonCard key={i} />)
+        ) : visibleProducts.length === 0 ? (
           <div className="text-center text-gray-500 col-span-full">
             No models found for selected filters.
           </div>
         ) : (
           visibleProducts.map((model) => (
-            <ProductCard key={model.id} model={model} onAddToCart={handleAddToCart} />
+            <ProductCard
+              key={model.id}
+              model={model}
+              onAddToCart={handleAddToCart}
+            />
           ))
         )}
       </div>
 
-      {/* КНОПКА Load More */}
       {visibleCount < filtered.length && (
         <div className="flex justify-center mt-8">
           <button

@@ -29,8 +29,6 @@ function LimitedDrop() {
 
     localStorage.setItem("cart", JSON.stringify(cart));
     window.dispatchEvent(new Event("cartUpdated"));
-
-    // ОНОВЛЕННЯ даних з сервера після додавання
     fetchLimitedProduct();
   };
 

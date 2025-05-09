@@ -11,10 +11,18 @@ router.post("/save", verifyUser, async (req, res) => {
     }
 
     const cleanedCart = (req.body.cart || []).map((item) => ({
-      ...item,
+      id: item.id || "",
+      name: item.name || "Unnamed",
+      price: typeof item.price === "number" ? item.price : 0,
       quantity:
         typeof item.quantity === "number" &&
-        item.quantity > 0 && item.quantity <= 99 ? item.quantity : 1,
+        item.quantity > 0 &&
+        item.quantity <= 99
+          ? item.quantity
+          : 1,
+      images: Array.isArray(item.images) ? item.images : [],
+      brand: item.brand || "Unknown",
+      scale: item.scale || "1/64",
     }));
 
     user.cart = cleanedCart;

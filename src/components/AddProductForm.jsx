@@ -1,42 +1,40 @@
-import React, { useState, useEffect } from 'react';
-import { X, CheckCircle, XCircle } from 'lucide-react';
-import { toast } from 'react-hot-toast';
+import React, { useState, useEffect } from "react";
+import { X, CheckCircle, XCircle } from "lucide-react";
+import { toast } from "react-hot-toast";
 
 function AddProductForm({ onClose }) {
   const [form, setForm] = useState({
-    brand: '',
-    name: '',
-    scale: '',
-    price: '',
-    image: ''
+    brand: "",
+    name: "",
+    scale: "",
+    price: "",
   });
-  const [fileName, setFileName] = useState('Файл не вибрано');
+  const [files, setFiles] = useState([]);
+  const [fileNames, setFileNames] = useState("Файли не вибрано");
   const [brands, setBrands] = useState([]);
 
-useEffect(() => {
-  document.body.style.overflow = 'hidden';
-  fetch('http://localhost:3000/api/products')
-    .then(res => res.json())
-    .then(data => {
-      if (Array.isArray(data)) {
-        const uniqueBrands = [...new Set(data.map(p => p.brand))];
-        setBrands(uniqueBrands);
-      } else {
-        console.error('products is not an array:', data);
+  useEffect(() => {
+    document.body.style.overflow = "hidden";
+    fetch("http://localhost:3000/api/products")
+      .then((res) => res.json())
+      .then((data) => {
+        if (Array.isArray(data)) {
+          const uniqueBrands = [...new Set(data.map((p) => p.brand))];
+          setBrands(uniqueBrands);
+        } else {
+          console.error("products is not an array:", data);
+          setBrands([]);
+        }
+      })
+      .catch((err) => {
+        console.error("Error fetching products:", err);
         setBrands([]);
-      }
-    })
-    .catch(err => {
-      console.error('Error fetching products:', err);
-      setBrands([]); 
-    });
-    
+      });
 
-  return () => {
-    document.body.style.overflow = 'auto';
-  };
-}, []);
-
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, []);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -44,53 +42,52 @@ useEffect(() => {
   };
 
   const handleFileChange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-
-    setFileName(file.name);
-
-    const reader = new FileReader();
-    reader.onloadend = () => {
-      setForm((prev) => ({ ...prev, image: reader.result }));
-    };
-    reader.readAsDataURL(file);
+    const selectedFiles = Array.from(e.target.files);
+    setFiles(selectedFiles);
+    setFileNames(selectedFiles.map((f) => f.name).join(", "));
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-  
+
     try {
-      const token = localStorage.getItem('token');
-  
-      const res = await fetch('http://localhost:3000/api/admin/products', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...form,
-          price: Number(form.price),
-          inStock: true
-        })
+      const token = localStorage.getItem("token");
+      const formData = new FormData();
+
+      formData.append("name", form.name);
+      formData.append("brand", form.brand);
+      formData.append("scale", form.scale);
+      formData.append("price", form.price);
+      formData.append("inStock", true);
+
+      files.forEach((file) => {
+        formData.append("images", file);
       });
-  
+
+      const res = await fetch("http://localhost:3000/api/admin/products", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+        body: formData,
+      });
+
       const data = await res.json();
-  
+
       if (!res.ok) {
-        throw new Error(data.message || 'Failed to add product');
+        throw new Error(data.message || "Failed to add product");
       }
-  
-      toast.custom((t) => (
+
+      toast.custom(() => (
         <div className="bg-green-600 text-white px-4 py-3 rounded shadow-lg flex items-center gap-3">
           <CheckCircle size={20} />
           <span>Product added successfully!</span>
         </div>
       ));
-  
+
       onClose?.();
     } catch (err) {
-      toast.custom((t) => (
+      toast.custom(() => (
         <div className="bg-red-600 text-white px-4 py-3 rounded shadow-lg flex items-center gap-3">
           <XCircle size={20} />
           <span>{err.message}</span>
@@ -110,7 +107,11 @@ useEffect(() => {
         </button>
 
         <h2 className="text-xl font-bold mb-4 text-center">Add New Product</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           <div>
             <input
               list="brand-options"
@@ -157,24 +158,49 @@ useEffect(() => {
             required
           />
 
-          <div className="flex items-center gap-4">
-            <label className="block text-sm text-gray-700">
-              Upload Image:
+          <div className="space-y-2">
+            <label className="block text-sm font-medium text-gray-700">
+              Upload Images:
             </label>
-            <div className="relative">
-              <label className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 transition cursor-pointer">
-                Вибрати файл
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileChange}
-                  className="absolute left-0 top-0 w-full h-full cursor-pointer opacity-0"
-                />
-              </label>
-            </div>
-            <span className="text-sm text-gray-500 truncate max-w-[150px]">
-              {fileName}
-            </span>
+
+            <label className="relative inline-block bg-white border border-gray-300 rounded-md px-4 py-2 cursor-pointer hover:bg-gray-100 transition text-sm text-gray-800 font-medium">
+              Обрати файли
+              <input
+                type="file"
+                accept="image/*"
+                multiple
+                onChange={handleFileChange}
+                className="absolute left-0 top-0 w-full h-full opacity-0 cursor-pointer"
+              />
+            </label>
+
+{files.length > 0 && (
+  <div className="grid grid-cols-2 gap-2 mt-2">
+    {files.map((file, index) => (
+      <div key={index} className="relative border rounded-md overflow-hidden group">
+        <img
+          src={URL.createObjectURL(file)}
+          alt={`preview-${index}`}
+          className="object-cover h-24 w-full"
+        />
+        <button
+          type="button"
+          onClick={() => {
+            const updatedFiles = [...files];
+            updatedFiles.splice(index, 1);
+            setFiles(updatedFiles);
+            setFileNames(updatedFiles.map(f => f.name).join(', '));
+          }}
+          className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-80 transition text-xs"
+          title="Видалити"
+        >
+          ✕
+        </button>
+      </div>
+    ))}
+  </div>
+)}
+
           </div>
 
           <button

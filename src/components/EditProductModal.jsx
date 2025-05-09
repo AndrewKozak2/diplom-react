@@ -7,8 +7,9 @@ function EditProductModal({ product, onClose, onSave }) {
     name: product.name,
     brand: product.brand,
     price: product.price,
-    image: product.image,
     inStock: product.inStock ?? true,
+    existingImages: product.images || [],
+    newImages: [],
   });
 
   useEffect(() => {
@@ -20,26 +21,52 @@ function EditProductModal({ product, onClose, onSave }) {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    const newValue = type === "checkbox" ? checked : value;
-    setForm({ ...form, [name]: newValue });
+    setForm({ ...form, [name]: type === "checkbox" ? checked : value });
+  };
+
+  const handleFileChange = (e) => {
+    const files = Array.from(e.target.files);
+    setForm((prev) => ({ ...prev, newImages: [...prev.newImages, ...files] }));
+  };
+
+  const handleRemoveExisting = (index) => {
+    const updated = [...form.existingImages];
+    updated.splice(index, 1);
+    setForm({ ...form, existingImages: updated });
+  };
+
+  const handleRemoveNew = (index) => {
+    const updated = [...form.newImages];
+    updated.splice(index, 1);
+    setForm({ ...form, newImages: updated });
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch(`http://localhost:3000/api/admin/products/${product._id}`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify(form),
-      });
+      const formData = new FormData();
 
-      if (!response.ok) {
-        throw new Error("Failed to update product");
-      }
+      formData.append("name", form.name);
+      formData.append("brand", form.brand);
+      formData.append("price", form.price);
+      formData.append("inStock", form.inStock);
+      formData.append("existingImages", JSON.stringify(form.existingImages));
+      form.newImages.forEach((file) => formData.append("newImages", file));
+
+      const response = await fetch(
+        `http://localhost:3000/api/admin/products/${product._id}`,
+        {
+          method: "PUT",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
+
+      if (!response.ok) throw new Error("Failed to update product");
 
       const updated = await response.json();
       onSave(updated.product);
@@ -52,7 +79,7 @@ function EditProductModal({ product, onClose, onSave }) {
 
   return (
     <div className="fixed inset-0 bg-black/30 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative">
+      <div className="bg-white p-6 rounded-xl w-full max-w-md shadow-lg relative max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-black"
@@ -60,12 +87,16 @@ function EditProductModal({ product, onClose, onSave }) {
           <X />
         </button>
         <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
+
+        <form
+          onSubmit={handleSubmit}
+          className="space-y-4"
+          encType="multipart/form-data"
+        >
           <input
             name="name"
             value={form.name}
             onChange={handleChange}
-            placeholder="Product Name"
             className="w-full border p-2 rounded"
             required
           />
@@ -73,26 +104,83 @@ function EditProductModal({ product, onClose, onSave }) {
             name="brand"
             value={form.brand}
             onChange={handleChange}
-            placeholder="Brand"
             className="w-full border p-2 rounded"
             required
           />
           <input
             name="price"
+            type="number"
             value={form.price}
             onChange={handleChange}
-            placeholder="Price"
-            type="number"
             className="w-full border p-2 rounded"
             required
           />
-          <input
-            name="image"
-            value={form.image}
-            onChange={handleChange}
-            placeholder="Image URL"
-            className="w-full border p-2 rounded"
-          />
+
+          {/* Existing images */}
+          {form.existingImages.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {form.existingImages.map((img, i) => (
+                <div key={i} className="relative">
+                  <img
+                    src={`http://localhost:3000${img}`}
+                    className="h-24 w-full object-cover rounded"
+                    alt="img"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveExisting(i)}
+                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* New image previews */}
+          {form.newImages.length > 0 && (
+            <div className="grid grid-cols-2 gap-2">
+              {form.newImages.map((file, i) => (
+                <div key={i} className="relative">
+                  <img
+                    src={URL.createObjectURL(file)}
+                    className="h-24 w-full object-cover rounded"
+                    alt="new"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => handleRemoveNew(i)}
+                    className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 text-xs"
+                  >
+                    ✕
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Add new */}
+          <div className="flex items-center gap-4 flex-wrap">
+            <div className="relative">
+              <label className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 transition cursor-pointer">
+                Вибрати файли
+                <input
+                  type="file"
+                  accept="image/*"
+                  multiple
+                  onChange={handleFileChange}
+                  className="absolute left-0 top-0 w-full h-full cursor-pointer opacity-0"
+                />
+              </label>
+            </div>
+            <span className="text-sm text-gray-500 truncate max-w-[200px]">
+              {form.newImages.length > 0
+                ? form.newImages.map((f) => f.name).join(", ")
+                : "Файли не вибрано"}
+            </span>
+          </div>
+
           <label className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -103,6 +191,7 @@ function EditProductModal({ product, onClose, onSave }) {
             />
             <span className="text-sm text-gray-700">In stock</span>
           </label>
+
           <button
             type="submit"
             className="w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800"

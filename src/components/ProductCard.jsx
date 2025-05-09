@@ -1,12 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { ShoppingCart, Heart, Pencil } from "lucide-react";
 import EditProductModal from "./EditProductModal";
+import { useKeenSlider } from "keen-slider/react";
+import "keen-slider/keen-slider.min.css";
 
 function ProductCard({ model, onAddToCart }) {
   const [isFavorite, setIsFavorite] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [localModel, setLocalModel] = useState(model);
+  const [sliderRef] = useKeenSlider({ loop: true });
+  const backendURL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const getFullImagePath = (src) => {
+    if (!src) return "/images/placeholder.svg";
+    if (src.startsWith("http")) return src;
+    const path = src.startsWith("/") ? src : `/${src}`;
+    return `${backendURL}${path.replace(/^\/+/, "/")}`;
+  };
 
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -32,11 +43,14 @@ function ProductCard({ model, onAddToCart }) {
   };
 
   const isOutOfStock = localModel.inStock === false;
+  console.log("IMAGE PATH:", getFullImagePath(localModel.images?.[0]));
 
   return (
     <div
-      className={`relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full sm:w-[300px] min-h-[380px] ${
-        isOutOfStock && !showEditModal ? "bg-gray-100 opacity-60" : "bg-white hover:shadow-md"
+      className={`relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full sm:w-[300px] min-h-[400px] ${
+        isOutOfStock && !showEditModal
+          ? "bg-gray-100 opacity-60"
+          : "bg-white hover:shadow-md"
       }`}
     >
       {/* Header row */}
@@ -66,13 +80,28 @@ function ProductCard({ model, onAddToCart }) {
         </button>
       </div>
 
-      {/* Image */}
-      <img
-        src={localModel.image}
-        alt={localModel.name}
-        onError={(e) => (e.target.src = "/images/placeholder.svg")}
-        className="w-full h-[180px] object-contain rounded mb-2"
-      />
+      {/* Image carousel */}
+      <div
+        ref={sliderRef}
+        className="keen-slider w-full h-[180px] rounded mb-2"
+      >
+        {(localModel.images?.length > 0
+          ? localModel.images
+          : [localModel.image]
+        ).map((src, idx) => (
+          <div
+            className="keen-slider__slide flex items-center justify-center"
+            key={idx}
+          >
+            <img
+              src={getFullImagePath(src)}
+              alt={localModel.name}
+              onError={(e) => (e.target.src = "/images/placeholder.svg")}
+              className="object-contain h-full max-w-full rounded"
+            />
+          </div>
+        ))}
+      </div>
 
       {/* Info */}
       <div className="mb-2">
@@ -94,12 +123,21 @@ function ProductCard({ model, onAddToCart }) {
 
       {/* Add to cart button */}
       <button
-        onClick={() => onAddToCart(localModel)}
+        onClick={() =>
+          onAddToCart({
+            id: localModel.id,
+            name: localModel.name,
+            price: localModel.price,
+            images: localModel.images || [],
+          })
+        }
         disabled={isOutOfStock}
         className={`w-full py-2 rounded-md text-xs font-medium transition flex items-center justify-center gap-4 cursor-pointer
-          ${isOutOfStock
-            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-            : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white active:scale-95 active:bg-gray-900 active:text-white"}
+          ${
+            isOutOfStock
+              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+              : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white active:scale-95 active:bg-gray-900 active:text-white"
+          }
         `}
       >
         <ShoppingCart size={20} /> Add to Cart

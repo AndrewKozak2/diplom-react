@@ -6,7 +6,12 @@ const productSchema = new mongoose.Schema({
   name: String,
   scale: String,
   price: Number,
-  image: String,
+  images: {
+    type: [String],
+    default: function () {
+      return this.image ? [this.image, this.image, this.image] : [];
+    }
+  },
   inStock: {
     type: Boolean,
     default: true,
