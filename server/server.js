@@ -30,6 +30,8 @@ app.use('/api/user', userRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/cart', cartRoutes);
 app.use("/api/limited", limitedRoutes);
+app.use("/api/promocodes", require("./routes/promocodes"));
+app.use("/api/orders", require("./routes/orders"));
 app.use('/api', passwordResetRoutes);
 app.use('/api', registerVerificationRoutes);
 app.use('/api', authRoutes);

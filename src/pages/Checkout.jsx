@@ -13,12 +13,6 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import PaymentModal from "../components/PaymentModal";
 
-const PROMO_CODES = {
-  SALE10: { type: "percent", value: 10 },
-  SAVE50: { type: "fixed", value: 50 },
-  FREESHIP: { type: "shipping", value: true },
-};
-
 function Checkout() {
   const [cart, setCart] = useState([]);
   const [form, setForm] = useState({
@@ -35,6 +29,7 @@ function Checkout() {
   const [showPayment, setShowPayment] = useState(false);
   const [promo, setPromo] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
+  const [promoCodes, setPromoCodes] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -69,14 +64,48 @@ function Checkout() {
   }, []);
   const handlePromoApply = () => {
     const code = promo.trim().toUpperCase();
-    if (PROMO_CODES[code]) {
-      setAppliedPromo({ ...PROMO_CODES[code], code });
+    const found = promoCodes.find((p) => p.code === code);
+    if (found) {
+      const now = new Date();
+      const expired = found.expiresAt && new Date(found.expiresAt) < now;
+      const limitReached = found.maxUsage && found.usageCount >= found.maxUsage;
+
+      if (expired) {
+        toast.error("Promo code has expired.");
+        return;
+      }
+
+      if (limitReached) {
+        toast.error("Promo code usage limit reached.");
+        return;
+      }
+
+      setAppliedPromo({ ...found, code });
       toast.success(`Promo code ${code} applied!`);
     } else {
       setAppliedPromo(null);
       toast.error("Invalid promo code");
     }
   };
+
+  useEffect(() => {
+    async function loadPromoCodes() {
+      try {
+        const res = await fetch("http://localhost:3000/api/promocodes/public");
+        const data = await res.json();
+        if (Array.isArray(data)) {
+          setPromoCodes(data);
+        } else {
+          console.warn("Promo API response not array:", data);
+          setPromoCodes([]);
+        }
+      } catch (err) {
+        console.error("❌ Error loading promo codes:", err);
+        setPromoCodes([]);
+      }
+    }
+    loadPromoCodes();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (e) => {

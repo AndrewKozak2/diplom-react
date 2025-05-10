@@ -1,21 +1,29 @@
-const express = require('express');
+const express = require("express");
 const router = express.Router();
-const Order = require('../models/Order');
-const sendEmail = require('../utils/sendEmail');
-const sendTelegramMessage = require('../utils/sendTelegramMessage');
-const { verifyUser } = require('../middlewares/auth');
+const Order = require("../models/Order");
+const sendEmail = require("../utils/sendEmail");
+const sendTelegramMessage = require("../utils/sendTelegramMessage");
+const { verifyUser } = require("../middlewares/auth");
 
 function generateOrderEmail(order) {
-  const itemsHtml = order.cart.map(item => `
+  const itemsHtml = order.cart
+    .map(
+      (item) => `
     <tr>
       <td style="padding: 10px; text-align: center;">
-        <img src="${item.images?.[0]}" alt="${item.name}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+        <img src="${item.images?.[0]}" alt="${
+        item.name
+      }" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
       </td>
       <td style="padding: 10px;">${item.name}</td>
       <td style="padding: 10px;">× ${item.quantity}</td>
-      <td style="padding: 10px;">$${(item.price * item.quantity).toFixed(2)}</td>
+      <td style="padding: 10px;">$${(item.price * item.quantity).toFixed(
+        2
+      )}</td>
     </tr>
-  `).join("");
+  `
+    )
+    .join("");
 
   return `
     <div style="background: linear-gradient(135deg, #e0f2fe, #f1f5f9); padding: 40px 0;">
@@ -31,7 +39,11 @@ function generateOrderEmail(order) {
           <p><strong>Телефон:</strong> ${order.phone}</p>
           <p><strong>Email:</strong> ${order.email}</p>
           <p><strong>Оплата:</strong> Карткою</p>
-          ${order.promoCode ? `<p><strong>Promo Code:</strong> ${order.promoCode}</p>` : ""}
+          ${
+            order.promoCode
+              ? `<p><strong>Promo Code:</strong> ${order.promoCode}</p>`
+              : ""
+          }
 
           <h3 style="margin-top: 20px; color: #1f2937;">Ваше замовлення:</h3>
           <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
@@ -57,7 +69,9 @@ function generateOrderEmail(order) {
 }
 
 function generateTelegramMessage(order) {
-  const itemsText = order.cart.map(item => `• ${item.name} × ${item.quantity}`).join('\n');
+  const itemsText = order.cart
+    .map((item) => `• ${item.name} × ${item.quantity}`)
+    .join("\n");
 
   return `
 <b>Нове замовлення на TrueScale!</b>\n
@@ -76,34 +90,97 @@ ${itemsText}
   `;
 }
 
-router.post('/orders', async (req, res) => {
+router.post("/orders", async (req, res) => {
   try {
-    const { firstName, lastName, city, warehouse, phone, email, cart, total, promoCode } = req.body;
+    const {
+      firstName,
+      lastName,
+      city,
+      warehouse,
+      phone,
+      email,
+      cart,
+      total,
+      promoCode,
+    } = req.body;
 
-    const order = new Order({ firstName, lastName, city, warehouse, phone, email, cart, total, promoCode });
+    const order = new Order({
+      firstName,
+      lastName,
+      city,
+      warehouse,
+      phone,
+      email,
+      cart,
+      total,
+      promoCode,
+    });
     await order.save();
+
+    if (promoCode) {
+      try {
+        const Promo = require("../models/PromoCode");
+        await Promo.findOneAndUpdate(
+          { code: promoCode },
+          {
+            $inc: { usageCount: 1 },
+            $push: { usedBy: { email, usedAt: new Date() } },
+          }
+        );
+      } catch (err) {
+        console.error("❌ Error updating promo code stats:", err);
+      }
+    }
 
     const htmlContent = generateOrderEmail(order);
     const telegramMessage = generateTelegramMessage(order);
 
-    await sendEmail(email, 'Ваше замовлення на TrueScale', htmlContent);
+    await sendEmail(email, "Ваше замовлення на TrueScale", htmlContent);
     await sendTelegramMessage(telegramMessage);
 
-    res.status(201).json({ message: 'Замовлення успішно створено' });
+    res.status(201).json({ message: "Замовлення успішно створено" });
   } catch (error) {
-    console.error('Помилка при створенні замовлення:', error);
-    res.status(500).json({ message: 'Помилка сервера' });
+    console.error("Помилка при створенні замовлення:", error);
+    res.status(500).json({ message: "Помилка сервера" });
   }
 });
 
-router.get('/orders/my', verifyUser, async (req, res) => {
+router.get("/orders/my", verifyUser, async (req, res) => {
   try {
     const userEmail = req.user.email;
-    const orders = await Order.find({ email: userEmail }).sort({ createdAt: -1 });
+    const orders = await Order.find({ email: userEmail }).sort({
+      createdAt: -1,
+    });
     res.status(200).json(orders);
   } catch (error) {
-    console.error('Помилка при отриманні замовлень користувача:', error);
-    res.status(500).json({ message: 'Помилка сервера' });
+    console.error("Помилка при отриманні замовлень користувача:", error);
+    res.status(500).json({ message: "Помилка сервера" });
+  }
+});
+
+const { verifyAdmin } = require("../middlewares/auth");
+
+router.get("/stats", verifyAdmin, async (req, res) => {
+  try {
+    const totalOrders = await Order.countDocuments();
+    const revenueAgg = await Order.aggregate([
+      { $group: { _id: null, total: { $sum: "$total" } } },
+    ]);
+    const promoStats = await Order.aggregate([
+      { $match: { promoCode: { $ne: null } } },
+      { $group: { _id: "$promoCode", count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 10 },
+    ]);
+
+    res.json({
+      totalOrders,
+      totalRevenue: revenueAgg[0]?.total || 0,
+      promoStats,
+    });
+  } catch (err) {
+    console.error("Stats error:", err);
+    res.status(500).json({ message: "Server error" });
   }
 });
 

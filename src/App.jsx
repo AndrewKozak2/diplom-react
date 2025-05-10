@@ -18,6 +18,8 @@ import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
 import ScrollToTopButton from "./components/ScrollToTopButton";
 import FloatingCartButton from "./components/FloatingCartButton";
+import AdminPromoPanel from "./pages/AdminPromoPanel";
+import AdminOrderStats from "./pages/AdminOrderStats";
 import { Toaster } from 'react-hot-toast';
 
 function App() {
@@ -55,6 +57,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
         <Route path="/verify-email" element={<VerifyEmail />} />
+        <Route path="/admin/promo" element={<AdminPromoPanel />} />
+        <Route path="/admin/stats" element={<AdminOrderStats />} />
       </Routes>
       <FloatingCartButton onClick={() => window.toggleCart?.()} />
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
