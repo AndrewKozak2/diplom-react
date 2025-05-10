@@ -17,14 +17,23 @@ function LimitedDrop() {
     fetchLimitedProduct();
   }, []);
 
-  const handleAddToCart = () => {
+    const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
-    const existingItem = cart.find(item => item.id === product._id);
+    const existingItem = cart.find((item) => item.id === product._id);
 
     if (existingItem) {
       existingItem.quantity += 1;
     } else {
-      cart.push({ ...product, id: product._id, quantity: 1, limited: true });
+      cart.push({
+        id: product._id,
+        name: product.name,
+        price: product.price,
+        quantity: 1,
+        brand: product.brand,
+        scale: "1/64",
+        images: product.image ? [product.image] : [],
+        limited: true,
+      });
     }
 
     localStorage.setItem("cart", JSON.stringify(cart));
@@ -32,7 +41,8 @@ function LimitedDrop() {
     fetchLimitedProduct();
   };
 
-  if (!product) return <div className="text-center py-20 text-white">Loading...</div>;
+  if (!product)
+    return <div className="text-center py-20 text-white">Loading...</div>;
 
   return (
     <section className="py-20 bg-transparent">
@@ -43,9 +53,15 @@ function LimitedDrop() {
             <p className="uppercase text-pink-300 font-semibold mb-2 text-sm tracking-wider">
               Limited Edition
             </p>
-            <h2 className="text-4xl md:text-5xl font-bold mb-4">{product.name}</h2>
-            <p className="text-white/80 text-lg mb-4 leading-relaxed">{product.description}</p>
-            <p className="text-white text-lg font-semibold mb-6">${product.price}</p>
+            <h2 className="text-4xl md:text-5xl font-bold mb-4">
+              {product.name}
+            </h2>
+            <p className="text-white/80 text-lg mb-4 leading-relaxed">
+              {product.description}
+            </p>
+            <p className="text-white text-lg font-semibold mb-6">
+              ${product.price}
+            </p>
             <div className="flex items-center gap-6">
               <button
                 onClick={handleAddToCart}
@@ -55,7 +71,9 @@ function LimitedDrop() {
                 {product.countInStock > 0 ? "Buy Now" : "Out of Stock"}
               </button>
               <span className="text-lg font-medium">
-                {product.countInStock > 0 ? `${product.countInStock} left` : "Sold Out"}
+                {product.countInStock > 0
+                  ? `${product.countInStock} left`
+                  : "Sold Out"}
               </span>
             </div>
           </div>

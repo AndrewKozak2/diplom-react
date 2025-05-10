@@ -2,7 +2,7 @@ import React from 'react';
 
 function Filters({ brands, filters, onChange }) {
   return (
-    <div className="bg-white p-5 sm:p-6 rounded-xl shadow-md sm:shadow-lg mb-6 sm:mb-8 w-full sm:max-w-sm border border-gray-200">
+    <div className="bg-white p-4 sm:p-6 rounded-xl shadow-md sm:shadow-lg mb-6 sm:mb-8 w-full border border-gray-200 max-w-full sm:max-w-sm sm:mx-0 mx-4">
       <h2 className="font-semibold text-lg sm:text-xl mb-4 text-gray-800">Filter by</h2>
       <div className="mb-6">
         <label className="block mb-2 text-sm text-gray-600">Brand</label>

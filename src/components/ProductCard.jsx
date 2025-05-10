@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingCart, Heart, Pencil } from "lucide-react";
+import { ShoppingCart, Heart, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
 import EditProductModal from "./EditProductModal";
 import { useKeenSlider } from "keen-slider/react";
 import "keen-slider/keen-slider.min.css";
@@ -9,9 +9,11 @@ function ProductCard({ model, onAddToCart }) {
   const [showEditModal, setShowEditModal] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [localModel, setLocalModel] = useState(model);
-  const [sliderRef] = useKeenSlider({ loop: true });
-  const backendURL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const [sliderRef, instanceRef] = useKeenSlider({ loop: true });
+  const [currentSlide, setCurrentSlide] = useState(0);
+
+  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+
   const getFullImagePath = (src) => {
     if (!src) return "/images/placeholder.svg";
     if (src.startsWith("http")) return src;
@@ -22,10 +24,16 @@ function ProductCard({ model, onAddToCart }) {
   useEffect(() => {
     const saved = JSON.parse(localStorage.getItem("favorites")) || [];
     setIsFavorite(saved.includes(model.id));
-
     const role = localStorage.getItem("role");
     setIsAdmin(role === "admin");
   }, [model.id]);
+
+  useEffect(() => {
+    if (!instanceRef.current) return;
+    instanceRef.current.on("slideChanged", (slider) => {
+      setCurrentSlide(slider.track.details.rel);
+    });
+  }, [instanceRef]);
 
   const toggleFavorite = () => {
     const saved = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -43,17 +51,10 @@ function ProductCard({ model, onAddToCart }) {
   };
 
   const isOutOfStock = localModel.inStock === false;
-  console.log("IMAGE PATH:", getFullImagePath(localModel.images?.[0]));
+  const images = localModel.images?.length > 0 ? localModel.images : [localModel.image];
 
   return (
-    <div
-      className={`relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full sm:w-[300px] min-h-[400px] ${
-        isOutOfStock && !showEditModal
-          ? "bg-gray-100 opacity-60"
-          : "bg-white hover:shadow-md"
-      }`}
-    >
-      {/* Header row */}
+    <div className="relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full max-w-[300px] min-h-[430px] bg-white hover:shadow-md group mx-auto">
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded-full">
@@ -80,27 +81,52 @@ function ProductCard({ model, onAddToCart }) {
         </button>
       </div>
 
-      {/* Image carousel */}
-      <div
-        ref={sliderRef}
-        className="keen-slider w-full h-[180px] rounded mb-2"
-      >
-        {(localModel.images?.length > 0
-          ? localModel.images
-          : [localModel.image]
-        ).map((src, idx) => (
-          <div
-            className="keen-slider__slide flex items-center justify-center"
-            key={idx}
-          >
-            <img
-              src={getFullImagePath(src)}
-              alt={localModel.name}
-              onError={(e) => (e.target.src = "/images/placeholder.svg")}
-              className="object-contain h-full max-w-full rounded"
-            />
+      <div className="relative w-full h-[180px] rounded mb-2 overflow-hidden">
+        <div ref={sliderRef} className="keen-slider w-full h-full">
+          {images.map((src, idx) => (
+            <div className="keen-slider__slide flex items-center justify-center" key={idx}>
+              <img
+                src={getFullImagePath(src)}
+                alt={localModel.name}
+                onError={(e) => (e.target.src = "/images/placeholder.svg")}
+                className="object-contain h-full max-w-full rounded"
+              />
+            </div>
+          ))}
+        </div>
+
+        {images.length > 1 && (
+          <>
+            <button
+              onClick={() => instanceRef.current?.prev()}
+              className="absolute left-1 top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-700 p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={() => instanceRef.current?.next()}
+              className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-white/70 hover:bg-white text-gray-700 p-1 rounded-full opacity-0 group-hover:opacity-100 transition"
+            >
+              <ChevronRight size={20} />
+            </button>
+          </>
+        )}
+
+        {images.length > 1 && (
+          <div className="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex gap-1">
+            {images.map((_, idx) => (
+              <div
+                key={idx}
+                onClick={() => instanceRef.current?.moveToIdx(idx)}
+                className={`w-2 h-2 rounded-full cursor-pointer transition ${
+                  idx === currentSlide
+                    ? "bg-gray-800"
+                    : "bg-gray-300 group-hover:bg-gray-400"
+                }`}
+              ></div>
+            ))}
           </div>
-        ))}
+        )}
       </div>
 
       {/* Info */}
@@ -121,7 +147,6 @@ function ProductCard({ model, onAddToCart }) {
         )}
       </div>
 
-      {/* Add to cart button */}
       <button
         onClick={() =>
           onAddToCart({
@@ -143,7 +168,6 @@ function ProductCard({ model, onAddToCart }) {
         <ShoppingCart size={20} /> Add to Cart
       </button>
 
-      {/* Edit modal (admin only) */}
       {showEditModal && (
         <EditProductModal
           product={localModel}
