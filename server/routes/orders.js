@@ -3,7 +3,7 @@ const router = express.Router();
 const Order = require('../models/Order');
 const sendEmail = require('../utils/sendEmail');
 const sendTelegramMessage = require('../utils/sendTelegramMessage');
-const { verifyUser } = require('../middlewares/auth'); 
+const { verifyUser } = require('../middlewares/auth');
 
 function generateOrderEmail(order) {
   const itemsHtml = order.cart.map(item => `
@@ -30,7 +30,8 @@ function generateOrderEmail(order) {
           <p><strong>Відділення:</strong> ${order.warehouse}</p>
           <p><strong>Телефон:</strong> ${order.phone}</p>
           <p><strong>Email:</strong> ${order.email}</p>
-          <p><strong>Оплата:</strong> —</p>
+          <p><strong>Оплата:</strong> Карткою</p>
+          ${order.promoCode ? `<p><strong>Promo Code:</strong> ${order.promoCode}</p>` : ""}
 
           <h3 style="margin-top: 20px; color: #1f2937;">Ваше замовлення:</h3>
           <table style="width: 100%; margin-top: 10px; border-collapse: collapse;">
@@ -65,8 +66,8 @@ function generateTelegramMessage(order) {
 🏢 <b>Відділення:</b> ${order.warehouse}
 📞 <b>Телефон:</b> ${order.phone}
 ✉️ <b>Email:</b> ${order.email}
-💳 💳 <b>Оплата:</b> —
-
+💳 <b>Оплата:</b> Карткою
+${order.promoCode ? `🏷️ <b>Промокод:</b> ${order.promoCode}` : ""}
 
 <b>Товари:</b>
 ${itemsText}
@@ -77,9 +78,9 @@ ${itemsText}
 
 router.post('/orders', async (req, res) => {
   try {
-    const { firstName, lastName, city, warehouse, phone, email, cart, total } = req.body;
+    const { firstName, lastName, city, warehouse, phone, email, cart, total, promoCode } = req.body;
 
-    const order = new Order({ firstName, lastName, city, warehouse, phone, email, cart, total });
+    const order = new Order({ firstName, lastName, city, warehouse, phone, email, cart, total, promoCode });
     await order.save();
 
     const htmlContent = generateOrderEmail(order);

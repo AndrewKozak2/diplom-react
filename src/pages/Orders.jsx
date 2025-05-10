@@ -52,9 +52,10 @@ function Orders() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto p-4 pt-28"> {/* Зменшив контейнер і відступ зверху */}
+    <div className="max-w-4xl mx-auto p-4 pt-28">
+      {" "}
+      {/* Зменшив контейнер і відступ зверху */}
       <h2 className="text-3xl font-bold mb-10 text-center">My Orders</h2>
-
       <div className="space-y-8">
         {orders.map((order) => (
           <motion.div
@@ -66,7 +67,8 @@ function Orders() {
           >
             <div className="flex justify-between items-center mb-6">
               <h3 className="text-lg font-semibold text-gray-800">
-                Order <span className="text-blue-600">#{order._id.slice(-5)}</span>
+                Order{" "}
+                <span className="text-blue-600">#{order._id.slice(-5)}</span>
               </h3>
               <p className="text-sm text-gray-500">
                 {new Date(order.createdAt).toLocaleDateString()}
@@ -96,11 +98,21 @@ function Orders() {
             </div>
 
             <div className="flex justify-between items-center mt-6 pt-4 border-t">
-              <span className="text-lg font-semibold text-gray-700">Total:</span>
+              <span className="text-lg font-semibold text-gray-700">
+                Total:
+              </span>
               <span className="text-lg font-bold text-blue-600">
                 ${order.total.toFixed(2)}
               </span>
             </div>
+            {order.promoCode && (
+              <p className="text-sm text-gray-500 italic mt-2">
+                Promo code used:{" "}
+                <span className="text-blue-600 font-medium">
+                  {order.promoCode}
+                </span>
+              </p>
+            )}
           </motion.div>
         ))}
       </div>

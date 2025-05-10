@@ -1,10 +1,23 @@
 import React, { useEffect, useState } from "react";
-import { ShoppingCart, Truck, CheckCircle } from "lucide-react";
+import {
+  ShoppingCart,
+  Truck,
+  CheckCircle,
+  ShieldCheck,
+  Info,
+  Calendar,
+  Lock,
+} from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import PaymentModal from "../components/PaymentModal";
 
+const PROMO_CODES = {
+  SALE10: { type: "percent", value: 10 },
+  SAVE50: { type: "fixed", value: 50 },
+  FREESHIP: { type: "shipping", value: true },
+};
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -20,9 +33,9 @@ function Checkout() {
   const [warehouses, setWarehouses] = useState([]);
   const [cityRef, setCityRef] = useState("");
   const [showPayment, setShowPayment] = useState(false);
+  const [promo, setPromo] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState(null);
   const navigate = useNavigate();
-
-  const deliveryCost = cart.length <= 5 ? 1.94 : 2.43;
 
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -54,6 +67,16 @@ function Checkout() {
     }
     fetchProfile();
   }, []);
+  const handlePromoApply = () => {
+    const code = promo.trim().toUpperCase();
+    if (PROMO_CODES[code]) {
+      setAppliedPromo({ ...PROMO_CODES[code], code });
+      toast.success(`Promo code ${code} applied!`);
+    } else {
+      setAppliedPromo(null);
+      toast.error("Invalid promo code");
+    }
+  };
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -73,16 +96,6 @@ function Checkout() {
     document.addEventListener("click", handleClickOutside);
     return () => document.removeEventListener("click", handleClickOutside);
   }, []);
-
-
-
-const handleConfirmClick = () => {
-  if (validateForm()) {
-    setShowPaypal(true);
-  }
-};
-
-
 
   const fetchCities = async (searchTerm) => {
     if (searchTerm.length < 2) {
@@ -189,25 +202,26 @@ const handleConfirmClick = () => {
       const orderData = {
         ...form,
         cart: cart,
-        total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0) + deliveryCost,
+        total,
+        promoCode: appliedPromo?.code || null,
       };
-  
+
       console.log("🧾 Order data:", orderData);
-  
+
       try {
         const res = await fetch("http://localhost:3000/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData),
         });
-  
+
         if (!res.ok) {
           const errText = await res.text();
           console.error("Server response:", errText);
           toast.error("Server error: " + errText);
           return;
         }
-  
+
         await fetch("http://localhost:3000/api/cart/clear", {
           method: "PATCH",
           headers: {
@@ -215,12 +229,13 @@ const handleConfirmClick = () => {
             Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
-        const limitedItem = cart.find(item =>
-          item.limited === true &&
-          item.name === "LB★Silhouette GT–R R35" &&
-          item.brand === "MiniGT"
+        const limitedItem = cart.find(
+          (item) =>
+            item.limited === true &&
+            item.name === "LB★Silhouette GT–R R35" &&
+            item.brand === "MiniGT"
         );
-  
+
         if (limitedItem) {
           try {
             await fetch("http://localhost:3000/api/limited/reduce", {
@@ -228,16 +243,26 @@ const handleConfirmClick = () => {
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({
                 brand: limitedItem.brand,
-                quantity: limitedItem.quantity || 1
+                quantity: limitedItem.quantity || 1,
               }),
             });
           } catch (err) {
-            console.error("❌ Помилка при зменшенні кількості LimitedProduct:", err);
+            console.error(
+              "❌ Помилка при зменшенні кількості LimitedProduct:",
+              err
+            );
           }
         }
-  
+
         toast.success("Order placed successfully!");
-        setForm({ firstName: "", lastName: "", city: "", warehouse: "", phone: "", email: "" });
+        setForm({
+          firstName: "",
+          lastName: "",
+          city: "",
+          warehouse: "",
+          phone: "",
+          email: "",
+        });
         setCart([]);
         localStorage.removeItem("cart");
         window.dispatchEvent(new Event("cartUpdated"));
@@ -247,16 +272,32 @@ const handleConfirmClick = () => {
         toast.error("Something went wrong. Check console.");
       }
     }
-  }; 
+  };
 
-  const total =
-    cart.reduce((sum, item) => sum + item.price * item.quantity, 0) +
-    deliveryCost;
+  const subtotal = cart.reduce(
+    (sum, item) => sum + item.price * item.quantity,
+    0
+  );
+  const discount =
+    appliedPromo?.type === "percent"
+      ? (subtotal * appliedPromo.value) / 100
+      : appliedPromo?.type === "fixed"
+      ? appliedPromo.value
+      : 0;
+
+  const deliveryCost =
+    appliedPromo?.type === "shipping" ? 0 : cart.length <= 5 ? 1.94 : 2.43;
+  const total = subtotal - discount + deliveryCost;
 
   return (
     <div className="min-h-screen bg-gray-100 pt-12 pb-10">
       <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
+        <p className="flex items-center justify-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-4 py-2 mb-6 text-center">
+          <Info size={16} /> We only ship via Nova Post. Orders are processed
+          within 24 hours after successful payment.
+        </p>
+
         <h2 className="text-3xl font-bold mb-8 text-center">Checkout</h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
@@ -397,35 +438,59 @@ const handleConfirmClick = () => {
               </div>
             </div>
           ))}
-
+          <div className="mb-6 flex flex-col sm:flex-row sm:items-center gap-3">
+            <input
+              type="text"
+              value={promo}
+              onChange={(e) => setPromo(e.target.value)}
+              placeholder="Have a promo code?"
+              className="border rounded-md px-4 py-2 w-full sm:w-64"
+            />
+            <button
+              onClick={handlePromoApply}
+              className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-md"
+            >
+              Apply
+            </button>
+          </div>
+          {appliedPromo && (
+            <div className="flex justify-between text-green-600 mt-2">
+              <span>Promo code ({appliedPromo.code})</span>
+              <span>- ${discount.toFixed(2)}</span>
+            </div>
+          )}
           <div className="flex justify-between border-t pt-4 mt-4">
             <span className="font-medium flex items-center gap-2">
               <Truck /> Delivery:
             </span>
             <span>${deliveryCost.toFixed(2)}</span>
           </div>
-
           <div className="flex justify-between mt-2 text-xl font-bold">
             <span>Total:</span>
             <span>${total.toFixed(2)}</span>
           </div>
+          <p className="text-sm text-gray-600 italic text-center mt-4 mb-2">
+            ⚠️ This order will be processed only after successful payment. Cash
+            on delivery is not available.
+          </p>
 
-<button
-  onClick={() => setShowPayment(true)}
-  className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
->
-  Confirm Order and Pay
-</button>
+          <button
+            onClick={() => setShowPayment(true)}
+            className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
+          >
+            Confirm Order and Pay
+          </button>
+          <p className="flex items-center justify-center gap-2 text-xs text-gray-500 text-center mt-1">
+            <Lock size={14} /> Secure encrypted payment powered by PayPal
+          </p>
 
-
-{showPayment && (
-  <PaymentModal
-    total={total}
-    onClose={() => setShowPayment(false)}
-    onOrderSuccess={handleSubmit} 
-  />
-)}
-
+          {showPayment && (
+            <PaymentModal
+              total={total}
+              onClose={() => setShowPayment(false)}
+              onOrderSuccess={handleSubmit}
+            />
+          )}
         </div>
       </div>
     </div>
