@@ -89,7 +89,7 @@ function AdminPromoPanel() {
           />
           <button
             onClick={handleCreate}
-            className="bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded flex items-center gap-2"
+            className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded flex items-center gap-2"
           >
             <PlusCircle size={16} /> Create
           </button>

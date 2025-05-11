@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from "react";
-import { User } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 function Account() {
   const navigate = useNavigate();
-  const [user, setUser] = useState({ username: "", email: "", city: "", warehouse: "", phone: "" });
+  const [user, setUser] = useState({
+    username: "",
+    email: "",
+    city: "",
+    warehouse: "",
+    phone: "",
+  });
   const [initialUser, setInitialUser] = useState(null);
   const [cities, setCities] = useState([]);
   const [warehouses, setWarehouses] = useState([]);
@@ -12,6 +17,18 @@ function Account() {
   const [loading, setLoading] = useState(true);
   const [successMessage, setSuccessMessage] = useState("");
   const [errorMessage, setErrorMessage] = useState("");
+  const [showConfirm, setShowConfirm] = useState(false);
+
+  useEffect(() => {
+    if (showConfirm) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "auto";
+    }
+    return () => {
+      document.body.style.overflow = "auto";
+    };
+  }, [showConfirm]);
 
   useEffect(() => {
     async function fetchProfile() {
@@ -31,7 +48,6 @@ function Account() {
 
         localStorage.setItem("username", data.username);
         localStorage.setItem("email", data.email);
-
         window.dispatchEvent(new Event("profileUpdated"));
       } catch (error) {
         console.error("Error loading profile:", error);
@@ -108,10 +124,7 @@ function Account() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     setUser((prev) => ({ ...prev, [name]: value }));
-
-    if (name === "city") {
-      fetchCities(value);
-    }
+    if (name === "city") fetchCities(value);
   };
 
   const handleCitySelect = (city) => {
@@ -121,27 +134,24 @@ function Account() {
   };
 
   const handleWarehouseFocus = () => {
-    if (cityRef) {
-      fetchWarehouses(cityRef);
-    }
+    if (cityRef) fetchWarehouses(cityRef);
   };
 
   const handleWarehouseInput = (e) => {
     const value = e.target.value;
     setUser((prev) => ({ ...prev, warehouse: value }));
-
-    if (cityRef) {
-      fetchWarehouses(cityRef, value);
-    }
+    if (cityRef) fetchWarehouses(cityRef, value);
   };
 
-  const handleSave = async () => {
+  const handleSaveClick = () => {
+    setShowConfirm(true);
+  };
+
+  const confirmSave = async () => {
+    setShowConfirm(false);
     const token = localStorage.getItem("token");
     if (!token) return;
-  
-    const confirmUpdate = window.confirm("Are you sure you want to save changes?");
-    if (!confirmUpdate) return;
-  
+
     try {
       const res = await fetch("http://localhost:3000/api/user/update-profile", {
         method: "PATCH",
@@ -151,48 +161,35 @@ function Account() {
         },
         body: JSON.stringify(user),
       });
-  
+
       if (!res.ok) throw new Error("Failed to update profile");
-  
+
       const updatedProfile = await res.json();
       setUser(updatedProfile);
       setInitialUser(updatedProfile);
-  
+
       localStorage.setItem("username", updatedProfile.username);
       localStorage.setItem("email", updatedProfile.email);
       window.dispatchEvent(new Event("profileUpdated"));
-  
 
       if (initialUser.email !== updatedProfile.email) {
-  
         localStorage.clear();
         window.dispatchEvent(new Event("cartUpdated"));
         setSuccessMessage("Email updated! Please login again.");
-        setTimeout(() => {
-          navigate("/login");
-        }, 1500);
+        setTimeout(() => navigate("/login"), 1500);
       } else if (initialUser.username !== updatedProfile.username) {
- 
         setSuccessMessage("Username updated!");
-        setTimeout(() => {
-          window.location.reload();
-        }, 1000);
+        setTimeout(() => window.location.reload(), 1000);
       } else {
-       
         setSuccessMessage("Profile updated successfully!");
-        setTimeout(() => {
-          setSuccessMessage("");
-        }, 3000);
+        setTimeout(() => setSuccessMessage(""), 3000);
       }
-  
     } catch (error) {
       console.error("Error updating profile:", error);
       setErrorMessage("Failed to update profile. Please try again.");
       setTimeout(() => setErrorMessage(""), 3000);
     }
   };
-  
-  
 
   const handleLogout = () => {
     localStorage.clear();
@@ -214,14 +211,24 @@ function Account() {
 
   return (
     <div className="max-w-2xl mx-auto p-6 mt-24">
-      {/* Profile Card */}
+      {successMessage && (
+        <div className="mb-4 text-green-600 text-center font-medium">
+          {successMessage}
+        </div>
+      )}
+      {errorMessage && (
+        <div className="mb-4 text-red-600 text-center font-medium">
+          {errorMessage}
+        </div>
+      )}
+
       <div className="bg-white shadow-md rounded-2xl p-6 mb-8">
         <div className="space-y-4">
           <input
             type="text"
             name="username"
             placeholder="Username"
-            autoComplete="nope"
+            autoComplete="off"
             value={user.username || ""}
             onChange={handleChange}
             className="w-full border rounded-md p-2"
@@ -230,7 +237,7 @@ function Account() {
             type="email"
             name="email"
             placeholder="Email"
-            autoComplete="nope"
+            autoComplete="off"
             value={user.email || ""}
             onChange={handleChange}
             className="w-full border rounded-md p-2"
@@ -238,16 +245,14 @@ function Account() {
         </div>
       </div>
 
-      {/* Address Card */}
       <div className="bg-white shadow-md rounded-2xl p-6 mb-8">
         <div className="space-y-4">
-          {/* City */}
           <div className="relative">
             <input
               type="text"
               name="city"
               placeholder="City"
-              autoComplete="nope"
+              autoComplete="off"
               value={user.city}
               onChange={handleChange}
               className="w-full border rounded-md p-2"
@@ -267,13 +272,12 @@ function Account() {
             )}
           </div>
 
-          {/* Warehouse */}
           <div className="relative">
             <input
               type="text"
               name="warehouse"
               placeholder="Warehouse"
-              autoComplete="nope"
+              autoComplete="off"
               value={user.warehouse}
               onFocus={handleWarehouseFocus}
               onChange={handleWarehouseInput}
@@ -292,7 +296,10 @@ function Account() {
                     <div
                       key={wh.Ref}
                       onClick={() => {
-                        setUser((prev) => ({ ...prev, warehouse: wh.Description }));
+                        setUser((prev) => ({
+                          ...prev,
+                          warehouse: wh.Description,
+                        }));
                         setWarehouses([]);
                       }}
                       className="px-4 py-2 hover:bg-gray-100 cursor-pointer"
@@ -304,11 +311,11 @@ function Account() {
             )}
           </div>
 
-          {/* Phone */}
           <input
             type="text"
             name="phone"
             placeholder="Phone"
+            autoComplete="off"
             value={user.phone || ""}
             onChange={handleChange}
             className="w-full border rounded-md p-2"
@@ -316,7 +323,6 @@ function Account() {
         </div>
       </div>
 
-      {/* Buttons */}
       <div className="flex justify-between items-center">
         <button
           onClick={handleLogout}
@@ -325,17 +331,44 @@ function Account() {
           Log Out
         </button>
         <button
-          onClick={handleSave}
+          onClick={handleSaveClick}
           disabled={!hasChanges}
           className={`px-6 py-2 font-semibold rounded-md transition ${
             hasChanges
-              ? "bg-blue-500 hover:bg-blue-600 text-white"
+              ? "bg-gray-800 hover:bg-gray-700 text-white"
               : "bg-gray-300 text-gray-600 cursor-not-allowed"
           }`}
         >
           Save Changes
         </button>
       </div>
+
+      {showConfirm && (
+        <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 shadow-lg w-[90%] max-w-md text-center">
+            <h3 className="text-lg font-semibold mb-4">
+              Save profile changes?
+            </h3>
+            <p className="text-sm text-gray-600 mb-6">
+              Your updated information will be saved.
+            </p>
+            <div className="flex justify-center gap-4">
+              <button
+                onClick={confirmSave}
+                className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md font-medium"
+              >
+                Confirm
+              </button>
+              <button
+                onClick={() => setShowConfirm(false)}
+                className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md font-medium"
+              >
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
