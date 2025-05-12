@@ -12,6 +12,7 @@ import { toast, Toaster } from "react-hot-toast";
 import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import PaymentModal from "../components/PaymentModal";
+import CapsuleModal from "../components/CapsuleModal";
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -30,11 +31,24 @@ function Checkout() {
   const [promo, setPromo] = useState("");
   const [appliedPromo, setAppliedPromo] = useState(null);
   const [promoCodes, setPromoCodes] = useState([]);
+  const [showCapsule, setShowCapsule] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
     setCart(savedCart);
+  }, []);
+
+  useEffect(() => {
+    const updateCart = () => {
+      const stored = localStorage.getItem("cart");
+      setCart(stored ? JSON.parse(stored) : []);
+    };
+
+    updateCart();
+
+    window.addEventListener("cartUpdated", updateCart);
+    return () => window.removeEventListener("cartUpdated", updateCart);
   }, []);
 
   useEffect(() => {
@@ -307,15 +321,19 @@ function Checkout() {
     (sum, item) => sum + item.price * item.quantity,
     0
   );
+
+  const baseDelivery = cart.length <= 5 ? 1.94 : 2.43;
+
   const discount =
     appliedPromo?.type === "percent"
       ? (subtotal * appliedPromo.value) / 100
       : appliedPromo?.type === "fixed"
       ? appliedPromo.value
+      : appliedPromo?.type === "shipping"
+      ? baseDelivery
       : 0;
 
-  const deliveryCost =
-    appliedPromo?.type === "shipping" ? 0 : cart.length <= 5 ? 1.94 : 2.43;
+  const deliveryCost = appliedPromo?.type === "shipping" ? 0 : baseDelivery;
   const total = subtotal - discount + deliveryCost;
 
   return (
@@ -453,7 +471,7 @@ function Checkout() {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={item.images?.[0]}
+                  src={item.images?.[0] || item.image}
                   alt={item.name}
                   className="w-16 h-16 object-cover rounded"
                 />
@@ -488,6 +506,25 @@ function Checkout() {
               <span>- ${discount.toFixed(2)}</span>
             </div>
           )}
+          <div className="mt-4">
+            <button
+              onClick={() => setShowCapsule(true)}
+              className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
+            >
+              🎁 Open Capsule
+            </button>
+          </div>
+
+          {showCapsule && (
+            <CapsuleModal
+              total={total}
+              onClose={() => setShowCapsule(false)}
+              onDrop={(model) => {
+                toast.success(`You got: ${model.name}`);
+              }}
+            />
+          )}
+
           <div className="flex justify-between border-t pt-4 mt-4">
             <span className="font-medium flex items-center gap-2">
               <Truck /> Delivery:
@@ -504,7 +541,11 @@ function Checkout() {
           </p>
 
           <button
-            onClick={() => setShowPayment(true)}
+            onClick={() => {
+              if (validateForm()) {
+                setShowPayment(true);
+              }
+            }}
             className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
           >
             Confirm Order and Pay

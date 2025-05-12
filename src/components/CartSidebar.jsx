@@ -93,9 +93,13 @@ function CartSidebar({ isOpen, onClose }) {
               >
                 <img
                   src={
-                    item.images?.[0]?.startsWith("http")
-                      ? item.images[0]
-                      : `http://localhost:3000${item.images?.[0]}`
+                    item.images?.[0]
+                      ? item.images[0].startsWith("http")
+                        ? item.images[0]
+                        : `http://localhost:3000${item.images[0]}`
+                      : item.image?.startsWith("http")
+                      ? item.image
+                      : `http://localhost:3000${item.image}`
                   }
                   alt={item.name}
                   onError={(e) => (e.target.src = "/images/placeholder.svg")}

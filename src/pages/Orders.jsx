@@ -53,7 +53,9 @@ function Orders() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 pt-28 pb-10">
-      <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">My Orders</h2>
+      <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
+        My Orders
+      </h2>
       <div className="space-y-8">
         {orders.map((order) => (
           <motion.div
@@ -65,7 +67,8 @@ function Orders() {
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
               <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-                Order <span className="text-blue-600">#{order._id.slice(-5)}</span>
+                Order{" "}
+                <span className="text-blue-600">#{order._id.slice(-5)}</span>
               </h3>
               <p className="text-sm text-gray-500 mt-1 sm:mt-0">
                 {new Date(order.createdAt).toLocaleDateString()}
@@ -79,23 +82,34 @@ function Orders() {
                   className="flex items-center gap-4 border-b pb-4 last:border-none"
                 >
                   <img
-                    src={item.images?.[0]}
+                    src={item.images?.[0] || item.image}
                     alt={item.name}
                     className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md"
                   />
                   <div className="flex-1">
-                    <p className="font-medium text-gray-900">{item.name}</p>
+                    <p className="font-medium text-gray-900">
+                      {item.name}
+                      {item.bonus && (
+                        <span className="ml-2 text-sm text-yellow-500 font-semibold">
+                          🎁 Gift
+                        </span>
+                      )}
+                    </p>
                     <p className="text-gray-500 text-sm">× {item.quantity}</p>
                   </div>
                   <div className="font-bold text-gray-700 text-sm sm:text-base">
-                    ${(item.price * item.quantity).toFixed(2)}
+                    {item.price === 0
+                      ? "FREE"
+                      : `$${(item.price * item.quantity).toFixed(2)}`}
                   </div>
                 </div>
               ))}
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-4 border-t gap-2">
-              <span className="text-base font-semibold text-gray-700">Total:</span>
+              <span className="text-base font-semibold text-gray-700">
+                Total:
+              </span>
               <span className="text-lg font-bold text-blue-600">
                 ${order.total.toFixed(2)}
               </span>

@@ -11,6 +11,7 @@ const userRoutes = require('./routes/user');
 const passwordResetRoutes = require('./routes/passwordReset');
 const registerVerificationRoutes = require('./routes/registerVerification');
 const limitedRoutes = require("./routes/limited");
+const capsuleRoutes = require("./routes/capsule");
 const path = require("path");
 require('dotenv').config();
 
@@ -32,6 +33,7 @@ app.use('/api/cart', cartRoutes);
 app.use("/api/limited", limitedRoutes);
 app.use("/api/promocodes", require("./routes/promocodes"));
 app.use("/api/orders", require("./routes/orders"));
+app.use("/api/capsule", capsuleRoutes);
 app.use('/api', passwordResetRoutes);
 app.use('/api', registerVerificationRoutes);
 app.use('/api', authRoutes);
