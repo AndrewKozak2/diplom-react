@@ -1,0 +1,302 @@
+{
+  "home": {
+    "title": "Realistic Car Models",
+    "subtitle": "New arrivals of scale models at TrueScale",
+    "shopNow": "Shop now",
+    "findMore": "Find more"
+  },
+  "header": {
+    "about": "About",
+    "favorites": "Favorites",
+    "login": "Log in",
+    "signup": "Sign up",
+    "addProduct": "Add Product",
+    "logout": "Log Out",
+    "account": "My Account",
+    "orders": "My Orders",
+    "promoPanel": "Promo Panel",
+    "stats": "Stats"
+  },
+  "about": {
+    "title": "About TrueScale",
+    "subtitle": "Precision. Passion. Perfection in 1:64 scale.",
+    "whoTitle": "Who We Are",
+    "whoDescription": "TrueScale is more than just a shop. We are a passionate community of scale car model collectors who appreciate the details, design, and heritage behind every miniature vehicle. Our journey began with a deep love for motorsports and precision modeling. Since our foundation, we've served thousands of collectors who seek quality, authenticity, and beauty in every piece.",
+    "missionTitle": "Our Mission",
+    "missionText": "To deliver premium 1:64 scale models to collectors around the world and inspire appreciation for automotive design.",
+    "visionTitle": "Our Vision",
+    "visionText": "To become the #1 destination for authentic die-cast models and a hub for passionate collectors worldwide.",
+    "valuesTitle": "Our Values",
+    "valuesText": "Quality, community, attention to detail, respect for automotive culture, and integrity in every interaction.",
+    "ctaTitle": "Ready to Start Collecting?",
+    "ctaButton": "Shop Now"
+  },
+  "banner": {
+    "badge": "Coming Soon",
+    "title": "Dioramas for 1:64 Collectors",
+    "description": "We're working on detailed miniature scenes for your favorite 1:64 scale brands like Mini GT, INNO64, and Tarmac Works. Stay tuned — they’ll be available very soon!",
+    "button": "Learn More"
+  },
+  "benefits": {
+    "shipping": {
+      "title": "Worldwide Shipping",
+      "desc": "We deliver across the globe with fast and reliable shipping."
+    },
+    "quality": {
+      "title": "Best Quality",
+      "desc": "Only top-grade models with precise detailing and design."
+    },
+    "offers": {
+      "title": "Best Offers",
+      "desc": "Enjoy great discounts, limited edition releases and bundles."
+    },
+    "security": {
+      "title": "Secure Payments",
+      "desc": "Your data is safe. Multiple payment methods supported."
+    }
+  },
+  "footer": {
+    "description": {
+      "line1": "Realistic 1:64 scale cars.",
+      "line2": "Premium quality for every collector."
+    },
+    "models": {
+      "title": "Models"
+    },
+    "company": {
+      "title": "Company",
+      "about": "About Us",
+      "shipping": "Shipping & Returns",
+      "terms": "Terms of Service",
+      "privacy": "Privacy Policy"
+    },
+    "subscribe": {
+      "title": "Subscribe",
+      "placeholder": "Your email...",
+      "button": "Subscribe"
+    },
+    "powered": "Powered by TrueScale Store"
+  },
+  "limited": {
+    "badge": "Limited Edition",
+    "buyNow": "Buy Now",
+    "outOfStock": "Out of Stock",
+    "left": "{{count}} left",
+    "soldOut": "Sold Out",
+    "loading": "Loading..."
+  },
+  "favorites": {
+    "title": "Your Favorite Models",
+    "description": "Browse the models you've added to your favorites.",
+    "empty": "You don't have any favorite models yet."
+  },
+  "cart": {
+    "title": "Your Cart",
+    "empty": "Your cart is empty.",
+    "qty": "Qty",
+    "remove": "Remove",
+    "total": "Total",
+    "checkout": "Checkout"
+  },
+  "product": {
+    "scale": "Scale",
+    "inStock": "In stock",
+    "outOfStock": "Out of stock",
+    "addToCart": "Add to Cart",
+    "edit": "Edit"
+  },
+  "addForm": {
+    "title": "Add New Product",
+    "brand": "Brand",
+    "name": "Name",
+    "scale": "Scale",
+    "price": "Price",
+    "uploadLabel": "Upload Images:",
+    "selectFiles": "Select Files",
+    "noFiles": "No files selected",
+    "remove": "Remove",
+    "submit": "Submit",
+    "success": "Product added successfully!",
+    "error": "Failed to add product"
+  },
+  "editForm": {
+    "title": "Edit Product",
+    "name": "Name",
+    "brand": "Brand",
+    "price": "Price",
+    "inStock": "In stock",
+    "selectFiles": "Select Files",
+    "noFiles": "No files selected",
+    "remove": "Remove",
+    "save": "Save Changes",
+    "error": "Failed to update product"
+  },
+  "productList": {
+    "allBrands": "All Brands",
+    "maxPrice": "Max Price",
+    "sort": "Sort",
+    "default": "Default",
+    "lowToHigh": "Price: Low to High",
+    "highToLow": "Price: High to Low",
+    "noModels": "No models found for selected filters.",
+    "loadMore": "Load More",
+    "added": "Added to cart"
+  },
+  "promoPanel": {
+    "title": "Promo Code Admin Panel",
+    "createTitle": "Create New Promo",
+    "code": "Code",
+    "type": "Type",
+    "value": "Value",
+    "used": "Used",
+    "max": "Max",
+    "expires": "Expires",
+    "create": "Create",
+    "delete": "Delete",
+    "existing": "Existing Promo Codes",
+    "percent": "% off",
+    "fixed": "Fixed $ off",
+    "shipping": "Free shipping"
+  },
+  "orderStats": {
+    "title": "Order Statistics",
+    "exportCSV": "Export CSV",
+    "exportPDF": "Export PDF",
+    "totalOrders": "Total Orders",
+    "totalRevenue": "Total Revenue",
+    "topPromo": "Top Promo Codes",
+    "code": "Code",
+    "usage": "Usage",
+    "chartTitle": "Promo Usage Chart",
+    "loading": "Loading..."
+  },
+  "checkout": {
+    "title": "Checkout",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "city": "City",
+    "warehouse": "Warehouse",
+    "phone": "Phone",
+    "email": "Email",
+    "itemsInCart": "Items in Cart",
+    "promoPlaceholder": "Have a promo code?",
+    "apply": "Apply",
+    "promoCode": "Promo code",
+    "openCapsule": "Open Capsule",
+    "youGot": "You got",
+    "delivery": "Delivery",
+    "total": "Total",
+    "paymentNotice": "This order will be processed only after successful payment. Cash on delivery is not available.",
+    "confirmOrder": "Confirm Order and Pay",
+    "securePayment": "Secure encrypted payment powered by PayPal",
+    "firstNameError": "Enter your First Name.",
+    "lastNameError": "Enter your Last Name.",
+    "cityError": "Select a city.",
+    "warehouseError": "Select a warehouse.",
+    "phoneError": "Invalid phone number.",
+    "emailError": "Invalid email.",
+    "promoExpired": "Promo code has expired.",
+    "promoLimit": "Promo code usage limit reached.",
+    "promoApplied": "Promo code {{code}} applied!",
+    "invalidPromo": "Invalid promo code",
+    "success": "Order placed successfully!",
+    "notice": "We only ship via Nova Post. Orders are processed within 24 hours after successful payment.",
+    "paypalSuccess": "Payment successful via PayPal",
+    "cancelled": "Payment cancelled",
+    "chooseMethod": "Choose Payment Method",
+    "paymentInfo": "We will only process your order after successful payment.",
+    "cancel": "Cancel"
+  },
+  "orderSuccess": {
+    "thankYou": "Thank you for your order!",
+    "processing": "Your order has been received and is being processed.",
+    "backToHome": "Return to Home"
+  },
+  "orders": {
+    "loading": "Loading...",
+    "noOrders": "You have no orders yet.",
+    "title": "My Orders",
+    "order": "Order",
+    "gift": "Gift",
+    "free": "FREE",
+    "total": "Total",
+    "promoUsed": "Promo code used"
+  },
+  "account": {
+    "title": "My Profile",
+    "subtitle": "Check or update your delivery contact details.",
+    "username": "Username",
+    "email": "Email",
+    "city": "City",
+    "warehouse": "Warehouse",
+    "phone": "Phone",
+    "logout": "Log Out",
+    "save": "Save Changes",
+    "loading": "Loading your profile...",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "confirmTitle": "Save profile changes?",
+    "confirmText": "Your updated information will be saved."
+  },
+  "login": {
+    "subtitle": "Welcome back! Please enter your credentials.",
+    "email": "Email",
+    "password": "Password",
+    "login": "Login",
+    "forgot": "Forgot your password?",
+    "noAccount": "Don’t have an account?",
+    "signUp": "Sign up",
+    "rights": "All rights reserved.",
+    "loginFailed": "Login failed",
+    "loginError": "Login error"
+  },
+  "register": {
+    "title": "Register to TrueScale",
+    "username": "Username",
+    "email": "Email",
+    "password": "Password",
+    "confirm": "Confirm Password",
+    "register": "Register",
+    "haveAccount": "Already have an account?",
+    "login": "Login"
+  },
+  "reset": {
+    "title": "Set New Password",
+    "newPassword": "New password",
+    "update": "Update Password",
+    "success": "Password updated!",
+    "fail": "Failed to reset password.",
+    "error": "Something went wrong.",
+    "redirect": "Password updated! Redirecting to login..."
+  },
+  "verify": {
+    "title": "Enter the code sent to {{email}}",
+    "placeholder": "6-digit code",
+    "button": "Verify",
+    "resendWait": "You can resend the code in",
+    "resend": "Resend Code",
+    "success": "Success! Redirecting...",
+    "fail": "Verification failed.",
+    "error": "Server error.",
+    "resendFail": "Failed to resend code.",
+    "noEmail": "No email provided. Please register again."
+  },
+  "forgot": {
+    "title": "Forgot Password",
+    "subtitle": "Enter your email and we'll send you a 6-digit reset code.",
+    "email": "Email address",
+    "send": "Send Reset Code",
+    "codeSent": "If an account with that email exists, a reset code was sent.",
+    "codePlaceholder": "Enter 6-digit code",
+    "verify": "Verify Code",
+    "sendFail": "Failed to send code.",
+    "invalidCode": "Invalid code.",
+    "verificationFail": "Verification failed.",
+    "error": "Something went wrong."
+  },
+  "capsule": {
+    "title": "Open Your Capsule",
+    "requirements": "Capsule is available for orders over $50 and only once.",
+    "claim": "Claim Reward"
+  }
+}

@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
 import { loadCartFromDB } from '../utils/cartStorage';
 import { toast } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 function Login() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,10 +32,10 @@ function Login() {
         navigate('/');
         window.location.reload();
       } else {
-        toast.error(data.message || 'Login failed');
+        toast.error(data.message || t("login.loginFailed"));
       }
     } catch (error) {
-      toast.error('Login error');
+      toast.error(t("login.loginError"));
       console.error(error);
     }
   };
@@ -48,12 +50,12 @@ function Login() {
           TrueScale
         </h1>
         <p className="text-sm text-center text-gray-500 mb-6">
-          Welcome back! Please enter your credentials.
+          {t("login.subtitle")}
         </p>
 
         <input
           type="text"
-          placeholder="Email"
+          placeholder={t("login.email")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -61,7 +63,7 @@ function Login() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t("login.password")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 focus:outline-none focus:ring-2 focus:ring-blue-500"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -72,27 +74,27 @@ function Login() {
           type="submit"
           className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 rounded-md transition cursor-pointer"
         >
-          Login
+          {t("login.login")}
         </button>
+
         <p className="text-sm text-center text-gray-600 mt-3">
-  <a
-    href="/forgot-password"
-    className="text-gray-900 hover:underline"
-  >
-    Forgot your password?
-  </a>
-</p>
-        {/* Посилання на реєстрацію */}
+          <a
+            href="/forgot-password"
+            className="text-gray-900 hover:underline"
+          >
+            {t("login.forgot")}
+          </a>
+        </p>
+
         <p className="text-sm text-center text-gray-600 mt-4">
-          Don’t have an account?{' '}
+          {t("login.noAccount")}{' '}
           <Link to="/register" className="text-gray-900 hover:underline">
-            Sign up
+            {t("login.signUp")}
           </Link>
         </p>
 
-        {/* Внутрішній футер */}
         <p className="text-xs text-gray-400 text-center mt-6">
-          © 2025 TrueScale. All rights reserved.
+          © 2025 TrueScale. {t("login.rights")}
         </p>
       </form>
     </div>

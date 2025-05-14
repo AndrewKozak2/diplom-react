@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
+import { useTranslation } from "react-i18next";
 
 function Favorites() {
   const [favorites, setFavorites] = useState([]);
+  const { t } = useTranslation();
 
   const loadFavorites = () => {
     const storedFavorites = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -52,15 +54,15 @@ function Favorites() {
     <section className="pt-20 pb-12 px-4 min-h-screen bg-gray-100">
       <div className="max-w-[1300px] mx-auto">
         <h2 className="text-4xl font-bold text-center mb-2 text-gray-800">
-          Your Favorite Models
+          {t("favorites.title")}
         </h2>
         <p className="text-center text-gray-600 mb-8">
-          Browse the models you've added to your favorites.
+          {t("favorites.description")}
         </p>
 
         {favorites.length === 0 ? (
           <p className="text-center text-gray-600 text-lg">
-            You don't have any favorite models yet.
+            {t("favorites.empty")}
           </p>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-4 justify-center">

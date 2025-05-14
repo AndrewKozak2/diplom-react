@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useNavigate, Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function Register() {
   const [username, setUsername] = useState('');
@@ -7,12 +8,13 @@ function Register() {
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleRegister = async (e) => {
     e.preventDefault();
 
     if (password !== confirm) {
-      return; 
+      return;
     }
 
     try {
@@ -40,12 +42,12 @@ function Register() {
         className="bg-white shadow-md rounded-xl p-8 w-full max-w-md"
       >
         <h2 className="text-2xl font-bold mb-6 text-center text-gray-800">
-          Register to TrueScale
+          {t("register.title")}
         </h2>
 
         <input
           type="text"
-          placeholder="Username"
+          placeholder={t("register.username")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
           value={username}
           onChange={(e) => setUsername(e.target.value)}
@@ -53,7 +55,7 @@ function Register() {
         />
         <input
           type="email"
-          placeholder="Email"
+          placeholder={t("register.email")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
           value={email}
           onChange={(e) => setEmail(e.target.value)}
@@ -61,7 +63,7 @@ function Register() {
         />
         <input
           type="password"
-          placeholder="Password"
+          placeholder={t("register.password")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
           value={password}
           onChange={(e) => setPassword(e.target.value)}
@@ -69,7 +71,7 @@ function Register() {
         />
         <input
           type="password"
-          placeholder="Confirm Password"
+          placeholder={t("register.confirm")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-6"
           value={confirm}
           onChange={(e) => setConfirm(e.target.value)}
@@ -80,13 +82,13 @@ function Register() {
           type="submit"
           className="w-full bg-gray-900 hover:bg-gray-800 text-white font-medium py-2.5 rounded-md transition cursor-pointer"
         >
-          Register
+          {t("register.register")}
         </button>
 
         <p className="mt-4 text-center text-sm text-gray-700">
-          Already have an account?{' '}
+          {t("register.haveAccount")}{" "}
           <Link to="/login" className="text-gray-900 hover:underline">
-            Login
+            {t("register.login")}
           </Link>
         </p>
       </form>

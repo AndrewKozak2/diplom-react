@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from "react";
+import { useTranslation } from "react-i18next";
 
 function LimitedDrop() {
   const [product, setProduct] = useState(null);
+  const { t } = useTranslation();
 
   const fetchLimitedProduct = async () => {
     try {
@@ -17,7 +19,7 @@ function LimitedDrop() {
     fetchLimitedProduct();
   }, []);
 
-    const handleAddToCart = () => {
+  const handleAddToCart = () => {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const existingItem = cart.find((item) => item.id === product._id);
 
@@ -42,7 +44,7 @@ function LimitedDrop() {
   };
 
   if (!product)
-    return <div className="text-center py-20 text-white">Loading...</div>;
+    return <div className="text-center py-20 text-white">{t("limited.loading")}</div>;
 
   return (
     <section className="py-20 bg-transparent">
@@ -51,7 +53,7 @@ function LimitedDrop() {
           {/* Ліва частина */}
           <div className="max-w-xl">
             <p className="uppercase text-pink-300 font-semibold mb-2 text-sm tracking-wider">
-              Limited Edition
+              {t("limited.badge")}
             </p>
             <h2 className="text-4xl md:text-5xl font-bold mb-4">
               {product.name}
@@ -68,12 +70,14 @@ function LimitedDrop() {
                 className={`px-6 py-3 rounded-xl font-semibold transition bg-pink-600 hover:bg-pink-700 text-white`}
                 disabled={product.countInStock <= 0}
               >
-                {product.countInStock > 0 ? "Buy Now" : "Out of Stock"}
+                {product.countInStock > 0
+                  ? t("limited.buyNow")
+                  : t("limited.outOfStock")}
               </button>
               <span className="text-lg font-medium">
                 {product.countInStock > 0
-                  ? `${product.countInStock} left`
-                  : "Sold Out"}
+                  ? t("limited.left", { count: product.countInStock })
+                  : t("limited.soldOut")}
               </span>
             </div>
           </div>

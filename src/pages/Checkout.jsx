@@ -13,6 +13,7 @@ import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
 import PaymentModal from "../components/PaymentModal";
 import CapsuleModal from "../components/CapsuleModal";
+import { useTranslation } from "react-i18next";
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -33,6 +34,7 @@ function Checkout() {
   const [promoCodes, setPromoCodes] = useState([]);
   const [showCapsule, setShowCapsule] = useState(false);
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   useEffect(() => {
     const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
@@ -85,20 +87,20 @@ function Checkout() {
       const limitReached = found.maxUsage && found.usageCount >= found.maxUsage;
 
       if (expired) {
-        toast.error("Promo code has expired.");
+        toast.error(t("checkout.promoExpired"));
         return;
       }
 
       if (limitReached) {
-        toast.error("Promo code usage limit reached.");
+        toast.error(t("checkout.promoLimit"));
         return;
       }
 
       setAppliedPromo({ ...found, code });
-      toast.success(`Promo code ${code} applied!`);
+      toast.success(t("checkout.promoApplied", { code }));
     } else {
       setAppliedPromo(null);
-      toast.error("Invalid promo code");
+      toast.error(t("checkout.invalidPromo"));
     }
   };
 
@@ -214,27 +216,27 @@ function Checkout() {
 
   const validateForm = () => {
     if (!form.firstName.trim()) {
-      toast.error("Enter your First Name.");
+      toast.error(t("checkout.firstNameError"));
       return false;
     }
     if (!form.lastName.trim()) {
-      toast.error("Enter your Last Name.");
+      toast.error(t("checkout.lastNameError"));
       return false;
     }
     if (!form.city.trim()) {
-      toast.error("Select a city.");
+      toast.error(t("checkout.cityError"));
       return false;
     }
     if (!form.warehouse.trim()) {
-      toast.error("Select a warehouse.");
+      toast.error(t("checkout.warehouseError"));
       return false;
     }
     if (!/^\d{10,12}$/.test(form.phone)) {
-      toast.error("Invalid phone number.");
+      toast.error(t("checkout.phoneError"));
       return false;
     }
     if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
-      toast.error("Invalid email.");
+      toast.error(t("checkout.emailError"));
       return false;
     }
     return true;
@@ -297,7 +299,7 @@ function Checkout() {
           }
         }
 
-        toast.success("Order placed successfully!");
+        toast.success(t("checkout.success"));
         setForm({
           firstName: "",
           lastName: "",
@@ -341,18 +343,19 @@ function Checkout() {
       <Toaster position="top-center" reverseOrder={false} />
       <div className="max-w-4xl mx-auto bg-white rounded-2xl shadow-lg p-8">
         <p className="flex items-center justify-center gap-2 text-sm text-blue-600 bg-blue-50 border border-blue-200 rounded-md px-4 py-2 mb-6 text-center">
-          <Info size={16} /> We only ship via Nova Post. Orders are processed
-          within 24 hours after successful payment.
+          <Info size={16} /> {t("checkout.notice")}
         </p>
 
-        <h2 className="text-3xl font-bold mb-8 text-center">Checkout</h2>
+        <h2 className="text-3xl font-bold mb-8 text-center">
+          {t("checkout.title")}
+        </h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* First Name */}
           <input
             type="text"
             name="firstName"
-            placeholder="First Name"
+            placeholder={t("checkout.firstName")}
             value={form.firstName}
             onChange={handleChange}
             autoComplete="off"
@@ -363,7 +366,7 @@ function Checkout() {
           <input
             type="text"
             name="lastName"
-            placeholder="Last Name"
+            placeholder={t("checkout.lastName")}
             value={form.lastName}
             onChange={handleChange}
             autoComplete="off"
@@ -375,7 +378,7 @@ function Checkout() {
             <input
               type="text"
               name="city"
-              placeholder="City"
+              placeholder={t("checkout.city")}
               value={form.city}
               onChange={handleChange}
               autoComplete="nope"
@@ -401,7 +404,7 @@ function Checkout() {
             <input
               type="text"
               name="warehouse"
-              placeholder="Warehouse"
+              placeholder={t("checkout.warehouse")}
               value={form.warehouse}
               onFocus={handleWarehouseFocus}
               onChange={handleWarehouseInput}
@@ -440,7 +443,7 @@ function Checkout() {
           <input
             type="text"
             name="phone"
-            placeholder="Phone"
+            placeholder={t("checkout.phone")}
             value={form.phone}
             onChange={handleChange}
             autoComplete="nope"
@@ -451,7 +454,7 @@ function Checkout() {
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder={t("checkout.email")}
             value={form.email}
             onChange={handleChange}
             autoComplete="nope"
@@ -462,7 +465,7 @@ function Checkout() {
         {/* Cart Summary */}
         <div className="border-t pt-6">
           <h3 className="text-xl font-semibold mb-4 flex items-center gap-2">
-            <ShoppingCart /> Items in Cart:
+            <ShoppingCart /> {t("checkout.itemsInCart")}
           </h3>
           {cart.map((item) => (
             <div
@@ -490,19 +493,21 @@ function Checkout() {
               type="text"
               value={promo}
               onChange={(e) => setPromo(e.target.value)}
-              placeholder="Have a promo code?"
+              placeholder={t("checkout.promoPlaceholder")}
               className="border rounded-md px-4 py-2 w-full sm:w-64"
             />
             <button
               onClick={handlePromoApply}
               className="bg-gray-800 hover:bg-gray-700 text-white px-6 py-2 rounded-md"
             >
-              Apply
+              {t("checkout.apply")}
             </button>
           </div>
           {appliedPromo && (
             <div className="flex justify-between text-green-600 mt-2">
-              <span>Promo code ({appliedPromo.code})</span>
+              <span>
+                {t("checkout.promoCode")} ({appliedPromo.code})
+              </span>
               <span>- ${discount.toFixed(2)}</span>
             </div>
           )}
@@ -511,7 +516,7 @@ function Checkout() {
               onClick={() => setShowCapsule(true)}
               className="px-4 py-2 bg-purple-600 text-white rounded hover:bg-purple-700 transition"
             >
-              🎁 Open Capsule
+              {t("checkout.openCapsule")}
             </button>
           </div>
 
@@ -520,24 +525,23 @@ function Checkout() {
               total={total}
               onClose={() => setShowCapsule(false)}
               onDrop={(model) => {
-                toast.success(`You got: ${model.name}`);
+                toast.success(`${t("checkout.youGot")}: ${model.name}`);
               }}
             />
           )}
 
           <div className="flex justify-between border-t pt-4 mt-4">
             <span className="font-medium flex items-center gap-2">
-              <Truck /> Delivery:
+              <Truck /> {t("checkout.delivery")}:
             </span>
             <span>${deliveryCost.toFixed(2)}</span>
           </div>
           <div className="flex justify-between mt-2 text-xl font-bold">
-            <span>Total:</span>
+            <span>{t("checkout.total")}:</span>
             <span>${total.toFixed(2)}</span>
           </div>
           <p className="text-sm text-gray-600 italic text-center mt-4 mb-2">
-            ⚠️ This order will be processed only after successful payment. Cash
-            on delivery is not available.
+            {t("checkout.paymentNotice")}
           </p>
 
           <button
@@ -548,10 +552,10 @@ function Checkout() {
             }}
             className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
           >
-            Confirm Order and Pay
+           {t("checkout.confirmOrder")}
           </button>
           <p className="flex items-center justify-center gap-2 text-xs text-gray-500 text-center mt-1">
-            <Lock size={14} /> Secure encrypted payment powered by PayPal
+            <Lock size={14} /> {t("checkout.securePayment")}
           </p>
 
           {showPayment && (

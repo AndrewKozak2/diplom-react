@@ -1,7 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { ShoppingCart, Heart, Pencil, ChevronLeft, ChevronRight } from "lucide-react";
+import {
+  ShoppingCart,
+  Heart,
+  Pencil,
+  ChevronLeft,
+  ChevronRight,
+} from "lucide-react";
 import EditProductModal from "./EditProductModal";
 import { useKeenSlider } from "keen-slider/react";
+import { useTranslation } from "react-i18next";
 import "keen-slider/keen-slider.min.css";
 
 function ProductCard({ model, onAddToCart }) {
@@ -11,8 +18,10 @@ function ProductCard({ model, onAddToCart }) {
   const [localModel, setLocalModel] = useState(model);
   const [sliderRef, instanceRef] = useKeenSlider({ loop: true });
   const [currentSlide, setCurrentSlide] = useState(0);
+  const { t } = useTranslation();
 
-  const backendURL = import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+  const backendURL =
+    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
 
   const getFullImagePath = (src) => {
     if (!src) return "/images/placeholder.svg";
@@ -51,7 +60,8 @@ function ProductCard({ model, onAddToCart }) {
   };
 
   const isOutOfStock = localModel.inStock === false;
-  const images = localModel.images?.length > 0 ? localModel.images : [localModel.image];
+  const images =
+    localModel.images?.length > 0 ? localModel.images : [localModel.image];
 
   return (
     <div className="relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full max-w-[300px] min-h-[430px] bg-white hover:shadow-md group mx-auto">
@@ -64,7 +74,7 @@ function ProductCard({ model, onAddToCart }) {
             <button
               onClick={() => setShowEditModal(true)}
               className="bg-white rounded-full p-1 shadow hover:bg-gray-200 transition"
-              title="Edit"
+              title={t("product.edit")}
             >
               <Pencil size={16} className="text-gray-700" />
             </button>
@@ -84,7 +94,10 @@ function ProductCard({ model, onAddToCart }) {
       <div className="relative w-full h-[180px] rounded mb-2 overflow-hidden">
         <div ref={sliderRef} className="keen-slider w-full h-full">
           {images.map((src, idx) => (
-            <div className="keen-slider__slide flex items-center justify-center" key={idx}>
+            <div
+              className="keen-slider__slide flex items-center justify-center"
+              key={idx}
+            >
               <img
                 src={getFullImagePath(src)}
                 alt={localModel.name}
@@ -134,15 +147,17 @@ function ProductCard({ model, onAddToCart }) {
         <h3 className="text-sm font-semibold leading-tight mb-1">
           {localModel.name}
         </h3>
-        <p className="text-xs text-gray-500 mb-1">Scale: 1/64</p>
-        <p className="text-base font-bold text-gray-900">${localModel.price}</p>
+        <p className="text-xs text-gray-500 mb-1">{t("product.scale")}: 1/64</p>
+        <p className="text-base font-bold text-gray-900">
+          ${localModel.price}
+        </p>
         {localModel.inStock ? (
           <span className="inline-block text-green-600 text-xs font-medium mt-1">
-            ✔ In stock
+            ✔ {t("product.inStock")}
           </span>
         ) : (
           <span className="inline-block text-red-500 text-xs font-medium mt-1">
-            ✖ Out of stock
+            ✖ {t("product.outOfStock")}
           </span>
         )}
       </div>
@@ -157,15 +172,13 @@ function ProductCard({ model, onAddToCart }) {
           })
         }
         disabled={isOutOfStock}
-        className={`w-full py-2 rounded-md text-xs font-medium transition flex items-center justify-center gap-4 cursor-pointer
-          ${
-            isOutOfStock
-              ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-              : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white active:scale-95 active:bg-gray-900 active:text-white"
-          }
-        `}
+        className={`w-full py-2 rounded-md text-xs font-medium transition flex items-center justify-center gap-4 cursor-pointer ${
+          isOutOfStock
+            ? "bg-gray-300 text-gray-500 cursor-not-allowed"
+            : "bg-white border border-gray-800 text-gray-800 hover:bg-gray-800 hover:text-white active:scale-95 active:bg-gray-900 active:text-white"
+        }`}
       >
-        <ShoppingCart size={20} /> Add to Cart
+        <ShoppingCart size={20} /> {t("product.addToCart")}
       </button>
 
       {showEditModal && (

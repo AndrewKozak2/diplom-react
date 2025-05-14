@@ -3,8 +3,10 @@ import ProductCard from "./ProductCard";
 import { saveCartToDB } from "../utils/cartStorage";
 import SkeletonCard from "../components/SkeletonCard";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function ProductList({ refresh }) {
+  const { t } = useTranslation();
   const [products, setProducts] = useState([]);
   const [filters, setFilters] = useState({ brand: "", price: 100 });
   const [sortOrder, setSortOrder] = useState("");
@@ -43,33 +45,31 @@ function ProductList({ refresh }) {
 
   const visibleProducts = filtered.slice(0, visibleCount);
 
-const handleAddToCart = (product) => {
-  const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
-  const existing = savedCart.find((item) => item.id === product.id);
+  const handleAddToCart = (product) => {
+    const savedCart = JSON.parse(localStorage.getItem("cart")) || [];
+    const existing = savedCart.find((item) => item.id === product.id);
 
-  const productForCart = {
-    id: product.id,
-    name: product.name,
-    price: product.price,
-    images: product.images || [], 
-    quantity: 1,
+    const productForCart = {
+      id: product.id,
+      name: product.name,
+      price: product.price,
+      images: product.images || [],
+      quantity: 1,
+    };
+
+    const updatedCart = existing
+      ? savedCart.map((item) =>
+          item.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
+      : [...savedCart, productForCart];
+
+    localStorage.setItem("cart", JSON.stringify(updatedCart));
+    saveCartToDB();
+    window.dispatchEvent(new Event("cartUpdated"));
+    toast.success(t("productList.added"));
   };
-
-  const updatedCart = existing
-    ? savedCart.map((item) =>
-        item.id === product.id
-          ? { ...item, quantity: item.quantity + 1 }
-          : item
-      )
-    : [...savedCart, productForCart];
-
-  localStorage.setItem("cart", JSON.stringify(updatedCart));
-  saveCartToDB();
-  window.dispatchEvent(new Event("cartUpdated"));
-  toast.success("Added to cart");
-};
-
-
 
   const uniqueBrands = Array.from(new Set(products.map((p) => p.brand)));
 
@@ -92,7 +92,7 @@ const handleAddToCart = (product) => {
                 setVisibleCount(16);
               }}
             >
-              All Brands
+              {t("productList.allBrands")}
             </button>
             {uniqueBrands.map((brand) => (
               <button
@@ -115,7 +115,7 @@ const handleAddToCart = (product) => {
           <div className="flex flex-col sm:flex-row gap-4 items-start sm:items-center">
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
-                Max Price:{" "}
+                {t("productList.maxPrice")}:{" "}
                 <span className="text-gray-900 font-bold">
                   ${filters.price}
                 </span>
@@ -134,7 +134,7 @@ const handleAddToCart = (product) => {
             </div>
             <div>
               <label className="block mb-1 text-sm font-medium text-gray-700">
-                Sort
+                {t("productList.sort")}
               </label>
               <select
                 value={sortOrder}
@@ -144,9 +144,9 @@ const handleAddToCart = (product) => {
                 }}
                 className="border rounded-md p-2 w-48 cursor-pointer"
               >
-                <option value="">Default</option>
-                <option value="asc">Price: Low to High</option>
-                <option value="desc">Price: High to Low</option>
+                <option value="">{t("productList.default")}</option>
+                <option value="asc">{t("productList.lowToHigh")}</option>
+                <option value="desc">{t("productList.highToLow")}</option>
               </select>
             </div>
           </div>
@@ -160,7 +160,7 @@ const handleAddToCart = (product) => {
             .map((_, i) => <SkeletonCard key={i} />)
         ) : visibleProducts.length === 0 ? (
           <div className="text-center text-gray-500 col-span-full">
-            No models found for selected filters.
+            {t("productList.noModels")}
           </div>
         ) : (
           visibleProducts.map((model) => (
@@ -179,7 +179,7 @@ const handleAddToCart = (product) => {
             onClick={() => setVisibleCount(visibleCount + 16)}
             className="px-6 py-3 bg-gray-900 text-white rounded-full hover:bg-gray-700 transition"
           >
-            Load More
+            {t("productList.loadMore")}
           </button>
         </div>
       )}

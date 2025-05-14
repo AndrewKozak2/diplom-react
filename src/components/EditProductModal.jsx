@@ -1,8 +1,11 @@
 import React, { useState, useEffect } from "react";
 import { X } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function EditProductModal({ product, onClose, onSave }) {
+  const { t } = useTranslation();
+
   const [form, setForm] = useState({
     name: product.name,
     brand: product.brand,
@@ -66,14 +69,14 @@ function EditProductModal({ product, onClose, onSave }) {
         }
       );
 
-      if (!response.ok) throw new Error("Failed to update product");
+      if (!response.ok) throw new Error(t("editForm.error"));
 
       const updated = await response.json();
       onSave(updated.product);
       onClose();
     } catch (err) {
       console.error(err);
-      toast.error("Failed to update product");
+      toast.error(t("editForm.error"));
     }
   };
 
@@ -86,7 +89,7 @@ function EditProductModal({ product, onClose, onSave }) {
         >
           <X />
         </button>
-        <h2 className="text-xl font-semibold mb-4">Edit Product</h2>
+        <h2 className="text-xl font-semibold mb-4">{t("editForm.title")}</h2>
 
         <form
           onSubmit={handleSubmit}
@@ -98,6 +101,7 @@ function EditProductModal({ product, onClose, onSave }) {
             value={form.name}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            placeholder={t("editForm.name")}
             required
           />
           <input
@@ -105,6 +109,7 @@ function EditProductModal({ product, onClose, onSave }) {
             value={form.brand}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            placeholder={t("editForm.brand")}
             required
           />
           <input
@@ -113,6 +118,7 @@ function EditProductModal({ product, onClose, onSave }) {
             value={form.price}
             onChange={handleChange}
             className="w-full border p-2 rounded"
+            placeholder={t("editForm.price")}
             required
           />
 
@@ -130,6 +136,7 @@ function EditProductModal({ product, onClose, onSave }) {
                     type="button"
                     onClick={() => handleRemoveExisting(i)}
                     className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 text-xs"
+                    title={t("editForm.remove")}
                   >
                     ✕
                   </button>
@@ -152,6 +159,7 @@ function EditProductModal({ product, onClose, onSave }) {
                     type="button"
                     onClick={() => handleRemoveNew(i)}
                     className="absolute top-1 right-1 bg-black/60 text-white rounded-full p-1 text-xs"
+                    title={t("editForm.remove")}
                   >
                     ✕
                   </button>
@@ -164,7 +172,7 @@ function EditProductModal({ product, onClose, onSave }) {
           <div className="flex items-center gap-4 flex-wrap">
             <div className="relative">
               <label className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-sm px-3 py-1 rounded border border-gray-300 transition cursor-pointer">
-                Вибрати файли
+                {t("editForm.selectFiles")}
                 <input
                   type="file"
                   accept="image/*"
@@ -177,7 +185,7 @@ function EditProductModal({ product, onClose, onSave }) {
             <span className="text-sm text-gray-500 truncate max-w-[200px]">
               {form.newImages.length > 0
                 ? form.newImages.map((f) => f.name).join(", ")
-                : "Файли не вибрано"}
+                : t("editForm.noFiles")}
             </span>
           </div>
 
@@ -189,14 +197,14 @@ function EditProductModal({ product, onClose, onSave }) {
               onChange={handleChange}
               className="w-4 h-4 accent-green-600"
             />
-            <span className="text-sm text-gray-700">In stock</span>
+            <span className="text-sm text-gray-700">{t("editForm.inStock")}</span>
           </label>
 
           <button
             type="submit"
             className="w-full bg-gray-900 text-white py-2 rounded hover:bg-gray-800"
           >
-            Save Changes
+            {t("editForm.save")}
           </button>
         </form>
       </div>

@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 function VerifyEmail() {
   const [code, setCode] = useState('');
@@ -8,6 +9,7 @@ function VerifyEmail() {
   const [resendTimer, setResendTimer] = useState(60);
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation();
 
   const email = location.state?.email;
 
@@ -33,10 +35,10 @@ function VerifyEmail() {
         setTimeout(() => navigate('/login'), 2000);
       } else {
         const data = await res.json();
-        setError(data.message || 'Verification failed');
+        setError(data.message || t('verify.fail'));
       }
     } catch (err) {
-      setError('Server error');
+      setError(t('verify.error'));
     }
   };
 
@@ -52,15 +54,19 @@ function VerifyEmail() {
         setResendTimer(60);
         setError('');
       } else {
-        setError('Failed to resend code');
+        setError(t('verify.resendFail'));
       }
     } catch (err) {
-      setError('Server error');
+      setError(t('verify.error'));
     }
   };
 
   if (!email) {
-    return <p className="text-center mt-20 text-gray-600">No email provided. Please register again.</p>;
+    return (
+      <p className="text-center mt-20 text-gray-600">
+        {t("verify.noEmail")}
+      </p>
+    );
   }
 
   return (
@@ -70,7 +76,7 @@ function VerifyEmail() {
         className="bg-white shadow-lg rounded-xl p-8 w-full max-w-md border border-gray-200"
       >
         <h2 className="text-2xl font-bold mb-4 text-center text-gray-800">
-          Enter the code sent to {email}
+          {t("verify.title", { email })}
         </h2>
 
         <input
@@ -78,22 +84,22 @@ function VerifyEmail() {
           maxLength={6}
           value={code}
           onChange={(e) => setCode(e.target.value)}
-          placeholder="6-digit code"
+          placeholder={t("verify.placeholder")}
           className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4 text-center tracking-widest focus:outline-none focus:ring-2 focus:ring-blue-500"
           required
         />
 
         <button
           type="submit"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-medium py-2.5 rounded-md transition"
+          className="w-full bg-gray-800 hover:bg-gray-700 text-white font-medium py-2.5 rounded-md transition"
         >
-          Verify
+          {t("verify.button")}
         </button>
 
         <div className="text-center mt-4 text-sm">
           {resendTimer > 0 ? (
             <p className="text-gray-500">
-              You can resend the code in <span className="font-medium">{resendTimer}s</span>
+              {t("verify.resendWait")} <span className="font-medium">{resendTimer}s</span>
             </p>
           ) : (
             <button
@@ -101,13 +107,17 @@ function VerifyEmail() {
               onClick={handleResend}
               className="text-gray-900 hover:underline"
             >
-              Resend Code
+              {t("verify.resend")}
             </button>
           )}
         </div>
 
         {error && <p className="text-red-600 text-sm text-center mt-4">{error}</p>}
-        {success && <p className="text-green-600 text-sm text-center mt-4">Success! Redirecting...</p>}
+        {success && (
+          <p className="text-green-600 text-sm text-center mt-4">
+            {t("verify.success")}
+          </p>
+        )}
       </form>
     </div>
   );

@@ -21,18 +21,25 @@ import FloatingCartButton from "./components/FloatingCartButton";
 import AdminPromoPanel from "./pages/AdminPromoPanel";
 import AdminOrderStats from "./pages/AdminOrderStats";
 import { Toaster } from 'react-hot-toast';
+import { useTranslation } from 'react-i18next';
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
   const [refresh, setRefresh] = useState(false);
   const location = useLocation(); 
+   const { i18n } = useTranslation();
 
   useEffect(() => {
     window.toggleCart = () => setCartOpen((prev) => !prev);
     window.showAddProductForm = () => setShowAddForm(true);
     window.triggerRefresh = () => setRefresh(prev => !prev);
   }, []);
+
+    useEffect(() => {
+    document.body.classList.remove('ua', 'en');
+    document.body.classList.add(i18n.language);
+  }, [i18n.language]);
 
   const hideLayoutRoutes = ['/login', '/register', '/forgot-password', '/reset-password', '/verify-email'];
   const hideScrollButton = ['/checkout', '/favorites'].includes(location.pathname);

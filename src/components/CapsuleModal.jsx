@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import { X, Gift } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 function CapsuleModal({ onClose, onDrop, total }) {
   const [finalModel, setFinalModel] = useState(null);
@@ -8,6 +9,7 @@ function CapsuleModal({ onClose, onDrop, total }) {
   const [models, setModels] = useState([]);
   const sliderRef = useRef(null);
   const containerRef = useRef(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (total < 50 || localStorage.getItem("capsuleOpened") === "true") {
@@ -127,12 +129,12 @@ function CapsuleModal({ onClose, onDrop, total }) {
         </button>
 
         <h2 className="text-xl font-semibold mb-4 flex justify-center items-center gap-2">
-          <Gift className="w-6 h-6 text-pink-500" /> Open Your Capsule
+          <Gift className="w-6 h-6 text-pink-500" /> 	{t("capsule.title")}
         </h2>
 
         {!canOpen && (
           <p className="text-gray-600">
-            Capsule is available for orders over $50 and only once.
+            	{t("capsule.requirements")}
           </p>
         )}
 
@@ -162,7 +164,7 @@ function CapsuleModal({ onClose, onDrop, total }) {
               {finalModel.rarity}
             </p>
             <button onClick={handleAccept} className="px-5 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md">
-              Claim Reward
+              	{t("capsule.claim")}
             </button>
           </div>
         )}

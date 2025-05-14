@@ -1,4 +1,9 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto&family=Rubik:wght@400;700&display=swap');
 @import "tailwindcss";
+
+body.ua {
+  font-family: 'Rubik', sans-serif;
+}
 
 html, body, #root {
   width: 100%;

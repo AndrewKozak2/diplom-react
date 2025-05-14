@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { Loader } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 function Orders() {
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     async function fetchOrders() {
@@ -38,7 +40,7 @@ function Orders() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center text-gray-600 text-lg mt-24">
-        <Loader className="animate-spin mr-2" /> Loading...
+        <Loader className="animate-spin mr-2" /> {t("orders.loading")}
       </div>
     );
   }
@@ -46,7 +48,7 @@ function Orders() {
   if (orders.length === 0) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center text-gray-600 text-lg mt-24">
-        You have no orders yet.
+        {t("orders.noOrders")}
       </div>
     );
   }
@@ -54,7 +56,7 @@ function Orders() {
   return (
     <div className="max-w-4xl mx-auto px-4 pt-28 pb-10">
       <h2 className="text-2xl sm:text-3xl font-bold mb-10 text-center">
-        My Orders
+        {t("orders.title")}
       </h2>
       <div className="space-y-8">
         {orders.map((order) => (
@@ -67,8 +69,8 @@ function Orders() {
           >
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4">
               <h3 className="text-base sm:text-lg font-semibold text-gray-800">
-                Order{" "}
-                <span className="text-blue-600">#{order._id.slice(-5)}</span>
+                {t("orders.order")}{" "}
+                <span className="text-gray-800">#{order._id.slice(-5)}</span>
               </h3>
               <p className="text-sm text-gray-500 mt-1 sm:mt-0">
                 {new Date(order.createdAt).toLocaleDateString()}
@@ -91,7 +93,7 @@ function Orders() {
                       {item.name}
                       {item.bonus && (
                         <span className="ml-2 text-sm text-yellow-500 font-semibold">
-                          🎁 Gift
+                           {t("orders.gift")}
                         </span>
                       )}
                     </p>
@@ -99,7 +101,7 @@ function Orders() {
                   </div>
                   <div className="font-bold text-gray-700 text-sm sm:text-base">
                     {item.price === 0
-                      ? "FREE"
+                      ? t("orders.free")
                       : `$${(item.price * item.quantity).toFixed(2)}`}
                   </div>
                 </div>
@@ -108,17 +110,17 @@ function Orders() {
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mt-6 pt-4 border-t gap-2">
               <span className="text-base font-semibold text-gray-700">
-                Total:
+                {t("orders.total")}:
               </span>
-              <span className="text-lg font-bold text-blue-600">
+              <span className="text-lg font-bold text-gray-800">
                 ${order.total.toFixed(2)}
               </span>
             </div>
 
             {order.promoCode && (
               <p className="text-sm text-gray-500 italic mt-2">
-                Promo code used:{" "}
-                <span className="text-blue-600 font-medium">
+                {t("orders.promoUsed")}:{" "}
+                <span className="text-gray-800 font-medium">
                   {order.promoCode}
                 </span>
               </p>

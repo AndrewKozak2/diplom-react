@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function Account() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const [user, setUser] = useState({
     username: "",
     email: "",
@@ -204,13 +206,16 @@ function Account() {
   if (loading) {
     return (
       <div className="min-h-[60vh] flex items-center justify-center text-gray-600 text-lg mt-24">
-        Loading your profile...
+        {t("account.loading")}
       </div>
     );
   }
 
   return (
     <div className="max-w-2xl mx-auto p-6 mt-24">
+      <h1 className="text-3xl font-bold text-center mb-2">{t("account.title")}</h1>
+      <p className="text-center text-gray-600 mb-8">{t("account.subtitle")}</p>
+
       {successMessage && (
         <div className="mb-4 text-green-600 text-center font-medium">
           {successMessage}
@@ -227,7 +232,7 @@ function Account() {
           <input
             type="text"
             name="username"
-            placeholder="Username"
+            placeholder={t("account.username")}
             autoComplete="off"
             value={user.username || ""}
             onChange={handleChange}
@@ -236,7 +241,7 @@ function Account() {
           <input
             type="email"
             name="email"
-            placeholder="Email"
+            placeholder={t("account.email")}
             autoComplete="off"
             value={user.email || ""}
             onChange={handleChange}
@@ -251,7 +256,7 @@ function Account() {
             <input
               type="text"
               name="city"
-              placeholder="City"
+              placeholder={t("account.city")}
               autoComplete="off"
               value={user.city}
               onChange={handleChange}
@@ -276,7 +281,7 @@ function Account() {
             <input
               type="text"
               name="warehouse"
-              placeholder="Warehouse"
+              placeholder={t("account.warehouse")}
               autoComplete="off"
               value={user.warehouse}
               onFocus={handleWarehouseFocus}
@@ -314,7 +319,7 @@ function Account() {
           <input
             type="text"
             name="phone"
-            placeholder="Phone"
+            placeholder={t("account.phone")}
             autoComplete="off"
             value={user.phone || ""}
             onChange={handleChange}
@@ -328,7 +333,7 @@ function Account() {
           onClick={handleLogout}
           className="px-6 py-2 bg-red-500 hover:bg-red-600 text-white font-semibold rounded-md"
         >
-          Log Out
+          {t("account.logout")}
         </button>
         <button
           onClick={handleSaveClick}
@@ -339,7 +344,7 @@ function Account() {
               : "bg-gray-300 text-gray-600 cursor-not-allowed"
           }`}
         >
-          Save Changes
+          {t("account.save")}
         </button>
       </div>
 
@@ -347,23 +352,23 @@ function Account() {
         <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl p-6 shadow-lg w-[90%] max-w-md text-center">
             <h3 className="text-lg font-semibold mb-4">
-              Save profile changes?
+              {t("account.confirmTitle")}
             </h3>
             <p className="text-sm text-gray-600 mb-6">
-              Your updated information will be saved.
+              {t("account.confirmText")}
             </p>
             <div className="flex justify-center gap-4">
               <button
                 onClick={confirmSave}
                 className="px-4 py-2 bg-gray-800 hover:bg-gray-700 text-white rounded-md font-medium"
               >
-                Confirm
+                {t("account.confirm")}
               </button>
               <button
                 onClick={() => setShowConfirm(false)}
                 className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded-md font-medium"
               >
-                Cancel
+                {t("account.cancel")}
               </button>
             </div>
           </div>

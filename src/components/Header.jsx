@@ -2,12 +2,14 @@ import React, { useEffect, useState } from "react";
 import { Link, useNavigate, useLocation } from "react-router-dom";
 import { ShoppingCart, User, UserRound, PackageCheck } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useTranslation } from "react-i18next";
 
 function Header() {
   const navigate = useNavigate();
   const location = useLocation();
   const role = localStorage.getItem("role");
   const token = localStorage.getItem("token");
+  const { t, i18n } = useTranslation();
 
   const [username, setUsername] = useState(
     localStorage.getItem("username") || ""
@@ -59,7 +61,7 @@ function Header() {
 
   return (
     <header
-      className={`w-full z-50 flex justify-between items-center px-6 sm:px-8 h-[100px] transition-all duration-300 ${
+      className={`w-full z-50 flex justify-between items-center px-4 sm:px-6 md:px-10 h-[100px] transition-all duration-300 ${
         isDarkHeader
           ? "bg-gray-900 text-white shadow-md"
           : "absolute top-0 left-0 bg-black/20 backdrop-blur-sm text-white"
@@ -73,28 +75,28 @@ function Header() {
         />
       </Link>
 
-      <div className="hidden lg:flex items-center gap-4">
+      <div className="hidden md:flex flex-wrap items-center gap-2 justify-end max-w-full">
         <Link
           to="/about"
-          className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition"
+          className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
         >
-          About
+          {t("header.about")}
         </Link>
         <Link
           to="/favorites"
-          className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition"
+          className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
         >
-          Favorites
+          {t("header.favorites")}
         </Link>
 
         {token ? (
           <>
             {role === "admin" && (
               <button
-                className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
+                className="px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 transition"
                 onClick={() => window.showAddProductForm?.()}
               >
-                Add Product
+                {t("header.addProduct")}
               </button>
             )}
 
@@ -103,7 +105,7 @@ function Header() {
                 to="/admin/promo"
                 className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
               >
-                Promo Panel
+                {t("header.promoPanel")}
               </Link>
             )}
             {role === "admin" && (
@@ -111,7 +113,7 @@ function Header() {
                 to="/admin/stats"
                 className="bg-gray-800 hover:bg-gray-700 text-white px-4 py-2 rounded"
               >
-                Stats
+                {t("header.stats")}
               </Link>
             )}
 
@@ -122,7 +124,7 @@ function Header() {
             >
               <button className="flex items-center gap-2 bg-white text-black px-3 py-1 rounded hover:bg-gray-100">
                 <User size={20} />
-                {username || "Profile"}
+                {username || t("header.account")}
               </button>
               <AnimatePresence>
                 {isMenuOpen && (
@@ -138,14 +140,14 @@ function Header() {
                       className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <UserRound size={18} /> My Account
+                      <UserRound size={18} /> {t("header.account")}
                     </Link>
                     <Link
                       to="/orders"
                       className="flex items-center gap-2 px-4 py-2 text-gray-800 hover:bg-gray-100"
                       onClick={() => setIsMenuOpen(false)}
                     >
-                      <PackageCheck size={18} /> My Orders
+                      <PackageCheck size={18} /> {t("header.orders")}
                     </Link>
                   </motion.div>
                 )}
@@ -154,31 +156,31 @@ function Header() {
 
             <button
               onClick={handleLogout}
-              className="px-4 py-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
+              className="px-3 py-1.5 rounded-md bg-gray-800 hover:bg-gray-700 transition"
             >
-              Log Out
+              {t("header.logout")}
             </button>
           </>
         ) : (
           <>
             <Link
               to="/login"
-              className="px-4 py-2 rounded-md  hover:bg-gray-700 text-white transition"
+              className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
             >
-              Log in
+              {t("header.login")}
             </Link>
             <Link
               to="/register"
-              className="px-4 py-2 rounded-md hover:bg-gray-700 text-white transition"
+              className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
             >
-              Sign up
+              {t("header.signup")}
             </Link>
           </>
         )}
 
         <button
           onClick={handleCartClick}
-          className="relative ml-2 p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
+          className="relative p-2 rounded-md bg-gray-800 hover:bg-gray-700 transition"
         >
           <ShoppingCart size={24} />
           {cartCount > 0 && (
@@ -187,9 +189,22 @@ function Header() {
             </span>
           )}
         </button>
+
+        <select
+          value={i18n.language}
+          onChange={(e) => {
+            const lang = e.target.value;
+            localStorage.setItem("lang", lang);
+            i18n.changeLanguage(lang);
+          }}
+          className="px-3 py-2 rounded bg-gray-800 text-white"
+        >
+          <option value="ua">UA</option>
+          <option value="en">EN</option>
+        </select>
       </div>
 
-      <div className="lg:hidden">
+      <div className="md:hidden">
         <motion.button
           whileTap={{ scale: 0.9 }}
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
@@ -226,21 +241,21 @@ function Header() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
-            className="absolute top-[100px] left-0 w-full bg-gray-900 z-40 flex flex-col items-center gap-4 py-6 lg:hidden"
+            className="absolute top-[100px] left-0 w-full bg-gray-900 z-40 flex flex-col items-center gap-4 py-6 md:hidden"
           >
             <Link to="/about" onClick={() => setMobileMenuOpen(false)}>
-              About
+              {t("header.about")}
             </Link>
             <Link to="/favorites" onClick={() => setMobileMenuOpen(false)}>
-              Favorites
+              {t("header.favorites")}
             </Link>
             {token ? (
               <>
                 <Link to="/account" onClick={() => setMobileMenuOpen(false)}>
-                  My Account
+                  {t("header.account")}
                 </Link>
                 <Link to="/orders" onClick={() => setMobileMenuOpen(false)}>
-                  My Orders
+                  {t("header.orders")}
                 </Link>
                 <button
                   onClick={() => {
@@ -248,19 +263,32 @@ function Header() {
                     handleLogout();
                   }}
                 >
-                  Log Out
+                  {t("header.logout")}
                 </button>
               </>
             ) : (
               <>
                 <Link to="/login" onClick={() => setMobileMenuOpen(false)}>
-                  Log in
+                  {t("header.login")}
                 </Link>
                 <Link to="/register" onClick={() => setMobileMenuOpen(false)}>
-                  Sign Up
+                  {t("header.signup")}
                 </Link>
               </>
             )}
+
+            <select
+              value={i18n.language}
+              onChange={(e) => {
+                const lang = e.target.value;
+                localStorage.setItem("lang", lang);
+                i18n.changeLanguage(lang);
+              }}
+              className="px-3 py-2 rounded bg-white text-black text-sm mt-2"
+            >
+              <option value="ua">UA</option>
+              <option value="en">EN</option>
+            </select>
           </motion.div>
         )}
       </AnimatePresence>

@@ -1,11 +1,14 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 function About() {
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const scrollToModels = () => {
-    navigate("/", { state: { scrollToModels: true } });
+    localStorage.setItem("scrollTo", "models");
+    navigate("/");
   };
 
   return (
@@ -17,23 +20,18 @@ function About() {
       >
         <div className="absolute inset-0 bg-black/60 backdrop-blur-sm" />
         <div className="z-10 text-center px-4">
-          <h1 className="text-5xl font-bold mb-4">About TrueScale</h1>
-          <p className="text-xl font-medium">
-            Precision. Passion. Perfection in 1:64 scale.
-          </p>
+          <h1 className="text-5xl font-bold mb-4">{t("about.title")}</h1>
+          <p className="text-xl font-medium">{t("about.subtitle")}</p>
         </div>
       </section>
 
       {/* Who We Are */}
       <section className="max-w-6xl mx-auto py-16 px-4 text-center">
-        <h2 className="text-4xl font-bold mb-6 text-gray-800">Who We Are</h2>
+        <h2 className="text-4xl font-bold mb-6 text-gray-800">
+          {t("about.whoTitle")}
+        </h2>
         <p className="text-lg text-gray-700 max-w-4xl mx-auto">
-          TrueScale is more than just a shop. We are a passionate community of
-          scale car model collectors who appreciate the details, design, and
-          heritage behind every miniature vehicle. Our journey began with a deep
-          love for motorsports and precision modeling. Since our foundation,
-          we've served thousands of collectors who seek quality, authenticity,
-          and beauty in every piece.
+          {t("about.whoDescription")}
         </p>
       </section>
 
@@ -41,29 +39,26 @@ function About() {
       <section className="max-w-6xl mx-auto px-4 pb-20 grid grid-cols-1 md:grid-cols-3 gap-8 text-center">
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-semibold mb-3 text-gray-800">
-            Our Mission
+            {t("about.missionTitle")}
           </h3>
           <p className="text-sm text-gray-600">
-            To deliver premium 1:64 scale models to collectors around the world
-            and inspire appreciation for automotive design.
+            {t("about.missionText")}
           </p>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-semibold mb-3 text-gray-800">
-            Our Vision
+            {t("about.visionTitle")}
           </h3>
           <p className="text-sm text-gray-600">
-            To become the #1 destination for authentic die-cast models and a hub
-            for passionate collectors worldwide.
+            {t("about.visionText")}
           </p>
         </div>
         <div className="bg-white rounded-xl p-6 shadow-md">
           <h3 className="text-xl font-semibold mb-3 text-gray-800">
-            Our Values
+            {t("about.valuesTitle")}
           </h3>
           <p className="text-sm text-gray-600">
-            Quality, community, attention to detail, respect for automotive
-            culture, and integrity in every interaction.
+            {t("about.valuesText")}
           </p>
         </div>
       </section>
@@ -72,16 +67,13 @@ function About() {
       <section className="bg-gray-200 py-12">
         <div className="text-center">
           <h2 className="text-3xl font-bold text-gray-800 mb-6">
-            Ready to Start Collecting?
+            {t("about.ctaTitle")}
           </h2>
           <button
-            onClick={() => {
-              localStorage.setItem("scrollTo", "models"); // 🧠 зберігаємо ціль
-              navigate("/");
-            }}
+            onClick={scrollToModels}
             className="inline-block px-6 py-3 bg-gray-900 text-white rounded-md font-medium hover:bg-gray-800 transition"
           >
-            Shop Now
+            {t("about.ctaButton")}
           </button>
         </div>
       </section>

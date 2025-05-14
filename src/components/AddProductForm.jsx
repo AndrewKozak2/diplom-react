@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { X, CheckCircle, XCircle } from "lucide-react";
 import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 function AddProductForm({ onClose }) {
+  const { t } = useTranslation();
   const [form, setForm] = useState({
     brand: "",
     name: "",
@@ -10,7 +12,7 @@ function AddProductForm({ onClose }) {
     price: "",
   });
   const [files, setFiles] = useState([]);
-  const [fileNames, setFileNames] = useState("Файли не вибрано");
+  const [fileNames, setFileNames] = useState(t("addForm.noFiles"));
   const [brands, setBrands] = useState([]);
 
   useEffect(() => {
@@ -75,13 +77,13 @@ function AddProductForm({ onClose }) {
       const data = await res.json();
 
       if (!res.ok) {
-        throw new Error(data.message || "Failed to add product");
+        throw new Error(data.message || t("addForm.error"));
       }
 
       toast.custom(() => (
         <div className="bg-green-600 text-white px-4 py-3 rounded shadow-lg flex items-center gap-3">
           <CheckCircle size={20} />
-          <span>Product added successfully!</span>
+          <span>{t("addForm.success")}</span>
         </div>
       ));
 
@@ -106,7 +108,7 @@ function AddProductForm({ onClose }) {
           <X size={22} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-center">Add New Product</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">{t("addForm.title")}</h2>
         <form
           onSubmit={handleSubmit}
           className="space-y-4"
@@ -118,7 +120,7 @@ function AddProductForm({ onClose }) {
               name="brand"
               value={form.brand}
               onChange={handleChange}
-              placeholder="Brand"
+              placeholder={t("addForm.brand")}
               className="w-full border px-3 py-2 rounded"
               required
             />
@@ -133,8 +135,7 @@ function AddProductForm({ onClose }) {
             name="name"
             value={form.name}
             onChange={handleChange}
-            placeholder="Name"
-            autoComplete="nope"
+            placeholder={t("addForm.name")}
             className="w-full border px-3 py-2 rounded"
             required
           />
@@ -142,8 +143,7 @@ function AddProductForm({ onClose }) {
             name="scale"
             value={form.scale}
             onChange={handleChange}
-            placeholder="Scale"
-            autoComplete="nope"
+            placeholder={t("addForm.scale")}
             className="w-full border px-3 py-2 rounded"
             required
           />
@@ -151,8 +151,7 @@ function AddProductForm({ onClose }) {
             name="price"
             value={form.price}
             onChange={handleChange}
-            placeholder="Price"
-            autoComplete="nope"
+            placeholder={t("addForm.price")}
             type="number"
             className="w-full border px-3 py-2 rounded"
             required
@@ -160,11 +159,11 @@ function AddProductForm({ onClose }) {
 
           <div className="space-y-2">
             <label className="block text-sm font-medium text-gray-700">
-              Upload Images:
+              {t("addForm.uploadLabel")}
             </label>
 
             <label className="relative inline-block bg-white border border-gray-300 rounded-md px-4 py-2 cursor-pointer hover:bg-gray-100 transition text-sm text-gray-800 font-medium">
-              Обрати файли
+              {t("addForm.selectFiles")}
               <input
                 type="file"
                 accept="image/*"
@@ -174,40 +173,42 @@ function AddProductForm({ onClose }) {
               />
             </label>
 
-{files.length > 0 && (
-  <div className="grid grid-cols-2 gap-2 mt-2">
-    {files.map((file, index) => (
-      <div key={index} className="relative border rounded-md overflow-hidden group">
-        <img
-          src={URL.createObjectURL(file)}
-          alt={`preview-${index}`}
-          className="object-cover h-24 w-full"
-        />
-        <button
-          type="button"
-          onClick={() => {
-            const updatedFiles = [...files];
-            updatedFiles.splice(index, 1);
-            setFiles(updatedFiles);
-            setFileNames(updatedFiles.map(f => f.name).join(', '));
-          }}
-          className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-80 transition text-xs"
-          title="Видалити"
-        >
-          ✕
-        </button>
-      </div>
-    ))}
-  </div>
-)}
-
+            {files.length > 0 && (
+              <div className="grid grid-cols-2 gap-2 mt-2">
+                {files.map((file, index) => (
+                  <div
+                    key={index}
+                    className="relative border rounded-md overflow-hidden group"
+                  >
+                    <img
+                      src={URL.createObjectURL(file)}
+                      alt={`preview-${index}`}
+                      className="object-cover h-24 w-full"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const updatedFiles = [...files];
+                        updatedFiles.splice(index, 1);
+                        setFiles(updatedFiles);
+                        setFileNames(updatedFiles.map((f) => f.name).join(", "));
+                      }}
+                      className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-80 transition text-xs"
+                      title={t("addForm.remove")}
+                    >
+                      ✕
+                    </button>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
 
           <button
             type="submit"
             className="w-full bg-gray-900 hover:bg-gray-800 text-white py-2 rounded cursor-pointer transition"
           >
-            Submit
+            {t("addForm.submit")}
           </button>
         </form>
       </div>
