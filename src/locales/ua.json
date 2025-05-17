@@ -15,7 +15,9 @@
     "account": "Мій профіль",
     "orders": "Мої замовлення",
     "promoPanel": "Промо панель",
-    "stats": "Статистика"
+    "stats": "Статистика",
+    "configurator": "Кастомізація"
+
   },
   "about": {
     "title": "Про TrueScale",

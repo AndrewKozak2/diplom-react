@@ -83,6 +83,12 @@ function Header() {
           {t("header.about")}
         </Link>
         <Link
+          to="/configurator"
+          className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
+        >
+          {t("header.configurator")}
+        </Link>
+        <Link
           to="/favorites"
           className="px-3 py-1.5 rounded-md hover:bg-gray-700 text-white transition"
         >

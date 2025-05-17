@@ -22,6 +22,7 @@ import AdminPromoPanel from "./pages/AdminPromoPanel";
 import AdminOrderStats from "./pages/AdminOrderStats";
 import { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
+import Configurator from './pages/Configurator';
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -66,6 +67,7 @@ function App() {
         <Route path="/verify-email" element={<VerifyEmail />} />
         <Route path="/admin/promo" element={<AdminPromoPanel />} />
         <Route path="/admin/stats" element={<AdminOrderStats />} />
+        <Route path="/configurator" element={<Configurator />} />
       </Routes>
       <FloatingCartButton onClick={() => window.toggleCart?.()} />
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />

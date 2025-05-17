@@ -15,7 +15,8 @@
     "account": "My Account",
     "orders": "My Orders",
     "promoPanel": "Promo Panel",
-    "stats": "Stats"
+    "stats": "Stats",
+    "configurator": "Customize"
   },
   "about": {
     "title": "About TrueScale",
