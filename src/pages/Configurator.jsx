@@ -5,8 +5,9 @@ import MyCarModel from "../components/MyCarModel";
 import Loader from "../components/Loader";
 
 export default function Configurator() {
-  const [carColor, setCarColor] = useState("#0e0e0e");
+  const [carColor, setCarColor] = useState(null);
   const [materialType, setMaterialType] = useState("metallic");
+  const [wheelColor, setWheelColor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
   const categories = [
@@ -36,9 +37,17 @@ export default function Configurator() {
     },
   ];
 
+  const wheelPresets = [
+    { name: "Black", value: "#111111" },
+    { name: "Silver", value: "#bbbbbb" },
+    { name: "Bronze", value: "#9e835f" },
+    { name: "Gold", value: "#e3c565" },
+    { name: "White", value: "#eeeeee" },
+  ];
+
   const handleCustomColor = (e) => {
     setCarColor(e.target.value);
-    setMaterialType("glossy"); // тип для користувацького кольору
+    setMaterialType("glossy");
   };
 
   return (
@@ -57,10 +66,10 @@ export default function Configurator() {
             <MyCarModel
               color={carColor}
               materialType={materialType}
+              wheelColor={wheelColor}
               onLoaded={() => setIsLoading(false)}
             />
 
-            {/* земля */}
             <mesh
               rotation={[-Math.PI / 2, 0, 0]}
               position={[0, -0.5, 0]}
@@ -92,6 +101,7 @@ export default function Configurator() {
             maxDistance={6}
           />
         </Canvas>
+
         {isLoading && (
           <div className="absolute inset-0 z-10 flex items-center justify-center bg-white bg-opacity-90 rounded-xl">
             <Loader />
@@ -99,7 +109,7 @@ export default function Configurator() {
         )}
       </div>
 
-      {/* Категорії кольорів справа */}
+      {/* Панель керування */}
       <div className="w-[280px] space-y-6">
         {categories.map((cat) => (
           <div key={cat.title}>
@@ -135,10 +145,26 @@ export default function Configurator() {
             />
             <input
               type="color"
-              value={carColor}
+              value={carColor || "#000000"} // якщо null — буде чорний за замовчуванням
               onChange={handleCustomColor}
               className="absolute top-0 left-0 w-12 h-12 opacity-0 cursor-pointer"
             />
+          </div>
+        </div>
+
+        {/* Wheel colors */}
+        <div>
+          <h3 className="text-lg font-semibold mb-2">Wheel Color</h3>
+          <div className="flex gap-3 flex-wrap">
+            {wheelPresets.map((w) => (
+              <button
+                key={w.value}
+                title={w.name}
+                onClick={() => setWheelColor(w.value)}
+                className="w-10 h-10 rounded-full border-2 border-gray-300 hover:scale-110 transition-transform"
+                style={{ backgroundColor: w.value }}
+              ></button>
+            ))}
           </div>
         </div>
       </div>

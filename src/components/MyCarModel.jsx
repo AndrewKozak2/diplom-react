@@ -1,12 +1,25 @@
-import React, { useRef, useEffect } from 'react';
-import { useGLTF } from '@react-three/drei';
-import { useFrame } from '@react-three/fiber';
-import * as THREE from 'three';
+import React, { useRef, useEffect } from "react";
+import { useGLTF } from "@react-three/drei";
+import { useFrame } from "@react-three/fiber";
+import * as THREE from "three";
 
-export default function MyCarModel({ color, materialType = "glossy", onLoaded }) {
+export default function MyCarModel({
+  color,
+  materialType = "glossy",
+  wheelColor = null,
+  onLoaded,
+}) {
   const group = useRef();
-  const { scene } = useGLTF('/models/porsche.glb');
+  const { scene } = useGLTF("/models/porsche.glb");
   const materialRef = useRef(null);
+  const wheelMaterialRef = useRef(null);
+
+  const wheelMeshRanges = [
+    [1, 234], // передній лівий
+    [303, 537], // передній правий
+    [606, 804], // задній лівий
+    [872, 1071], // задній правий
+  ];
 
   // Анімація обертання
   useFrame(() => {
@@ -15,20 +28,22 @@ export default function MyCarModel({ color, materialType = "glossy", onLoaded })
     }
   });
 
-  // Пошук і заміна матеріалу після завантаження GLTF
   useEffect(() => {
     scene.traverse((child) => {
+      // Кузов
       if (
+        color &&
         child.isMesh &&
-        child.material.name === 'Porsche_911GT3TouringRewardRecycled_2022Paint_Material'
+        child.material.name ===
+          "Porsche_911GT3TouringRewardRecycled_2022Paint_Material"
       ) {
         const materialOptions = {
           color: new THREE.Color(color),
-          metalness: materialType === 'metallic' ? 0.8 : 0.2,
-          roughness: materialType === 'matte' ? 0.9 : 0.25,
+          metalness: materialType === "metallic" ? 0.8 : 0.2,
+          roughness: materialType === "matte" ? 0.9 : 0.25,
           clearcoat: 1.0,
-          clearcoatRoughness: materialType === 'matte' ? 0.8 : 0.1,
-          reflectivity: materialType === 'metallic' ? 0.7 : 0.4,
+          clearcoatRoughness: materialType === "matte" ? 0.8 : 0.1,
+          reflectivity: materialType === "metallic" ? 0.7 : 0.4,
         };
 
         if (!materialRef.current) {
@@ -41,18 +56,52 @@ export default function MyCarModel({ color, materialType = "glossy", onLoaded })
         child.castShadow = true;
         child.receiveShadow = true;
       }
+
+      // Диски
+      if (
+        wheelColor &&
+        child.isMesh &&
+        child.name.startsWith("polySurface")
+      ) {
+        const match = child.name.match(/\d+/);
+        const index = match ? parseInt(match[0], 10) : null;
+
+        const isWheel = wheelMeshRanges.some(
+          ([start, end]) => index >= start && index <= end
+        );
+
+        if (isWheel) {
+          if (!wheelMaterialRef.current) {
+            wheelMaterialRef.current = new THREE.MeshStandardMaterial({
+              color: new THREE.Color(wheelColor),
+              metalness: 1,
+              roughness: 0.3,
+            });
+          } else {
+            wheelMaterialRef.current.color.set(wheelColor);
+          }
+
+          child.material = wheelMaterialRef.current;
+          child.castShadow = true;
+          child.receiveShadow = true;
+        }
+      }
     });
 
-    // Повідомляємо, що модель повністю готова
     if (onLoaded) onLoaded();
-  }, [scene, color, materialType, onLoaded]);
+  }, [scene, color, materialType, wheelColor, onLoaded]);
 
-  // Оновлюємо тільки колір, якщо змінюється
   useEffect(() => {
-    if (materialRef.current) {
+    if (color && materialRef.current) {
       materialRef.current.color.set(color);
     }
   }, [color]);
+
+  useEffect(() => {
+    if (wheelColor && wheelMaterialRef.current) {
+      wheelMaterialRef.current.color.set(wheelColor);
+    }
+  }, [wheelColor]);
 
   return (
     <primitive
