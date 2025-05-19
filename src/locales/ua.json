@@ -300,5 +300,22 @@
     "title": "Відкрити капсулу",
     "requirements": "Капсула доступна для замовлень понад $50 та лише один раз.",
     "claim": "Забрати подарунок"
+  },
+  
+  "configurator": {
+    "shades": "Shades",
+    "dreams": "Dreams",
+    "legends": "Legends",
+    "paintToSample": "Paint to Sample",
+    "wheelColor": "Wheel Color",
+    "customizing": " Ви кастомізуєте модель:",
+    "description": "Це саме та модель, що на фото — ви можете змінити її вигляд перед замовленням.",
+    "addToCart": "Додати кастомну модель у кошик",
+    "canvasError": " Canvas не знайдено",
+    "screenshotError": " Неможливо створити скріншот",
+    "uploadFail": " Не вдалося зберегти зображення на сервері",
+    "addedSuccess": " Кастомна модель додана до кошика!"
   }
 }
+
+

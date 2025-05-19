@@ -86,14 +86,20 @@ function CartSidebar({ isOpen, onClose }) {
           {cart.length === 0 ? (
             <p className="text-gray-500 text-center mt-10">{t("cart.empty")}</p>
           ) : (
-            cart.map((item) => (
+            cart.map((item, index) => (
               <div
-                key={item.id}
+                key={item.id || `${item.name}-${index}`}
                 className="grid grid-cols-[64px_minmax(0,1fr)_auto] gap-3 sm:gap-4 bg-gray-50 border border-gray-200 rounded-xl p-3 sm:p-4 items-center"
               >
                 <img
                   src={
-                    item.images?.[0]
+                    item.image?.startsWith("data:image/")
+                      ? item.image
+                      : item.image?.startsWith("/images/")
+                      ? `http://localhost:3000${item.image}`
+                      : item.image?.startsWith("/uploads/")
+                      ? `http://localhost:3000${item.image}`
+                      : item.images?.[0]
                       ? item.images[0].startsWith("http")
                         ? item.images[0]
                         : `http://localhost:3000${item.images[0]}`

@@ -44,7 +44,6 @@ export async function saveCartToDB() {
     id: item.id || item._id || ""
   }));
 
-  console.log("🛒 Sending cart:", cart);
 
   try {
     const res = await fetch("http://localhost:3000/api/cart/save", {
@@ -58,7 +57,7 @@ export async function saveCartToDB() {
 
     if (!res.ok) throw new Error("Failed to save cart");
   } catch (error) {
-    console.error("❌ Error saving cart to DB:", error);
+    console.error(" Error saving cart to DB:", error);
   }
 }
 

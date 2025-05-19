@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from "react";
+import { useMemo } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
@@ -10,18 +11,19 @@ export default function MyCarModel({
   onLoaded,
 }) {
   const group = useRef();
-  const { scene } = useGLTF("/models/porsche.glb");
+  const { scene: loadedScene } = useGLTF("/models/porsche.glb");
+  const scene = useMemo(() => loadedScene.clone(true), [loadedScene]);
   const materialRef = useRef(null);
   const wheelMaterialRef = useRef(null);
 
   const wheelMeshRanges = [
-    [1, 234], // передній лівий
-    [303, 537], // передній правий
-    [606, 804], // задній лівий
-    [872, 1071], // задній правий
+    [1, 234],
+    [303, 537],
+    [606, 804],
+    [872, 1071],
   ];
 
-  // Анімація обертання
+  // обертання
   useFrame(() => {
     if (group.current) {
       group.current.rotation.y += 0.0003;
@@ -58,11 +60,7 @@ export default function MyCarModel({
       }
 
       // Диски
-      if (
-        wheelColor &&
-        child.isMesh &&
-        child.name.startsWith("polySurface")
-      ) {
+      if (wheelColor && child.isMesh && child.name.startsWith("polySurface")) {
         const match = child.name.match(/\d+/);
         const index = match ? parseInt(match[0], 10) : null;
 
@@ -71,13 +69,24 @@ export default function MyCarModel({
         );
 
         if (isWheel) {
+          const colorLower = wheelColor.toLowerCase();
+          const isWhite = ["#ffffff", "#eeeeee", "#f5f5f5"].includes(
+            colorLower
+          );
+
+          const wheelOptions = {
+            color: new THREE.Color(wheelColor),
+            metalness: isWhite ? 0.2 : 1,
+            roughness: isWhite ? 0.6 : 0.3,
+            envMapIntensity: isWhite ? 0.2 : 0.4,
+          };
+
           if (!wheelMaterialRef.current) {
-            wheelMaterialRef.current = new THREE.MeshStandardMaterial({
-              color: new THREE.Color(wheelColor),
-              metalness: 1,
-              roughness: 0.3,
-            });
+            wheelMaterialRef.current = new THREE.MeshStandardMaterial(
+              wheelOptions
+            );
           } else {
+            Object.assign(wheelMaterialRef.current, wheelOptions);
             wheelMaterialRef.current.color.set(wheelColor);
           }
 
@@ -91,17 +100,24 @@ export default function MyCarModel({
     if (onLoaded) onLoaded();
   }, [scene, color, materialType, wheelColor, onLoaded]);
 
+  // для оновлення кольору без перерендеру
   useEffect(() => {
     if (color && materialRef.current) {
       materialRef.current.color.set(color);
+      materialRef.current.needsUpdate = true;
     }
   }, [color]);
 
   useEffect(() => {
     if (wheelColor && wheelMaterialRef.current) {
       wheelMaterialRef.current.color.set(wheelColor);
+      wheelMaterialRef.current.needsUpdate = true;
     }
   }, [wheelColor]);
+  useEffect(() => {
+    materialRef.current = null;
+    wheelMaterialRef.current = null;
+  }, []);
 
   return (
     <primitive

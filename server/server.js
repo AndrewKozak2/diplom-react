@@ -12,6 +12,8 @@ const passwordResetRoutes = require('./routes/passwordReset');
 const registerVerificationRoutes = require('./routes/registerVerification');
 const limitedRoutes = require("./routes/limited");
 const capsuleRoutes = require("./routes/capsule");
+const customModelRoutes = require("./routes/customModels");
+const uploadScreenshotRoute = require("./routes/uploadScreenshot");
 const path = require("path");
 require('dotenv').config();
 
@@ -24,6 +26,7 @@ app.use(cors({
 app.use(express.json({ limit: '10mb' }));
 app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 app.use(express.static(path.join(__dirname, '..', 'public')));
+app.use("/images", express.static(path.join(__dirname, "..", "public", "images")));
 console.log('Registering auth routes...');
 
 app.use("/uploads", express.static(path.join(__dirname, "uploads")));
@@ -34,6 +37,9 @@ app.use("/api/limited", limitedRoutes);
 app.use("/api/promocodes", require("./routes/promocodes"));
 app.use("/api/orders", require("./routes/orders"));
 app.use("/api/capsule", capsuleRoutes);
+app.use("/api/custom-models", customModelRoutes);
+app.use("/api", uploadScreenshotRoute);
+
 app.use('/api', passwordResetRoutes);
 app.use('/api', registerVerificationRoutes);
 app.use('/api', authRoutes);

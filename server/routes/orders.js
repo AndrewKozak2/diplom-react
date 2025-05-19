@@ -69,12 +69,26 @@ function generateOrderEmail(order) {
 }
 
 function generateTelegramMessage(order) {
+  console.log("🧪 Створюється замовлення:", JSON.stringify(order.cart, null, 2));
   const itemsText = order.cart
-    .map((item) => `• ${item.name} × ${item.quantity}`)
-    .join("\n");
+    .map((item) => {
+      const base = `• ${item.name} × ${item.quantity}`;
+      const priceLine = `💵 <b>Price:</b> $${item.price.toFixed(2)}`;
+
+      const colorInfo =
+        item.name.includes("(Custom)") || item.id?.startsWith("custom-")
+          ? `🎨 <b>Body:</b> ${item.color || "N/A"}\n🛞 <b>Wheels:</b> ${
+              item.wheelColor || "N/A"
+            }`
+          : "";
+
+      return `${base}\n${colorInfo ? colorInfo + "\n" : ""}${priceLine}`;
+    })
+    .join("\n\n");
 
   return `
-<b>Нове замовлення на TrueScale!</b>\n
+<b>Нове замовлення на TrueScale!</b>
+
 👤 <b>Ім'я:</b> ${order.firstName} ${order.lastName}
 🏙️ <b>Місто:</b> ${order.city}
 🏢 <b>Відділення:</b> ${order.warehouse}

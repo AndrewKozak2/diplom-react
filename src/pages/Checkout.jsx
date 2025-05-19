@@ -251,8 +251,6 @@ function Checkout() {
         promoCode: appliedPromo?.code || null,
       };
 
-      console.log("🧾 Order data:", orderData);
-
       try {
         const res = await fetch("http://localhost:3000/api/orders", {
           method: "POST",

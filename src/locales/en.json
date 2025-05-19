@@ -299,5 +299,19 @@
     "title": "Open Your Capsule",
     "requirements": "Capsule is available for orders over $50 and only once.",
     "claim": "Claim Reward"
+  },
+    "configurator": {
+    "shades": "Shades",
+    "dreams": "Dreams",
+    "legends": "Legends",
+    "paintToSample": "Paint to Sample",
+    "wheelColor": "Wheel Color",
+    "customizing": "You are customizing the model:",
+    "description": "This is the exact model from the photo — you can change its look before ordering.",
+    "addToCart": "Add custom model to cart",
+    "canvasError": "Canvas not found",
+    "screenshotError": "Failed to take a screenshot",
+    "uploadFail": "Failed to save image on server",
+    "addedSuccess": " Custom model added to cart!"
   }
 }

@@ -1,18 +1,32 @@
-import React, { Suspense, useState } from "react";
+import React, { Suspense, useState, useRef, useEffect } from "react";
+import { useLocation } from "react-router-dom";
 import { Canvas } from "@react-three/fiber";
 import { OrbitControls, ContactShadows, Environment } from "@react-three/drei";
 import MyCarModel from "../components/MyCarModel";
 import Loader from "../components/Loader";
+import { toast } from "react-hot-toast";
+import { useTranslation } from "react-i18next";
 
 export default function Configurator() {
+  const { t } = useTranslation();
   const [carColor, setCarColor] = useState(null);
-  const [materialType, setMaterialType] = useState("metallic");
+  const [materialType, setMaterialType] = useState(null);
   const [wheelColor, setWheelColor] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const canvasRef = useRef();
+  const location = useLocation();
+  const [resetKey, setResetKey] = useState(Date.now());
+
+  useEffect(() => {
+    setResetKey(Date.now());
+    setCarColor(null);
+    setWheelColor(null);
+    setMaterialType("metallic");
+  }, [location.pathname]);
 
   const categories = [
     {
-      title: "Shades",
+      title: t("configurator.shades"),
       colors: [
         { name: "Jet Black Metallic", value: "#0e0e0e", type: "metallic" },
         { name: "Vanadium Grey Metallic", value: "#5a5a5a", type: "metallic" },
@@ -20,7 +34,7 @@ export default function Configurator() {
       ],
     },
     {
-      title: "Dreams",
+      title: t("configurator.dreams"),
       colors: [
         { name: "Guards Red", value: "#d72626", type: "glossy" },
         { name: "Gentian Blue Metallic", value: "#182e63", type: "metallic" },
@@ -29,7 +43,7 @@ export default function Configurator() {
       ],
     },
     {
-      title: "Legends",
+      title: t("configurator.legends"),
       colors: [
         { name: "Oak Green Metallic", value: "#314d2b", type: "metallic" },
         { name: "Slate Grey", value: "#474747", type: "matte" },
@@ -46,24 +60,85 @@ export default function Configurator() {
   ];
 
   const handleCustomColor = (e) => {
-    setCarColor(e.target.value);
+    const value = e.target.value;
+    setCarColor(value);
     setMaterialType("glossy");
   };
+
+  const handleAddCustomToCart = async () => {
+    const canvas = canvasRef.current?.querySelector("canvas");
+    if (!canvas) return toast.error(t("configurator.canvasError"));
+
+    await new Promise((resolve) => setTimeout(resolve, 500));
+    const screenshot = canvas.toDataURL("image/png", 0.8);
+    if (!screenshot.startsWith("data:image"))
+      return toast.error(t("configurator.screenshotError"));
+
+    try {
+      const filename = `custom-${Date.now()}-${Math.floor(
+        Math.random() * 1000
+      )}.png`;
+      const response = await fetch(
+        "http://localhost:3000/api/upload-screenshot",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ base64: screenshot, filename }),
+        }
+      );
+
+      if (!response.ok) throw new Error("Upload failed");
+      const { path } = await response.json();
+
+      const product = {
+        id: "custom-" + Date.now(),
+        name: "Porsche 911 GT3 Touring (Custom)",
+        price: finalPrice,
+        image: path,
+        quantity: 1,
+        color: carColor,
+        wheelColor: wheelColor,
+      };
+
+      const existing = JSON.parse(localStorage.getItem("cart")) || [];
+      existing.push(product);
+      localStorage.setItem("cart", JSON.stringify(existing));
+      window.dispatchEvent(new Event("cartUpdated"));
+      toast.success(t("configurator.addedSuccess"));
+      setCarColor(null);
+      setWheelColor(null);
+      setMaterialType("metallic");
+    } catch (error) {
+      console.error("❌ Error uploading screenshot:", error);
+      toast.error(t("configurator.uploadFail"));
+    }
+  };
+
+  const basePrice = 16;
+  const hasColor = !!carColor;
+  const hasWheels = !!wheelColor;
+
+  const finalPrice =
+    hasColor && hasWheels
+      ? basePrice + 8
+      : hasColor
+      ? basePrice + 5
+      : hasWheels
+      ? basePrice + 3
+      : basePrice;
 
   return (
     <div className="bg-gray-100 min-h-screen pt-[110px] px-8">
       <div className="max-w-7xl mx-auto flex gap-8">
-        {/* Ліва колонка: кастомізація + Canvas */}
         <div className="w-[1024px] flex flex-col gap-4">
-          {/* 🔧 Блок кастомізації */}
           <div className="bg-white p-4 rounded-xl shadow text-sm flex items-center justify-between gap-4">
             <div className="flex-1">
               <p className="font-semibold text-gray-800 mb-1">
-                🔧 Ви кастомізуєте модель:
+                {t("configurator.customizing")}
               </p>
               <p className="text-gray-600">Porsche 911 (992) GT3 Touring</p>
               <p className="text-green-600 mt-1 text-sm">
-                Це саме та модель, що на фото — ви можете змінити її вигляд перед замовленням.
+                {t("configurator.description")}
               </p>
             </div>
             <img
@@ -73,19 +148,26 @@ export default function Configurator() {
             />
           </div>
 
-          {/* 🧩 Canvas */}
-          <div className="relative bg-white rounded-xl shadow-2xl p-2 h-[576px]">
+          <div
+            ref={canvasRef}
+            className="relative bg-white rounded-xl shadow-2xl p-2 h-[576px]"
+          >
             <Canvas
               shadows
+              gl={{ preserveDrawingBuffer: true }}
               camera={{ position: [3, 1.4, 5.6], fov: 35 }}
               style={{ borderRadius: "12px" }}
             >
               <ambientLight intensity={0.4} />
-              <directionalLight position={[5, 5, 5]} intensity={1.5} castShadow />
+              <directionalLight
+                position={[5, 5, 5]}
+                intensity={1.5}
+                castShadow
+              />
               <pointLight position={[0, 2, 2]} intensity={0.6} />
-
               <Suspense fallback={<></>}>
                 <MyCarModel
+                  key={resetKey}
                   color={carColor}
                   materialType={materialType}
                   wheelColor={wheelColor}
@@ -108,7 +190,6 @@ export default function Configurator() {
                 />
                 <Environment preset="studio" />
               </Suspense>
-
               <OrbitControls
                 autoRotate
                 autoRotateSpeed={0.2}
@@ -127,10 +208,18 @@ export default function Configurator() {
               </div>
             )}
           </div>
+
+          {(carColor || wheelColor) && (
+            <button
+              onClick={handleAddCustomToCart}
+              className="mt-4 bg-black text-white px-6 py-3 rounded-xl hover:bg-gray-800 transition"
+            >
+              ➕ {t("configurator.addToCart")} (${finalPrice.toFixed(2)})
+            </button>
+          )}
         </div>
 
-        {/* Панель керування */}
-        <div className="w-[280px] space-y-6 mt-45">
+        <div className="w-[280px] space-y-6 mt-8">
           {categories.map((cat) => (
             <div key={cat.title}>
               <h3 className="text-lg font-semibold mb-2">{cat.title}</h3>
@@ -152,7 +241,9 @@ export default function Configurator() {
           ))}
 
           <div>
-            <h3 className="text-lg font-semibold mb-2">Paint to Sample</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("configurator.paintToSample")}
+            </h3>
             <div className="relative w-12 h-12">
               <div
                 className="w-12 h-12 rounded-full border cursor-pointer"
@@ -165,14 +256,19 @@ export default function Configurator() {
               <input
                 type="color"
                 value={carColor || "#000000"}
-                onChange={handleCustomColor}
+                onChange={(e) => {
+                  setCarColor(e.target.value);
+                  setMaterialType("glossy");
+                }}
                 className="absolute top-0 left-0 w-12 h-12 opacity-0 cursor-pointer"
               />
             </div>
           </div>
 
           <div>
-            <h3 className="text-lg font-semibold mb-2">Wheel Color</h3>
+            <h3 className="text-lg font-semibold mb-2">
+              {t("configurator.wheelColor")}
+            </h3>
             <div className="flex gap-3 flex-wrap">
               {wheelPresets.map((w) => (
                 <button
