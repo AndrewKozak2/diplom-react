@@ -1,11 +1,8 @@
 const mongoose = require("mongoose");
 
 const CustomModelSchema = new mongoose.Schema({
-  baseId: {
-    type: mongoose.Schema.Types.ObjectId,
-    ref: "Product",
-    required: true,
-  },
+  baseId: { type: String,
+    required: true },
   color: {
     type: String,
     required: true,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Routes, Route, useLocation } from 'react-router-dom';
+import { lazy, Suspense } from 'react';
 import Header from './components/Header';
 import Home from './pages/Home';
 import About from './pages/About';
@@ -9,10 +10,10 @@ import CartSidebar from './components/CartSidebar';
 import AddProductForm from './components/AddProductForm';
 import Favorites from './pages/Favorites';
 import Footer from './components/Footer';
-import Checkout from './pages/Checkout';
+const Checkout = lazy(() => import('./pages/Checkout'));
 import OrderSuccess from './pages/OrderSuccess';
-import Orders from "./pages/Orders";
-import Account from "./pages/Account";
+const Orders = lazy(() => import('./pages/Orders'));
+const Account = lazy(() => import('./pages/Account'));
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import VerifyEmail from './pages/VerifyEmail';
@@ -22,7 +23,7 @@ import AdminPromoPanel from "./pages/AdminPromoPanel";
 import AdminOrderStats from "./pages/AdminOrderStats";
 import { Toaster } from 'react-hot-toast';
 import { useTranslation } from 'react-i18next';
-import Configurator from './pages/Configurator';
+const Configurator = lazy(() => import('./pages/Configurator'));
 
 function App() {
   const [cartOpen, setCartOpen] = useState(false);
@@ -52,6 +53,7 @@ function App() {
     <div className={`${isHome ? 'bg-transparent' : 'bg-gray-100'} min-h-screen`}>
       {!hideLayout && <Header />}
       <Toaster position="top-center" />
+      <Suspense fallback={<div className="text-center py-10">Loading...</div>}>
       <Routes>
         <Route path="/" element={<Home refresh={refresh} />} />
         <Route path="/about" element={<About />} />
@@ -69,6 +71,7 @@ function App() {
         <Route path="/admin/stats" element={<AdminOrderStats />} />
         <Route path="/configurator" element={<Configurator />} />
       </Routes>
+      </Suspense>
       <FloatingCartButton onClick={() => window.toggleCart?.()} />
       <CartSidebar isOpen={cartOpen} onClose={() => setCartOpen(false)} />
       {showAddForm && <AddProductForm onClose={() => setShowAddForm(false)} />}

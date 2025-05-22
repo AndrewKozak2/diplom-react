@@ -84,8 +84,23 @@ function Orders() {
                   className="flex items-center gap-4 border-b pb-4 last:border-none"
                 >
                   <img
-                    src={item.images?.[0] || item.image}
+                    src={
+                      item.image?.startsWith("data:image/")
+                        ? item.image
+                        : item.image?.startsWith("/images/")
+                        ? `http://localhost:3000${item.image}`
+                        : item.image?.startsWith("/uploads/")
+                        ? `http://localhost:3000${item.image}`
+                        : item.image?.startsWith("http")
+                        ? item.image
+                        : item.images?.[0]
+                        ? item.images[0].startsWith("http")
+                          ? item.images[0]
+                          : `http://localhost:3000${item.images[0]}`
+                        : "/images/placeholder.svg"
+                    }
                     alt={item.name}
+                    onError={(e) => (e.target.src = "/images/placeholder.svg")}
                     className="w-14 h-14 sm:w-16 sm:h-16 object-cover rounded-md"
                   />
                   <div className="flex-1">
@@ -93,7 +108,7 @@ function Orders() {
                       {item.name}
                       {item.bonus && (
                         <span className="ml-2 text-sm text-yellow-500 font-semibold">
-                           {t("orders.gift")}
+                          {t("orders.gift")}
                         </span>
                       )}
                     </p>

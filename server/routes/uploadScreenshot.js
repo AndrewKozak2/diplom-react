@@ -19,8 +19,7 @@ router.post("/upload-screenshot", async (req, res) => {
 
     const buffer = Buffer.from(matches[1], "base64");
 
-    // 🔧 Ось тут зміна — правильний шлях до public
-    const projectRoot = path.join(__dirname, "..", ".."); // truescale
+    const projectRoot = path.join(__dirname, "..", "..");
     const folderPath = path.join(projectRoot, "public", "images", "custom");
     const filePath = path.join(folderPath, filename);
 

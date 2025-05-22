@@ -69,18 +69,25 @@ function generateOrderEmail(order) {
 }
 
 function generateTelegramMessage(order) {
-  console.log("🧪 Створюється замовлення:", JSON.stringify(order.cart, null, 2));
+  console.log(
+    "🧪 Створюється замовлення:",
+    JSON.stringify(order.cart, null, 2)
+  );
+
   const itemsText = order.cart
     .map((item) => {
-      const base = `• ${item.name} × ${item.quantity}`;
+      const base = `• ${item.name || "Unknown"} × ${item.quantity}`;
       const priceLine = `💵 <b>Price:</b> $${item.price.toFixed(2)}`;
 
-      const colorInfo =
-        item.name.includes("(Custom)") || item.id?.startsWith("custom-")
-          ? `🎨 <b>Body:</b> ${item.color || "N/A"}\n🛞 <b>Wheels:</b> ${
-              item.wheelColor || "N/A"
-            }`
-          : "";
+      const isCustom =
+        (item.name && item.name.includes("(Custom)")) ||
+        (item.id && item.id.startsWith("custom-"));
+
+      const colorInfo = isCustom
+        ? `🎨 <b>Body:</b> ${item.color || "N/A"}\n🛞 <b>Wheels:</b> ${
+            item.wheelColor || "N/A"
+          }`
+        : "";
 
       return `${base}\n${colorInfo ? colorInfo + "\n" : ""}${priceLine}`;
     })

@@ -90,11 +90,26 @@ export default function Configurator() {
       if (!response.ok) throw new Error("Upload failed");
       const { path } = await response.json();
 
+      // 🟢 Зберігаємо в базу
+      await fetch("http://localhost:3000/api/custom-models", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          baseId: "porsche-gt3-touring",
+          color: carColor,
+          wheelColor: wheelColor,
+          image: path,
+          price: finalPrice,
+          userId: localStorage.getItem("userId") || null,
+        }),
+      });
+
+      // 🟢 Зберігаємо в кошик (localStorage)
       const product = {
         id: "custom-" + Date.now(),
         name: "Porsche 911 GT3 Touring (Custom)",
         price: finalPrice,
-        image: path,
+        image: path, // 🔥 Ключовий момент!
         quantity: 1,
         color: carColor,
         wheelColor: wheelColor,
@@ -102,8 +117,9 @@ export default function Configurator() {
 
       const existing = JSON.parse(localStorage.getItem("cart")) || [];
       existing.push(product);
-      localStorage.setItem("cart", JSON.stringify(existing));
+      localStorage.setItem("cart", JSON.stringify(existing)); // 🔁 localStorage має мати image
       window.dispatchEvent(new Event("cartUpdated"));
+
       toast.success(t("configurator.addedSuccess"));
       setCarColor(null);
       setWheelColor(null);
@@ -128,10 +144,10 @@ export default function Configurator() {
       : basePrice;
 
   return (
-    <div className="bg-gray-100 min-h-screen pt-[110px] px-8">
-      <div className="max-w-7xl mx-auto flex gap-8">
-        <div className="w-[1024px] flex flex-col gap-4">
-          <div className="bg-white p-4 rounded-xl shadow text-sm flex items-center justify-between gap-4">
+    <div className="bg-gray-100 min-h-screen pt-[110px]">
+      <div className="mx-auto flex flex-col lg:flex-row gap-8 px-4 sm:px-8">
+        <div className="w-full lg:w-[72%] flex flex-col gap-4">
+          <div className="bg-white p-2 rounded-xl shadow text-sm flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex-1">
               <p className="font-semibold text-gray-800 mb-1">
                 {t("configurator.customizing")}
@@ -150,13 +166,13 @@ export default function Configurator() {
 
           <div
             ref={canvasRef}
-            className="relative bg-white rounded-xl shadow-2xl p-2 h-[576px]"
+            className="relative bg-white rounded-xl shadow-2xl p-2 h-[300px] sm:h-[400px] md:h-[500px] lg:h-[576px]"
           >
             <Canvas
               shadows
               gl={{ preserveDrawingBuffer: true }}
-              camera={{ position: [3, 1.4, 5.6], fov: 35 }}
-              style={{ borderRadius: "12px" }}
+              camera={{ position: [4, 1.4, 6.8], fov: 30 }}
+              style={{ width: "100%", height: "100%", borderRadius: "12px" }}
             >
               <ambientLight intensity={0.4} />
               <directionalLight
@@ -219,7 +235,7 @@ export default function Configurator() {
           )}
         </div>
 
-        <div className="w-[280px] space-y-6 mt-8">
+        <div className="w-full lg:w-[28%] space-y-6 mt-4 lg:mt-40">
           {categories.map((cat) => (
             <div key={cat.title}>
               <h3 className="text-lg font-semibold mb-2">{cat.title}</h3>

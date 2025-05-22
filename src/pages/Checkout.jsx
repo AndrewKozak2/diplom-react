@@ -246,12 +246,23 @@ function Checkout() {
     if (validateForm()) {
       const orderData = {
         ...form,
-        cart: cart,
+        cart: cart.map((item) => ({
+          id: item.id,
+          name: item.name,
+          price: item.price,
+          quantity: item.quantity,
+          image: item.image || item.images?.[0] || "",
+          images: item.images || [],
+          color: item.color || null,
+          wheelColor: item.wheelColor || null, 
+          bonus: item.bonus || false,
+        })),
         total,
         promoCode: appliedPromo?.code || null,
       };
 
       try {
+        console.log("🛒 Sending cart to backend:", cart);
         const res = await fetch("http://localhost:3000/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -550,7 +561,7 @@ function Checkout() {
             }}
             className="w-full mt-6 bg-gray-900 hover:bg-gray-800 text-white py-3 rounded-md text-lg font-semibold transition"
           >
-           {t("checkout.confirmOrder")}
+            {t("checkout.confirmOrder")}
           </button>
           <p className="flex items-center justify-center gap-2 text-xs text-gray-500 text-center mt-1">
             <Lock size={14} /> {t("checkout.securePayment")}

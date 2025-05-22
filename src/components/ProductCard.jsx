@@ -38,11 +38,14 @@ function ProductCard({ model, onAddToCart }) {
   }, [model.id]);
 
   useEffect(() => {
-    if (!instanceRef.current) return;
-    instanceRef.current.on("slideChanged", (slider) => {
+    const slider = instanceRef.current;
+    if (!slider) return;
+    const onSlideChange = () => {
       setCurrentSlide(slider.track.details.rel);
-    });
-  }, [instanceRef]);
+    };
+    slider.on("slideChanged", onSlideChange);
+    return () => {};
+  }, [instanceRef.current]);
 
   const toggleFavorite = () => {
     const saved = JSON.parse(localStorage.getItem("favorites")) || [];
@@ -64,7 +67,11 @@ function ProductCard({ model, onAddToCart }) {
     localModel.images?.length > 0 ? localModel.images : [localModel.image];
 
   return (
-    <div className="relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full max-w-[300px] min-h-[430px] bg-white hover:shadow-md group mx-auto">
+    <div
+      className={`relative border rounded-xl shadow-sm p-4 text-gray-800 flex flex-col justify-between transition w-full max-w-[300px] min-h-[430px] bg-white hover:shadow-md group mx-auto ${
+        isOutOfStock ? "opacity-50 grayscale" : ""
+      }`}
+    >
       <div className="flex items-center justify-between mb-2">
         <div className="flex items-center gap-2">
           <span className="bg-gray-100 text-gray-700 text-xs font-semibold px-2 py-0.5 rounded-full">
@@ -148,9 +155,7 @@ function ProductCard({ model, onAddToCart }) {
           {localModel.name}
         </h3>
         <p className="text-xs text-gray-500 mb-1">{t("product.scale")}: 1/64</p>
-        <p className="text-base font-bold text-gray-900">
-          ${localModel.price}
-        </p>
+        <p className="text-base font-bold text-gray-900">${localModel.price}</p>
         {localModel.inStock ? (
           <span className="inline-block text-green-600 text-xs font-medium mt-1">
             ✔ {t("product.inStock")}

@@ -255,6 +255,9 @@ function Header() {
             <Link to="/favorites" onClick={() => setMobileMenuOpen(false)}>
               {t("header.favorites")}
             </Link>
+            <Link to="/configurator" onClick={() => setMobileMenuOpen(false)}>
+              {t("header.configurator")}
+            </Link>
             {token ? (
               <>
                 <Link to="/account" onClick={() => setMobileMenuOpen(false)}>
