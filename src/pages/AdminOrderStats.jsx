@@ -48,17 +48,27 @@ function AdminOrderStats() {
     document.body.removeChild(link);
   };
 
-  const handleExportPDF = () => {
-    if (!stats?.promoStats) return;
-    const doc = new jsPDF();
-    doc.text("TrueScale - Promo Code Statistics", 14, 18);
-    autoTable(doc, {
-      startY: 24,
-      head: [[t("orderStats.code"), t("orderStats.usage")]],
-      body: stats.promoStats.map((p) => [p._id || "—", p.count]),
-    });
-    doc.save("orders-stats.pdf");
-  };
+const handleExportPDF = () => {
+  if (!stats?.promoStats) return;
+
+  const doc = new jsPDF();
+  doc.setFontSize(18);
+  doc.text("TrueScale — Order Statistics", 14, 20);
+
+  doc.setFontSize(12);
+  doc.text(`Total Orders: ${stats.totalOrders}`, 14, 32);
+  doc.text(`Total Revenue: $${stats.totalRevenue.toFixed(2)}`, 14, 40);
+
+  autoTable(doc, {
+    startY: 50,
+    head: [["Promo Code", "Used"]],
+    body: stats.promoStats.map((p) => [p._id || "—", p.count]),
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [31, 41, 55] },
+  });
+
+  doc.save("orders-statistics.pdf");
+};
 
   if (!stats) return <div className="pt-28 text-center">{t("orderStats.loading")}</div>;
 
