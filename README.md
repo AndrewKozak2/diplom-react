@@ -39,7 +39,7 @@ Surprise capsule drop feature
 Multilanguage support (ua/en)
 
 Tech Stack
-Frontend: `React`, `Tailwind CSS`, `react-three-fiber`, `react-router`, `i18next`
-Backend: `Node.js`, `Express.js`, `MongoDB`, `JWT`, `Mongoose`
-Integrations: `Nova Poshta API`, `PayPal`, `Telegram Bot API`, `Email (nodemailer)`
-Tools: `Framer Motion`, `Lucide`, `jsPDF`, `Chart.js`
+- Frontend: `React`, `Tailwind CSS`, `react-three-fiber`, `react-router`, `i18next`
+- Backend: `Node.js`, `Express.js`, `MongoDB`, `JWT`, `Mongoose`
+- Integrations: `Nova Poshta API`, `PayPal`, `Telegram Bot API`, `Email (nodemailer)`
+- Tools: `Framer Motion`, `Lucide`, `jsPDF`, `Chart.js`
