@@ -25,6 +25,7 @@ TrueScale — це повнофункціональний вебзастосун
 
 EN
 TrueScale is a full-featured web application for selling collectible 1:64 scale car models. Developed as a diploma project using the modern MERN stack: React, Node.js, MongoDB.
+
 Key Features
 - Registration / Login with JWT (user/admin roles)
 - Shopping cart synced with localStorage and database
