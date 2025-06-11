@@ -128,7 +128,11 @@ function EditProductModal({ product, onClose, onSave }) {
               {form.existingImages.map((img, i) => (
                 <div key={i} className="relative">
                   <img
-                    src={`https://truescale.up.railway.app${img}`}
+                    src={
+                      img?.startsWith("http")
+                        ? img
+                        : `${import.meta.env.VITE_API_BASE || ""}${img}`
+                    }
                     className="h-24 w-full object-cover rounded"
                     alt="img"
                   />
@@ -197,7 +201,9 @@ function EditProductModal({ product, onClose, onSave }) {
               onChange={handleChange}
               className="w-4 h-4 accent-green-600"
             />
-            <span className="text-sm text-gray-700">{t("editForm.inStock")}</span>
+            <span className="text-sm text-gray-700">
+              {t("editForm.inStock")}
+            </span>
           </label>
 
           <button

@@ -177,6 +177,7 @@ function ProductCard({ model, onAddToCart }) {
               name: localModel.name,
               price: localModel.price,
               images: localModel.images || [],
+              image: localModel.images?.[0] || "",
             })
           }
           disabled={isOutOfStock}

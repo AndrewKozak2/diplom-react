@@ -54,6 +54,7 @@ function ProductList({ refresh }) {
       name: product.name,
       price: product.price,
       images: product.images || [],
+      image: product.images?.[0] || "",
       quantity: 1,
     };
 
