@@ -491,6 +491,8 @@ function Checkout() {
                   src={
                     item.image?.startsWith("data:image/")
                       ? item.image
+                      : item.image?.startsWith("/images/")
+                      ? `https://truescale.up.railway.app${item.image}`
                       : item.image?.startsWith("/uploads/")
                       ? `https://truescale.up.railway.app${item.image}`
                       : item.images?.[0]
