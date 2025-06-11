@@ -59,9 +59,12 @@ function Checkout() {
       if (!token) return;
 
       try {
-        const res = await fetch("https://truescale.up.railway.app/api/user/profile", {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        const res = await fetch(
+          "https://truescale.up.railway.app/api/user/profile",
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
         if (res.ok) {
           const data = await res.json();
           setForm((prev) => ({
@@ -107,7 +110,9 @@ function Checkout() {
   useEffect(() => {
     async function loadPromoCodes() {
       try {
-        const res = await fetch("https://truescale.up.railway.app/api/promocodes/public");
+        const res = await fetch(
+          "https://truescale.up.railway.app/api/promocodes/public"
+        );
         const data = await res.json();
         if (Array.isArray(data)) {
           setPromoCodes(data);
@@ -254,7 +259,7 @@ function Checkout() {
           image: item.image || item.images?.[0] || "",
           images: item.images || [],
           color: item.color || null,
-          wheelColor: item.wheelColor || null, 
+          wheelColor: item.wheelColor || null,
           bonus: item.bonus || false,
         })),
         total,
@@ -483,8 +488,19 @@ function Checkout() {
             >
               <div className="flex items-center gap-4">
                 <img
-                  src={item.images?.[0] || item.image}
+                  src={
+                    item.image?.startsWith("data:image/")
+                      ? item.image
+                      : item.image?.startsWith("/uploads/")
+                      ? `https://truescale.up.railway.app${item.image}`
+                      : item.images?.[0]
+                      ? item.images[0].startsWith("http")
+                        ? item.images[0]
+                        : `https://truescale.up.railway.app${item.images[0]}`
+                      : "/images/placeholder.svg"
+                  }
                   alt={item.name}
+                  onError={(e) => (e.target.src = "/images/placeholder.svg")}
                   className="w-16 h-16 object-cover rounded"
                 />
                 <div>
