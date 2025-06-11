@@ -20,7 +20,7 @@ function AdminOrderStats() {
     async function fetchStats() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/orders/stats", {
+        const res = await fetch("https://truescale.up.railway.app/api/orders/stats", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();

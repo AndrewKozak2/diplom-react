@@ -79,7 +79,7 @@ export default function Configurator() {
         Math.random() * 1000
       )}.png`;
       const response = await fetch(
-        "http://localhost:3000/api/upload-screenshot",
+        "https://truescale.up.railway.app/api/upload-screenshot",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -91,7 +91,7 @@ export default function Configurator() {
       const { path } = await response.json();
 
       // 🟢 Зберігаємо в базу
-      await fetch("http://localhost:3000/api/custom-models", {
+      await fetch("https://truescale.up.railway.app/api/custom-models", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

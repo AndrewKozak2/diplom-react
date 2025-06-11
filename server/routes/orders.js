@@ -55,7 +55,7 @@ function generateOrderEmail(order) {
           </div>
 
           <div style="text-align: center; margin-top: 30px;">
-            <a href="https://truescale.shop" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Перейти на сайт</a>
+            <a href="https://truescale.up.railway.app" style="display: inline-block; background: #2563eb; color: white; padding: 12px 24px; border-radius: 6px; text-decoration: none; font-weight: bold;">Перейти на сайт</a>
           </div>
 
           <div style="margin-top: 40px; text-align: center; font-size: 16px; color: #6b7280;">

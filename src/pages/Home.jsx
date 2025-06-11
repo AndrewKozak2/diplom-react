@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { useLocation, Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import BrandSlider from "../components/BrandSlider";
-import NewArrivals from "../components/NewArrivals";
 import ProductList from "../components/ProductList";
 import StoreBenefits from "../components/StoreBenefits";
 import Banner from "../components/Banner";

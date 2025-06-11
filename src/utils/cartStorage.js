@@ -3,7 +3,7 @@ export async function loadCartFromDB() {
   if (!token) return;
 
   try {
-    const res = await fetch("http://localhost:3000/api/cart/load", {
+    const res = await fetch("https://truescale.up.railway.app/api/cart/load", {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -46,7 +46,7 @@ export async function saveCartToDB() {
 
 
   try {
-    const res = await fetch("http://localhost:3000/api/cart/save", {
+    const res = await fetch("https://truescale.up.railway.app/api/cart/save", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

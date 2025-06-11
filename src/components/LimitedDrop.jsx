@@ -7,7 +7,7 @@ function LimitedDrop() {
 
   const fetchLimitedProduct = async () => {
     try {
-      const res = await fetch("http://localhost:3000/api/limited");
+      const res = await fetch("https://truescale.up.railway.app/api/limited");
       const data = await res.json();
       setProduct(data);
     } catch (err) {

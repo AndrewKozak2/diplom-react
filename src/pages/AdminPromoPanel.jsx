@@ -11,7 +11,7 @@ function AdminPromoPanel() {
     async function fetchCodes() {
       try {
         const token = localStorage.getItem("token");
-        const res = await fetch("http://localhost:3000/api/promocodes", {
+        const res = await fetch("https://truescale.up.railway.app/api/promocodes", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -26,7 +26,7 @@ function AdminPromoPanel() {
   const handleCreate = async () => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch("http://localhost:3000/api/promocodes/create", {
+      const res = await fetch("https://truescale.up.railway.app/api/promocodes/create", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -46,7 +46,7 @@ function AdminPromoPanel() {
   const handleDelete = async (id) => {
     try {
       const token = localStorage.getItem("token");
-      const res = await fetch(`http://localhost:3000/api/promocodes/${id}`, {
+      const res = await fetch(`https://truescale.up.railway.app/api/promocodes/${id}`, {
         method: "DELETE",
         headers: {
           Authorization: `Bearer ${token}`,

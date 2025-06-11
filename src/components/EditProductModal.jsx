@@ -59,7 +59,7 @@ function EditProductModal({ product, onClose, onSave }) {
       form.newImages.forEach((file) => formData.append("newImages", file));
 
       const response = await fetch(
-        `http://localhost:3000/api/admin/products/${product._id}`,
+        `https://truescale.up.railway.app/api/admin/products/${product._id}`,
         {
           method: "PUT",
           headers: {
@@ -128,7 +128,7 @@ function EditProductModal({ product, onClose, onSave }) {
               {form.existingImages.map((img, i) => (
                 <div key={i} className="relative">
                   <img
-                    src={`http://localhost:3000${img}`}
+                    src={`https://truescale.up.railway.app${img}`}
                     className="h-24 w-full object-cover rounded"
                     alt="img"
                   />

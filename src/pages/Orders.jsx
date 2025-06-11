@@ -17,7 +17,7 @@ function Orders() {
       }
 
       try {
-        const res = await fetch("http://localhost:3000/api/orders/my", {
+        const res = await fetch("https://truescale.up.railway.app/api/orders/my", {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -88,15 +88,15 @@ function Orders() {
                       item.image?.startsWith("data:image/")
                         ? item.image
                         : item.image?.startsWith("/images/")
-                        ? `http://localhost:3000${item.image}`
+                        ? `https://truescale.up.railway.app${item.image}`
                         : item.image?.startsWith("/uploads/")
-                        ? `http://localhost:3000${item.image}`
+                        ? `https://truescale.up.railway.app${item.image}`
                         : item.image?.startsWith("http")
                         ? item.image
                         : item.images?.[0]
                         ? item.images[0].startsWith("http")
                           ? item.images[0]
-                          : `http://localhost:3000${item.images[0]}`
+                          : `https://truescale.up.railway.app${item.images[0]}`
                         : "/images/placeholder.svg"
                     }
                     alt={item.name}

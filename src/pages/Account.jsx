@@ -38,7 +38,7 @@ function Account() {
         const token = localStorage.getItem("token");
         if (!token) return;
 
-        const res = await fetch("http://localhost:3000/api/user/profile", {
+        const res = await fetch("https://truescale.up.railway.app/api/user/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
 
@@ -155,7 +155,7 @@ function Account() {
     if (!token) return;
 
     try {
-      const res = await fetch("http://localhost:3000/api/user/update-profile", {
+      const res = await fetch("https://truescale.up.railway.app/api/user/update-profile", {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

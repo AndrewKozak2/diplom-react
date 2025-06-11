@@ -17,7 +17,7 @@ function AddProductForm({ onClose }) {
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
-    fetch("http://localhost:3000/api/products")
+    fetch("https://truescale.up.railway.app/api/products")
       .then((res) => res.json())
       .then((data) => {
         if (Array.isArray(data)) {
@@ -66,7 +66,7 @@ function AddProductForm({ onClose }) {
         formData.append("images", file);
       });
 
-      const res = await fetch("http://localhost:3000/api/admin/products", {
+      const res = await fetch("https://truescale.up.railway.app/api/admin/products", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${token}`,

@@ -24,7 +24,7 @@ function VerifyEmail() {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3000/api/verify-registration', {
+      const res = await fetch('https://truescale.up.railway.app/api/verify-registration', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
@@ -44,7 +44,7 @@ function VerifyEmail() {
 
   const handleResend = async () => {
     try {
-      const res = await fetch('http://localhost:3000/api/register-temp', {
+      const res = await fetch('https://truescale.up.railway.app/api/register-temp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })

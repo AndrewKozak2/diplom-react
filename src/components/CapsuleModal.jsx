@@ -27,7 +27,7 @@ function CapsuleModal({ onClose, onDrop, total }) {
   useEffect(() => {
     if (!canOpen) return;
 
-    fetch("http://localhost:3000/api/capsule/all")
+    fetch("https://truescale.up.railway.app/api/capsule/all")
       .then((res) => res.json())
       .then((allModels) => {
         if (!Array.isArray(allModels)) {

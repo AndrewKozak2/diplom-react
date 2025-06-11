@@ -96,16 +96,16 @@ function CartSidebar({ isOpen, onClose }) {
                     item.image?.startsWith("data:image/")
                       ? item.image
                       : item.image?.startsWith("/images/")
-                      ? `http://localhost:3000${item.image}`
+                      ? `https://truescale.up.railway.app${item.image}`
                       : item.image?.startsWith("/uploads/")
-                      ? `http://localhost:3000${item.image}`
+                      ? `https://truescale.up.railway.app${item.image}`
                       : item.images?.[0]
                       ? item.images[0].startsWith("http")
                         ? item.images[0]
-                        : `http://localhost:3000${item.images[0]}`
+                        : `https://truescale.up.railway.app${item.images[0]}`
                       : item.image?.startsWith("http")
                       ? item.image
-                      : `http://localhost:3000${item.image}`
+                      : `https://truescale.up.railway.app${item.image}`
                   }
                   alt={item.name}
                   onError={(e) => (e.target.src = "/images/placeholder.svg")}

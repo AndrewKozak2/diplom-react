@@ -21,7 +21,7 @@ function ProductCard({ model, onAddToCart }) {
   const { t } = useTranslation();
 
   const backendURL =
-    import.meta.env.VITE_BACKEND_URL || "http://localhost:3000";
+    import.meta.env.VITE_BACKEND_URL || "https://truescale.up.railway.app";
 
   const getFullImagePath = (src) => {
     if (!src) return "/images/placeholder.svg";

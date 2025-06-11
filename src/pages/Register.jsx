@@ -18,7 +18,7 @@ function Register() {
     }
 
     try {
-      const res = await fetch('http://localhost:3000/api/register-temp', {
+      const res = await fetch('https://truescale.up.railway.app/api/register-temp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ username, email, password }),

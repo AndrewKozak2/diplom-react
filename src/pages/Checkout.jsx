@@ -59,7 +59,7 @@ function Checkout() {
       if (!token) return;
 
       try {
-        const res = await fetch("http://localhost:3000/api/user/profile", {
+        const res = await fetch("https://truescale.up.railway.app/api/user/profile", {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.ok) {
@@ -107,7 +107,7 @@ function Checkout() {
   useEffect(() => {
     async function loadPromoCodes() {
       try {
-        const res = await fetch("http://localhost:3000/api/promocodes/public");
+        const res = await fetch("https://truescale.up.railway.app/api/promocodes/public");
         const data = await res.json();
         if (Array.isArray(data)) {
           setPromoCodes(data);
@@ -263,7 +263,7 @@ function Checkout() {
 
       try {
         console.log("🛒 Sending cart to backend:", cart);
-        const res = await fetch("http://localhost:3000/api/orders", {
+        const res = await fetch("https://truescale.up.railway.app/api/orders", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(orderData),
@@ -276,7 +276,7 @@ function Checkout() {
           return;
         }
 
-        await fetch("http://localhost:3000/api/cart/clear", {
+        await fetch("https://truescale.up.railway.app/api/cart/clear", {
           method: "PATCH",
           headers: {
             "Content-Type": "application/json",
@@ -292,7 +292,7 @@ function Checkout() {
 
         if (limitedItem) {
           try {
-            await fetch("http://localhost:3000/api/limited/reduce", {
+            await fetch("https://truescale.up.railway.app/api/limited/reduce", {
               method: "POST",
               headers: { "Content-Type": "application/json" },
               body: JSON.stringify({

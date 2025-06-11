@@ -15,7 +15,7 @@ function ProductList({ refresh }) {
 
   useEffect(() => {
     setLoading(true);
-    fetch("http://localhost:3000/api/products")
+    fetch("https://truescale.up.railway.app/api/products")
       .then((res) => res.json())
       .then((data) => {
         const normalized = (data.products || data).map((p) => ({

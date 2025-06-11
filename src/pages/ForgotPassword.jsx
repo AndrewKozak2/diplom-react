@@ -14,7 +14,7 @@ function ForgotPassword() {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3000/api/forgot-password', {
+      const res = await fetch('https://truescale.up.railway.app/api/forgot-password', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email })
@@ -34,7 +34,7 @@ function ForgotPassword() {
     e.preventDefault();
 
     try {
-      const res = await fetch('http://localhost:3000/api/verify-reset-code', {
+      const res = await fetch('https://truescale.up.railway.app/api/verify-reset-code', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, code })
