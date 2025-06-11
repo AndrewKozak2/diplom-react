@@ -56,6 +56,13 @@ function AddProductForm({ onClose }) {
       const token = localStorage.getItem("token");
       const formData = new FormData();
 
+      const folderName = `${form.brand}_${form.name}`
+        .toLowerCase()
+        .replace(/\s+/g, "")
+        .replace(/[()]/g, "")
+        .replace(/[^a-z0-9_]/g, "");
+
+      formData.append("folderName", folderName);
       formData.append("name", form.name);
       formData.append("brand", form.brand);
       formData.append("scale", form.scale);
@@ -66,13 +73,16 @@ function AddProductForm({ onClose }) {
         formData.append("images", file);
       });
 
-      const res = await fetch("https://truescale.up.railway.app/api/admin/products", {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-        body: formData,
-      });
+      const res = await fetch(
+        "https://truescale.up.railway.app/api/admin/products",
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+          body: formData,
+        }
+      );
 
       const data = await res.json();
 
@@ -108,7 +118,9 @@ function AddProductForm({ onClose }) {
           <X size={22} />
         </button>
 
-        <h2 className="text-xl font-bold mb-4 text-center">{t("addForm.title")}</h2>
+        <h2 className="text-xl font-bold mb-4 text-center">
+          {t("addForm.title")}
+        </h2>
         <form
           onSubmit={handleSubmit}
           className="space-y-4"
@@ -191,7 +203,9 @@ function AddProductForm({ onClose }) {
                         const updatedFiles = [...files];
                         updatedFiles.splice(index, 1);
                         setFiles(updatedFiles);
-                        setFileNames(updatedFiles.map((f) => f.name).join(", "));
+                        setFileNames(
+                          updatedFiles.map((f) => f.name).join(", ")
+                        );
                       }}
                       className="absolute top-1 right-1 bg-black bg-opacity-50 text-white rounded-full p-1 hover:bg-opacity-80 transition text-xs"
                       title={t("addForm.remove")}
