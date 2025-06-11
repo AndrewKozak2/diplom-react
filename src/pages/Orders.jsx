@@ -17,11 +17,14 @@ function Orders() {
       }
 
       try {
-        const res = await fetch("https://truescale.up.railway.app/api/orders/my", {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+        const res = await fetch(
+          "https://truescale.up.railway.app/api/orders/my",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
 
         if (!res.ok) throw new Error("Failed to fetch orders");
 
@@ -85,11 +88,10 @@ function Orders() {
                 >
                   <img
                     src={
-                      item.image?.startsWith("data:image/")
+                      item.image?.startsWith("data:image/") 
                         ? item.image
-                        : item.image?.startsWith("/images/")
-                        ? `https://truescale.up.railway.app${item.image}`
-                        : item.image?.startsWith("/uploads/")
+                        : item.image?.startsWith("/uploads/") ||
+                          item.image?.startsWith("/images/")
                         ? `https://truescale.up.railway.app${item.image}`
                         : item.image?.startsWith("http")
                         ? item.image
