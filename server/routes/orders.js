@@ -11,9 +11,10 @@ function generateOrderEmail(order) {
       (item) => `
     <tr>
       <td style="padding: 10px; text-align: center;">
-        <img src="${item.images?.[0]}" alt="${
-        item.name
-      }" style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
+<img src="https://truescale.up.railway.app${
+        item.image || item.images?.[0]
+      }" alt="${item.name}"
+ style="width: 80px; height: 80px; object-fit: cover; border-radius: 8px;">
       </td>
       <td style="padding: 10px;">${item.name}</td>
       <td style="padding: 10px;">× ${item.quantity}</td>
