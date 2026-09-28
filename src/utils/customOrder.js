@@ -8,7 +8,7 @@ export function buildCustomCartItem(customModel) {
     price: customModel.price,
     quantity: 1,
     color: customModel.bodyColor,
-    rimColor: customModel.rimColor,
+    wheelColor: customModel.wheelColor,
   };
 }
 

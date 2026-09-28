@@ -8,7 +8,7 @@ describe("custom order pipeline", () => {
       name: "Nissan GT-R",
       price: 25,
       bodyColor: "Matte Black",
-      rimColor: "Gold",
+      wheelColor: "Gold",
     };
 
     const item = buildCustomCartItem(customModel);
