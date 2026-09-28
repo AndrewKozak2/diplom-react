@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "truescale-rag": {
+      "command": ".claude/mcp/rag-server/.venv/Scripts/python.exe",
+      "args": [".claude/mcp/rag-server/server.py"]
+    }
+  }
+}

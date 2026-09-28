@@ -12,6 +12,15 @@ dist
 dist-ssr
 *.local
 
+# RAG MCP server (lab-3): local venv + persisted Chroma index, not source
+.claude/mcp/rag-server/.venv
+.claude/mcp/rag-server/.chroma
+.claude/mcp/rag-server/__pycache__
+
+# Playwright test artifacts
+test-results
+playwright-report
+
 .vscode/*
 !.vscode/extensions.json
 .idea
