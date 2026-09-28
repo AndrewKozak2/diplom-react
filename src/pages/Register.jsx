@@ -7,11 +7,20 @@ function Register() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [confirm, setConfirm] = useState('');
+  const [emailError, setEmailError] = useState('');
   const navigate = useNavigate();
   const { t } = useTranslation();
 
+  const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
   const handleRegister = async (e) => {
     e.preventDefault();
+
+    if (!EMAIL_PATTERN.test(email)) {
+      setEmailError(t("register.invalidEmail"));
+      return;
+    }
+    setEmailError('');
 
     if (password !== confirm) {
       return;
@@ -56,11 +65,17 @@ function Register() {
         <input
           type="email"
           placeholder={t("register.email")}
-          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-4"
+          className="w-full border border-gray-300 rounded-md px-4 py-2 mb-1"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            if (emailError) setEmailError('');
+          }}
           required
         />
+        {emailError && (
+          <p className="text-red-600 text-sm mb-3">{emailError}</p>
+        )}
         <input
           type="password"
           placeholder={t("register.password")}

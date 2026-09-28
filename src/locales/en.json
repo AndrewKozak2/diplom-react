@@ -259,7 +259,8 @@
     "confirm": "Confirm Password",
     "register": "Register",
     "haveAccount": "Already have an account?",
-    "login": "Login"
+    "login": "Login",
+    "invalidEmail": "Enter a valid email address"
   },
   "reset": {
     "title": "Set New Password",
