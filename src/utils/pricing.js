@@ -4,13 +4,10 @@ export function getCartSubtotal(cart) {
   return cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 }
 
-export function applyDiscount(subtotal, discountPercent) {
-  return subtotal * (1 - discountPercent / 100);
-}
-
 export function calculateCartTotal(cart, discountPercent = 0) {
   const subtotal = getCartSubtotal(cart);
-  return applyDiscount(subtotal, discountPercent);
+  const discount = subtotal * (discountPercent / 100);
+  return subtotal - discount;
 }
 
 export function averageItemPrice(cart) {
