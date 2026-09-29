@@ -1,19 +1,16 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import {
   ShoppingCart,
   Truck,
-  CheckCircle,
-  ShieldCheck,
   Info,
-  Calendar,
   Lock,
 } from "lucide-react";
 import { toast, Toaster } from "react-hot-toast";
-import { motion } from "framer-motion";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next"; 
 import PaymentModal from "../components/PaymentModal";
 import CapsuleModal from "../components/CapsuleModal";
-import { useTranslation } from "react-i18next";
+import { isValidPromoCodeFormat } from "../utils/promoValidation";
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -83,6 +80,13 @@ function Checkout() {
   }, []);
   const handlePromoApply = () => {
     const code = promo.trim().toUpperCase();
+
+    if (!isValidPromoCodeFormat(code)) {
+      setAppliedPromo(null);
+      toast.error(t("checkout.promoInvalidFormat"));
+      return;
+    }
+
     const found = promoCodes.find((p) => p.code === code);
     if (found) {
       const now = new Date();
