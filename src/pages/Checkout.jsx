@@ -10,7 +10,7 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next"; 
 import PaymentModal from "../components/PaymentModal";
 import CapsuleModal from "../components/CapsuleModal";
-import { isValidPromoCodeFormat } from "../utils/promoValidation";
+import { isValidPromoCodeFormat, normalizePromoCode } from "../utils/promoValidation";
 
 function Checkout() {
   const [cart, setCart] = useState([]);
@@ -79,7 +79,7 @@ function Checkout() {
     fetchProfile();
   }, []);
   const handlePromoApply = () => {
-    const code = promo.trim().toUpperCase();
+    const code = normalizePromoCode(promo);
 
     if (!isValidPromoCodeFormat(code)) {
       setAppliedPromo(null);

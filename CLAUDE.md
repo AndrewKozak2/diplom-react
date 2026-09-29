@@ -6,7 +6,7 @@ TrueScale — вебзастосунок для продажу колекцій�
 
 - `src/` — фронтенд, React 19 + Vite, Tailwind CSS 4, react-router-dom, i18next (локалізація ua/en), react-three-fiber (3D-конфігуратор моделі), keen-slider, framer-motion.
   - `src/pages/` — сторінки (Checkout, Orders, Cart, каталог, адмінпанель тощо).
-  - `src/utils/` — чисті допоміжні функції (`cartStorage.js`, `pricing.js`, `customOrder.js`).
+  - `src/utils/` — чисті допоміжні функції (`cartStorage.js`, `pricing.js`, `customOrder.js`, `promoValidation.js`).
 - `server/` — бекенд, Node.js + Express, MongoDB через Mongoose.
   - `server/models/` — Mongoose-схеми (`User`, `Order`, `Product`, `CustomModel`, `CapsuleModel`, `PromoCode`, `LimitedProduct`, `PasswordResetCode`).
   - `server/routes/` — REST-маршрути (auth, cart, orders, products, promocodes, admin, capsule, customModels, limited, user, passwordReset).

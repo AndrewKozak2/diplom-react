@@ -4,6 +4,10 @@
 
 const PROMO_CODE_PATTERN = /^[A-Z0-9]{4,12}$/;
 
+export function normalizePromoCode(code) {
+  return String(code || "").trim().toUpperCase();
+}
+
 export function isValidPromoCodeFormat(code) {
-  return PROMO_CODE_PATTERN.test((code || "").trim().toUpperCase());
+  return PROMO_CODE_PATTERN.test(normalizePromoCode(code));
 }
