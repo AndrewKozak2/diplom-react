@@ -200,6 +200,7 @@
     "promoLimit": "Promo code usage limit reached.",
     "promoApplied": "Promo code {{code}} applied!",
     "invalidPromo": "Invalid promo code",
+    "promoInvalidFormat": "Promo code must be 4-12 letters or digits",
     "success": "Order placed successfully!",
     "notice": "We only ship via Nova Post. Orders are processed within 24 hours after successful payment.",
     "paypalSuccess": "Payment successful via PayPal",

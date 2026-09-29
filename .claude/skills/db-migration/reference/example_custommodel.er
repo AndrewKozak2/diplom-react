@@ -1,0 +1,6 @@
+entity: CustomModel
+fields:
+  - bodyColor: String
+  - wheelColor: String (renamed_from=rimColor)
+  - price: Number
+  - isFeatured: Boolean (new, default=false)
